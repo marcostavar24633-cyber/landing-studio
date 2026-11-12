@@ -65,6 +65,27 @@ button.addEventListener("click",async()=>{button.disabled=true;button.textConten
  .top-cta,.button{border-radius:999px;padding:14px 23px;letter-spacing:.035em;box-shadow:0 5px 16px rgba(0,0,0,.12)}
  .card,.price-card,.contact,.quote,.extra-card{border-radius:20px}.hero-art,.gallery-item{border-radius:24px}.field{border-radius:13px}
  @media(max-width:520px){#editor{border-radius:0;padding:18px}.editor-actions{grid-template-columns:1fr 1fr}.block-row{grid-template-columns:1fr auto auto}.block-row button{font-size:11px}}
+
+ /* Единый визуальный стиль личной мастерской */
+ :root{--studio-ink:#302d43;--studio-muted:#77738a;--studio-lilac:#8b78c2;--studio-mint:#7fa6a0;--studio-border:#e7e1ef;--studio-surface:rgba(255,255,255,.82)}
+ body{background:radial-gradient(ellipse at 12% 8%,rgba(226,215,246,.72),transparent 36%),radial-gradient(ellipse at 90% 88%,rgba(205,231,222,.7),transparent 35%),linear-gradient(135deg,#faf5ef,#f3f0fa 55%,#edf6f1)!important;color:var(--studio-ink)!important}
+ #app,.app,.workspace,.main,.main-content,.builder,.builder-layout{background:transparent!important;color:var(--studio-ink)}
+ header,.topbar,.toolbar,.project-bar,.workspace-header{background:rgba(255,255,255,.76)!important;border:1px solid rgba(255,255,255,.9)!important;border-radius:20px!important;box-shadow:0 8px 28px rgba(65,55,91,.06)!important;backdrop-filter:blur(14px)}
+ aside,.sidebar,.left-panel,.right-panel,.settings-panel,.editor,.panel,.section-panel{background:linear-gradient(155deg,rgba(255,250,244,.97),rgba(245,241,255,.96) 56%,rgba(237,246,242,.97))!important;color:var(--studio-ink)!important;border-color:var(--studio-border)!important}
+ .preview,.preview-area,.canvas,.site-preview,.device-frame{background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.95)!important;border-radius:26px!important;box-shadow:0 18px 48px rgba(65,55,91,.08)!important}
+ button,.btn,[role=button]{border-radius:999px!important;transition:transform .18s ease,box-shadow .18s ease,background .18s ease!important}
+ button:hover,.btn:hover,[role=button]:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(91,77,135,.13)}
+ button.primary,.btn-primary,.primary,[type=submit],#addBlock,#addSection{background:linear-gradient(110deg,#8b78c2,#719d9a)!important;color:#fff!important;border:0!important;box-shadow:0 7px 18px rgba(119,104,172,.2)!important}
+ button:not(.primary):not(.active),.btn:not(.primary),.secondary{border-color:#e2dceb!important}
+ input,textarea,select{border-radius:14px!important;border:1px solid #ded9e9!important;background:rgba(255,255,255,.9)!important;color:#302d43!important;box-shadow:0 2px 8px rgba(59,49,91,.035)!important}
+ input:focus,textarea:focus,select:focus{outline:none!important;border-color:#9c8bd1!important;box-shadow:0 0 0 3px rgba(156,139,209,.17)!important}
+ .card,.panel-card,.block-card,.project-card,.template-card,.section-card,.library-item,.item-card{background:rgba(255,255,255,.82)!important;border:1px solid rgba(255,255,255,.96)!important;border-radius:20px!important;box-shadow:0 8px 25px rgba(65,55,91,.055)!important}
+ h1,h2,h3,h4,.title{color:#302d43;letter-spacing:-.025em}
+ p,.muted,.hint,.description,.subtitle{color:#77738a}
+ .active,.selected,[aria-pressed=true]{border-color:#a99ad2!important;box-shadow:0 0 0 2px rgba(156,139,209,.13)!important}
+ .divider,hr{border-color:rgba(103,91,132,.13)!important}
+ @media(max-width:720px){header,.topbar,.toolbar,.project-bar{border-radius:15px!important}.preview,.preview-area,.canvas,.site-preview{border-radius:18px!important}}
+
  `;
  html=html.replace("</style>",polish+"</style>");
  document.open();document.write(html);document.close();
