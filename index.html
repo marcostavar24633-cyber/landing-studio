@@ -1,11 +1,4 @@
 <!doctype html>
-<html lang="ru">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111318"><title>Landing Studio</title>
-<style>body{margin:0;background:#111318;color:#f4f1eb;font:16px/1.6 system-ui,Arial,sans-serif;display:grid;min-height:100vh;place-items:center}main{max-width:620px;padding:32px}a{color:#c6a879}p{color:#aaa}</style>
-</head>
-<body><main><h1>Landing Studio</h1><p id="status">Загружаем конструктор…</p><p><a href="./landing-studio-my-business.zip">Скачать архив проекта</a></p></main>
-<script>
-(async()=>{const s=document.getElementById("status");try{if(!("DecompressionStream"in window))throw new Error("Браузер не поддерживает распаковку приложения. Скачайте ZIP-архив.");const r=await fetch("./landing-studio-app.html.gz",{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить приложение ("+r.status+").");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));const html=await new Response(stream).text();document.open();document.write(html);document.close()}catch(e){s.textContent=e.message+" Откройте ZIP-архив и запустите index.html."}})();
-</script></body></html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111318"><title>Landing Studio</title><style>body{margin:0;background:#111318;color:#f4f1eb;font:16px/1.6 system-ui,Arial,sans-serif;display:grid;min-height:100vh;place-items:center}main{max-width:620px;padding:32px}a{color:#c6a879}p{color:#aaa}</style></head>
+<body><main><h1>Landing Studio</h1><p id="status">Загружаем конструктор…</p><p><a href="https://github.com/marcostavar24633-cyber/landing-studio/archive/refs/heads/main.zip">Скачать архив репозитория ZIP</a></p></main>
+<script>(async()=>{const s=document.getElementById("status");try{if(!("DecompressionStream"in window))throw new Error("Браузер не поддерживает распаковку приложения. Скачайте ZIP-архив репозитория.");const r=await fetch("./landing-studio-app.html.gz",{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить приложение ("+r.status+").");const html=await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).text();document.open();document.write(html);document.close()}catch(e){s.textContent=e.message+" Откройте архив репозитория, чтобы получить исходные файлы."}})();</script></body></html>
