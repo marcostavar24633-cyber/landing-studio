@@ -156,11 +156,20 @@ main{max-width:520px;text-align:center;padding:28px}h1{font-size:24px;letter-spa
  const data={brand:name,niche:"УСЛУГИ · ИНДИВИДУАЛЬНЫЙ ПОДХОД",title:g.title,description:g.offer+". "+g.need+".",cta:"Оставить заявку",style:"Премиальный",palette:"Тёмная",accent:"#c6a879",aboutTitle:"Для кого это предложение",aboutText:g.audience+"\n\nЧто важно клиенту: "+g.need,servicesTitle:"Что мы предлагаем",servicesIntro:"Выберите подходящий вариант и уточните детали. "+g.need+" Фактические характеристики и условия добавьте в карточки ниже.",advantagesTitle:"Что важно при выборе",advantagesIntro:g.advantages.map((x,i)=>(i+1)+". "+x).join("\n")+"\nПроверьте каждый пункт и удалите неподтверждённые утверждения.",processTitle:"Как это работает: "+g.steps.map((x,i)=>(i+1)+". "+x[0]+" — "+x[1]).join(" "),reviewsTitle:"Отзывы клиентов",galleryTitle:"Примеры и визуальные материалы",pricesTitle:"Стоимость",priceLabel:"Укажите актуальную стоимость и условия",faqTitle:"Частые вопросы",contactTitle:"Обсудим вашу задачу?",contactText:"Свяжитесь с нами, чтобы уточнить детали предложения и следующий шаг.",phone:"",email:"",messenger:"",heroImage:"",services:g.services};
  const payload={format:"LandingStudioProject",version:1,project:{name,data}};
  const file=new File([JSON.stringify(payload,null,2)],"landing-studio-project.json",{type:"application/json"});
- const target=Array.from(document.querySelectorAll('input[type="file"]')).find(x=>/json/i.test(x.accept||""));
+ const inputs=Array.from(document.querySelectorAll('input[type="file"]'));
+ const target=inputs.find(x=>/json/i.test(x.accept||""))||
+  inputs.find(x=>/импорт проекта json/i.test((x.parentElement?.innerText||"")+" "+(x.closest("label")?.innerText||"")));
  const note=document.getElementById("lsa-note");
- if(!target){note.textContent="Поле импорта JSON не найдено. Ничего не изменено.";return;}
- try{const dt=new DataTransfer();dt.items.add(file);target.files=dt.files;target.dispatchEvent(new Event("change",{bubbles:true}));document.getElementById("lsa-create-project").textContent="Передано в импорт ✓";note.textContent="Проверьте проект в списке «Мои проекты».";}
- catch(e){note.textContent="Автоматическая передача не поддержана браузером. Существующие проекты не затронуты.";}
+ if(!target){note.textContent="Не найдено поле импорта JSON. Текущий проект не изменён.";return;}
+ try{
+  const dt=new DataTransfer();dt.items.add(file);target.files=dt.files;
+  target.dispatchEvent(new Event("input",{bubbles:true}));
+  target.dispatchEvent(new Event("change",{bubbles:true}));
+  document.getElementById("lsa-create-project").textContent="Файл передан ✓";
+  note.textContent="Файл передан штатному импорту. Проверьте, появился ли новый проект в «Мои проекты».";
+ }catch(e){
+  note.textContent="Браузер не разрешил передачу файла. Текущий проект не изменён.";
+ }
 });
 
  
