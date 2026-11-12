@@ -1,1 +1,1 @@
-Trigger automatic extraction of the uploaded Landing Studio archive.
+Retry archive extraction with corrected filename.
