@@ -3,7 +3,8 @@ name: Install Landing Studio archive
 on:
   push:
     paths:
-      - "Landing-Studio.zip"
+      - "landing-studio-main.zip"
+      - "trigger-extract.txt"
 
 permissions:
   contents: write
