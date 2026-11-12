@@ -12,6 +12,28 @@
  const chunks=await Promise.all(Array.from({length:11},async(_,i)=>{const name="./app-chunks/"+String(i).padStart(2,"0")+".txt";const r=await fetch(name,{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить часть приложения: "+name);return r.text()}));
  const binary=atob(chunks.join(""));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
  const html=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+ const polish=`
+ #editor{background:linear-gradient(155deg,#fffaf2 0%,#f5f1ff 54%,#edf6f2 100%);color:#29283a;border-radius:26px 0 0 26px;box-shadow:-18px 0 65px rgba(47,42,74,.18);padding:24px;scrollbar-width:thin;scrollbar-color:#c9c3d9 transparent}
+ .editor-head{background:rgba(255,250,244,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(103,91,132,.14);border-radius:0 0 16px 16px;padding:12px 0 17px}
+ .editor-head h2{font-size:21px;letter-spacing:-.03em;color:#302d43}.editor-group{border-bottom:1px solid rgba(103,91,132,.15);padding:19px 0}.editor-group h3{color:#77718d}
+ .editor label{color:#514d63}.editor input,.editor textarea,.editor select,.project-tools button,.project-tools select{border:1px solid #ded9e9;background:rgba(255,255,255,.88);color:#302d43;border-radius:13px;padding:11px 13px;box-shadow:0 2px 8px rgba(59,49,91,.04);transition:.18s}
+ .editor input:focus,.editor textarea:focus,.editor select:focus{outline:none;border-color:#9c8bd1;box-shadow:0 0 0 3px rgba(156,139,209,.18)}
+ .close,.editor-actions button,.project-tools button,.block-row button,.device-tools button,.block-library button,#validateSite{border-radius:13px;transition:transform .18s,box-shadow .18s}
+ .close{background:#eee9f7;color:#51496c;padding:10px 14px}
+ .project-tools button.primary,.editor-actions button:not(.secondary),#validateSite{background:linear-gradient(135deg,#8170bd,#6f8f9e);color:#fff;border:0;box-shadow:0 5px 13px rgba(113,99,165,.2)}
+ .project-tools button:not(.primary),.editor-actions .secondary{background:rgba(255,255,255,.8);color:#514d63;border:1px solid #ded9e9}
+ .editor-actions{gap:10px}.editor-actions button{padding:13px 11px;min-height:46px}
+ .block-row{background:rgba(255,255,255,.8);border:1px solid #e3deec;border-radius:14px;padding:9px;box-shadow:0 2px 8px rgba(59,49,91,.04)}
+ .block-row button{background:#f2eff8;border:1px solid #e1dced;color:#59536f;padding:7px 9px}
+ .block-library button{background:linear-gradient(135deg,#8170bd,#6f8f9e);color:#fff;border:0;padding:10px 14px}
+ .device-tools button{background:rgba(255,255,255,.85);border:1px solid #ded9e9;color:#5c5670;border-radius:12px}.device-tools button.active{background:#8170bd;color:#fff;border-color:#8170bd}
+ .editor-hint,.project-status{color:#77718d}
+ #editorToggle{background:linear-gradient(135deg,#8b78c8,#7199a0);color:#fff;border-radius:999px;padding:14px 21px;box-shadow:0 10px 28px rgba(74,67,112,.25)}
+ .top-cta,.button{border-radius:999px;padding:14px 23px;letter-spacing:.035em;box-shadow:0 5px 16px rgba(0,0,0,.12)}
+ .card,.price-card,.contact,.quote,.extra-card{border-radius:20px}.hero-art,.gallery-item{border-radius:24px}.field{border-radius:13px}
+ @media(max-width:520px){#editor{border-radius:0;padding:18px}.editor-actions{grid-template-columns:1fr 1fr}.block-row{grid-template-columns:1fr auto auto}.block-row button{font-size:11px}}
+ `;
+ html=html.replace("</style>",polish+"</style>");
  document.open();document.write(html);document.close();
  }catch(e){status.textContent=e.message+" Попробуйте обновить страницу или скачать архив репозитория."}})();
 </script></body></html>
