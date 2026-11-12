@@ -2,110 +2,23 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f6f2f8">
-<title>Landing Studio — личная мастерская лендингов</title>
+<meta name="theme-color" content="#0b0a08"><title>Landing Studio — личная мастерская лендингов</title>
 <style>
-:root{color-scheme:light;--ink:#302d43;--muted:#77738a;--purple:#8877bd;--teal:#7fa6a0}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(ellipse at 12% 8%,rgba(226,215,246,.78),transparent 36%),radial-gradient(ellipse at 90% 88%,rgba(205,231,222,.8),transparent 35%),linear-gradient(135deg,#faf5ef,#f3f0fa 55%,#edf6f1);display:grid;place-items:center;padding:24px;overflow-x:hidden}
-main{width:min(100%,1020px);position:relative}.topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:-.03em}.mark{width:42px;height:42px;border-radius:15px;background:linear-gradient(140deg,#9a87ce,#82aaa2);display:grid;place-items:center;color:white;font-size:21px;box-shadow:0 8px 20px #8174ae38}.private{font-size:12px;font-weight:650;letter-spacing:.04em;color:#6e6689;background:#fff9;border:1px solid #fff;border-radius:999px;padding:8px 13px}
-.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:28px;align-items:center;background:#ffffffb8;border:1px solid #ffffffd9;border-radius:32px;padding:clamp(24px,5vw,56px);box-shadow:0 24px 70px rgba(65,55,91,.10);backdrop-filter:blur(18px)}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#756b9b;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}.eyebrow:before{content:"";width:22px;height:2px;background:#9b8bc8;border-radius:3px}
-h1{font-size:clamp(34px,5vw,58px);line-height:1.05;letter-spacing:-.055em;margin:17px 0 18px;font-weight:780}h1 span{color:#8272b4}.lead{font-size:17px;color:#706d82;max-width:510px;margin:0 0 25px}
-.cta{border:0;border-radius:999px;background:linear-gradient(110deg,#8b78c2,#719d9a);color:white;font:700 15px inherit;padding:15px 25px;box-shadow:0 9px 22px rgba(119,104,172,.25);cursor:pointer;transition:.2s}.cta:hover{transform:translateY(-2px);box-shadow:0 13px 26px rgba(119,104,172,.3)}.cta:disabled{opacity:.65;cursor:wait;transform:none}
-.note{font-size:12px;color:#8b879b;margin:15px 0 0}
-.preview{background:linear-gradient(145deg,#f4effb,#edf7f2);border:1px solid #fff;border-radius:25px;padding:20px;min-height:310px;display:flex;flex-direction:column;justify-content:center;gap:13px;position:relative;overflow:hidden}.preview:before,.preview:after{content:"";position:absolute;border-radius:50%;filter:blur(1px);opacity:.6}.preview:before{width:170px;height:170px;background:#d9cdef;right:-55px;top:-65px}.preview:after{width:130px;height:130px;background:#c8e4d9;left:-55px;bottom:-55px}
-.browser{position:relative;z-index:1;background:#fff;border-radius:17px;padding:13px;box-shadow:0 12px 32px #51456b16;transform:rotate(1.5deg)}.browserbar{display:flex;gap:5px;padding:1px 0 11px;border-bottom:1px solid #f0edf4}.dot{width:6px;height:6px;border-radius:50%;background:#d6d0e3}.mockhero{height:106px;border-radius:12px;background:linear-gradient(120deg,#e9e1f4,#d9eee5);display:grid;place-items:center;margin-top:11px;color:#6d6489;font-weight:750;font-size:19px;letter-spacing:-.04em}.mocklines{display:grid;gap:7px;margin:12px 4px}.line{height:6px;border-radius:8px;background:#eeeaf4}.line:nth-child(1){width:72%}.line:nth-child(2){width:91%}.line:nth-child(3){width:53%}.mockbutton{height:25px;width:94px;border-radius:99px;background:linear-gradient(100deg,#927fc4,#82aaa1);margin:10px 4px 2px}
-.types{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:17px}.type{background:#ffffffa6;border:1px solid #ffffffd9;border-radius:17px;padding:14px 12px;text-align:center;color:#615c75;font-size:13px;font-weight:650}.type b{display:block;font-size:20px;margin-bottom:4px;font-weight:500}
-.footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:#8a8699;font-size:12px;padding:18px 8px 0}.footer a{color:#77709a;text-decoration:none}
-@media(max-width:720px){body{padding:15px}.topline{margin-bottom:17px}.hero{grid-template-columns:1fr;border-radius:25px;padding:25px 21px;gap:22px}.preview{min-height:235px}.types{grid-template-columns:repeat(2,1fr)}.private{font-size:10px;padding:7px 10px}.footer{padding:16px 4px}.lead{font-size:15px}}
-
-/* Чёрно-золотая тема главного экрана */
-:root{color-scheme:dark;--ink:#f3ead8;--muted:#b9ad98}
-body{color:#f3ead8;background:radial-gradient(ellipse at 12% 8%,rgba(173,132,58,.18),transparent 38%),radial-gradient(ellipse at 90% 88%,rgba(117,84,35,.16),transparent 35%),linear-gradient(135deg,#090909,#171511 58%,#0c0b09)}
-.mark{background:linear-gradient(140deg,#f0d18a,#9b7130);color:#17120a;box-shadow:0 8px 24px rgba(194,151,71,.25)}
-.private{color:#e2c27e;background:#1c1913;border-color:#5b4725}
-.hero{background:linear-gradient(145deg,rgba(31,28,22,.97),rgba(18,17,15,.96));border-color:rgba(207,168,91,.28);box-shadow:0 24px 70px rgba(0,0,0,.42)}
-.eyebrow{color:#d8b66f}.eyebrow:before{background:#c9a45a}
-h1{color:#f5eddf}h1 span{color:#d6b36b}.lead{color:#c0b6a5}
-.cta{background:linear-gradient(110deg,#e4c47b,#a77b35);color:#17120a;box-shadow:0 9px 24px rgba(190,148,66,.2)}.cta:hover{box-shadow:0 13px 28px rgba(190,148,66,.28)}
-.note,.footer{color:#9f9585}.footer a{color:#d7b56c}
-.preview{background:linear-gradient(145deg,#211c13,#11100d);border-color:#5c4827}
-.preview:before{background:#8d6b32}.preview:after{background:#51401f}
-.browser{background:#171511;box-shadow:0 12px 32px #0009}.browserbar{border-color:#393124}.dot{background:#8b713f}
-.mockhero{background:linear-gradient(120deg,#3c301b,#211c12);color:#e2c27e}
-.line{background:#403728}.mockbutton{background:linear-gradient(100deg,#e2c27e,#a47b3c)}
-.type{background:rgba(29,26,20,.88);border-color:rgba(207,168,91,.24);color:#d9cdb8}.type b{color:#d9b96f}
-
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#090909,#171511);color:#eadfc9;font:15px/1.5 system-ui,Arial,sans-serif;display:grid;place-items:center;padding:22px}
+main{max-width:520px;text-align:center;padding:28px}h1{font-size:24px;letter-spacing:-.04em;color:#e4c47b;margin:0 0 10px}p{color:#a99d88}a{color:#dfbf75}
 </style>
 </head>
 <body>
-<main>
- <div class="topline"><div class="brand"><div class="mark">✦</div><span>Landing Studio</span></div><div class="private">ЛИЧНАЯ МАСТЕРСКАЯ</div></div>
- <section class="hero">
-  <div>
-   <div class="eyebrow">ТВОЙ ИНСТРУМЕНТ ДЛЯ ПРОДАЖ</div>
-   <h1>Создавай лендинги <span>быстро и красиво</span></h1>
-   <p class="lead">Собирай страницу под товар, услугу или акцию: добавляй фото и тексты, настраивай блоки и кнопки заказа, проверяй мобильный вид и скачивай готовый сайт.</p>
-   <button class="cta" id="start">Создать лендинг <span aria-hidden="true">→</span></button>
-   <p class="note" id="status">Личный инструмент для собственных проектов. Не публичный сервис и не площадка для регистрации клиентов.</p>
-  </div>
-  <div class="preview" aria-label="Пример внешнего вида лендинга"><div class="browser"><div class="browserbar"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><div class="mockhero">Твой новый продукт</div><div class="mocklines"><i class="line"></i><i class="line"></i><i class="line"></i></div><div class="mockbutton"></div></div></div>
- </section>
- <section class="types" aria-label="Для каких страниц можно использовать конструктор">
-  <div class="type"><b>✧</b>Продажа товара</div><div class="type"><b>◈</b>Услуга</div><div class="type"><b>♡</b>Заявки и запись</div><div class="type"><b>✺</b>Акция и предложение</div>
- </section>
- <div class="footer"><span>Проекты сохраняются в браузере на этом устройстве.</span><a href="https://github.com/marcostavar24633-cyber/landing-studio" target="_blank" rel="noopener">Исходный код на GitHub ↗</a></div>
-</main>
+<main><h1>Landing Studio</h1><p id="status">Открываем рабочее пространство…</p><p><a href="https://github.com/marcostavar24633-cyber/landing-studio/archive/refs/heads/main.zip">Скачать ZIP-архив</a></p></main>
 <script>
-const button=document.getElementById("start"),status=document.getElementById("status");
-button.addEventListener("click",async()=>{button.disabled=true;button.textContent="Открываем конструктор…";status.textContent="Загружаем твои инструменты. Это займёт несколько секунд.";try{
- if(!("DecompressionStream"in window))throw new Error("Этот браузер не поддерживает распаковку приложения. Скачай ZIP-архив из GitHub.");
+(async()=>{const status=document.getElementById("status");try{
+ if(!("DecompressionStream"in window))throw new Error("Браузер не поддерживает распаковку приложения. Скачайте ZIP-архив репозитория.");
  const chunks=await Promise.all(Array.from({length:11},async(_,i)=>{const name="./app-chunks/"+String(i).padStart(2,"0")+".txt";const r=await fetch(name,{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить часть приложения: "+name);return r.text()}));
  const binary=atob(chunks.join(""));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
  let html=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
  const polish=`
- #editor{background:linear-gradient(155deg,#fffaf2 0%,#f5f1ff 54%,#edf6f2 100%);color:#29283a;border-radius:26px 0 0 26px;box-shadow:-18px 0 65px rgba(47,42,74,.18);padding:24px;scrollbar-width:thin;scrollbar-color:#c9c3d9 transparent}
- .editor-head{background:rgba(255,250,244,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(103,91,132,.14);border-radius:0 0 16px 16px;padding:12px 0 17px}
- .editor-head h2{font-size:21px;letter-spacing:-.03em;color:#302d43}.editor-group{border-bottom:1px solid rgba(103,91,132,.15);padding:19px 0}.editor-group h3{color:#77718d}
- .editor label{color:#514d63}.editor input,.editor textarea,.editor select,.project-tools button,.project-tools select{border:1px solid #ded9e9;background:rgba(255,255,255,.88);color:#302d43;border-radius:13px;padding:11px 13px;box-shadow:0 2px 8px rgba(59,49,91,.04);transition:.18s}
- .editor input:focus,.editor textarea:focus,.editor select:focus{outline:none;border-color:#9c8bd1;box-shadow:0 0 0 3px rgba(156,139,209,.18)}
- .close,.editor-actions button,.project-tools button,.block-row button,.device-tools button,.block-library button,#validateSite{border-radius:13px;transition:transform .18s,box-shadow .18s}
- .close{background:#eee9f7;color:#51496c;padding:10px 14px}
- .project-tools button.primary,.editor-actions button:not(.secondary),#validateSite{background:linear-gradient(135deg,#8170bd,#6f8f9e);color:#fff;border:0;box-shadow:0 5px 13px rgba(113,99,165,.2)}
- .project-tools button:not(.primary),.editor-actions .secondary{background:rgba(255,255,255,.8);color:#514d63;border:1px solid #ded9e9}
- .editor-actions{gap:10px}.editor-actions button{padding:13px 11px;min-height:46px}
- .block-row{background:rgba(255,255,255,.8);border:1px solid #e3deec;border-radius:14px;padding:9px;box-shadow:0 2px 8px rgba(59,49,91,.04)}
- .block-row button{background:#f2eff8;border:1px solid #e1dced;color:#59536f;padding:7px 9px}
- .block-library button{background:linear-gradient(135deg,#8170bd,#6f8f9e);color:#fff;border:0;padding:10px 14px}
- .device-tools button{background:rgba(255,255,255,.85);border:1px solid #ded9e9;color:#5c5670;border-radius:12px}.device-tools button.active{background:#8170bd;color:#fff;border-color:#8170bd}
- .editor-hint,.project-status{color:#77718d}
- #editorToggle{background:linear-gradient(135deg,#8b78c8,#7199a0);color:#fff;border-radius:999px;padding:14px 21px;box-shadow:0 10px 28px rgba(74,67,112,.25)}
- .top-cta,.button{border-radius:999px;padding:14px 23px;letter-spacing:.035em;box-shadow:0 5px 16px rgba(0,0,0,.12)}
- .card,.price-card,.contact,.quote,.extra-card{border-radius:20px}.hero-art,.gallery-item{border-radius:24px}.field{border-radius:13px}
- @media(max-width:520px){#editor{border-radius:0;padding:18px}.editor-actions{grid-template-columns:1fr 1fr}.block-row{grid-template-columns:1fr auto auto}.block-row button{font-size:11px}}
-
- /* Единый визуальный стиль личной мастерской */
- :root{--studio-ink:#302d43;--studio-muted:#77738a;--studio-lilac:#8b78c2;--studio-mint:#7fa6a0;--studio-border:#e7e1ef;--studio-surface:rgba(255,255,255,.82)}
- body{background:radial-gradient(ellipse at 12% 8%,rgba(226,215,246,.72),transparent 36%),radial-gradient(ellipse at 90% 88%,rgba(205,231,222,.7),transparent 35%),linear-gradient(135deg,#faf5ef,#f3f0fa 55%,#edf6f1)!important;color:var(--studio-ink)!important}
- #app,.app,.workspace,.main,.main-content,.builder,.builder-layout{background:transparent!important;color:var(--studio-ink)}
- header,.topbar,.toolbar,.project-bar,.workspace-header{background:rgba(255,255,255,.76)!important;border:1px solid rgba(255,255,255,.9)!important;border-radius:20px!important;box-shadow:0 8px 28px rgba(65,55,91,.06)!important;backdrop-filter:blur(14px)}
- aside,.sidebar,.left-panel,.right-panel,.settings-panel,.editor,.panel,.section-panel{background:linear-gradient(155deg,rgba(255,250,244,.97),rgba(245,241,255,.96) 56%,rgba(237,246,242,.97))!important;color:var(--studio-ink)!important;border-color:var(--studio-border)!important}
- .preview,.preview-area,.canvas,.site-preview,.device-frame{background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.95)!important;border-radius:26px!important;box-shadow:0 18px 48px rgba(65,55,91,.08)!important}
- button,.btn,[role=button]{border-radius:999px!important;transition:transform .18s ease,box-shadow .18s ease,background .18s ease!important}
- button:hover,.btn:hover,[role=button]:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(91,77,135,.13)}
- button.primary,.btn-primary,.primary,[type=submit],#addBlock,#addSection{background:linear-gradient(110deg,#8b78c2,#719d9a)!important;color:#fff!important;border:0!important;box-shadow:0 7px 18px rgba(119,104,172,.2)!important}
- button:not(.primary):not(.active),.btn:not(.primary),.secondary{border-color:#e2dceb!important}
- input,textarea,select{border-radius:14px!important;border:1px solid #ded9e9!important;background:rgba(255,255,255,.9)!important;color:#302d43!important;box-shadow:0 2px 8px rgba(59,49,91,.035)!important}
- input:focus,textarea:focus,select:focus{outline:none!important;border-color:#9c8bd1!important;box-shadow:0 0 0 3px rgba(156,139,209,.17)!important}
- .card,.panel-card,.block-card,.project-card,.template-card,.section-card,.library-item,.item-card{background:rgba(255,255,255,.82)!important;border:1px solid rgba(255,255,255,.96)!important;border-radius:20px!important;box-shadow:0 8px 25px rgba(65,55,91,.055)!important}
- h1,h2,h3,h4,.title{color:#302d43;letter-spacing:-.025em}
- p,.muted,.hint,.description,.subtitle{color:#77738a}
- .active,.selected,[aria-pressed=true]{border-color:#a99ad2!important;box-shadow:0 0 0 2px rgba(156,139,209,.13)!important}
- .divider,hr{border-color:rgba(103,91,132,.13)!important}
- @media(max-width:720px){header,.topbar,.toolbar,.project-bar{border-radius:15px!important}.preview,.preview-area,.canvas,.site-preview{border-radius:18px!important}}
-
- /* Основная чёрно-золотая тема конструктора */
- :root{color-scheme:dark;--studio-ink:#f1e8d7;--studio-muted:#b8ac97;--studio-gold:#d1ad62;--studio-gold-deep:#99712f;--studio-border:rgba(205,166,88,.24);--studio-surface:rgba(30,27,21,.94)}
+ /* Black & gold luxury theme */
+ :root{color-scheme:dark;--studio-ink:#f1e8d7;--studio-muted:#b8ac97;--studio-gold:#d1ad62;--studio-border:rgba(205,166,88,.24)}
  html,body{background:radial-gradient(ellipse at 10% 8%,rgba(174,132,56,.16),transparent 38%),radial-gradient(ellipse at 92% 90%,rgba(126,91,37,.13),transparent 35%),linear-gradient(135deg,#090909,#171511 58%,#0c0b09)!important;color:#f1e8d7!important}
  #app,.app,.workspace,.main,.main-content,.builder,.builder-layout{background:transparent!important;color:#f1e8d7!important}
  #editor,aside,.sidebar,.left-panel,.right-panel,.settings-panel,.editor,.panel,.section-panel{background:linear-gradient(155deg,rgba(34,30,23,.98),rgba(21,20,17,.98) 60%,rgba(29,25,18,.98))!important;color:#f1e8d7!important;border-color:rgba(205,166,88,.24)!important}
@@ -123,63 +36,40 @@ button.addEventListener("click",async()=>{button.disabled=true;button.textConten
  input:focus,textarea:focus,select:focus,.editor input:focus,.editor textarea:focus{outline:none!important;border-color:#d2ad60!important;box-shadow:0 0 0 3px rgba(204,166,88,.17)!important}
  .card,.panel-card,.block-card,.project-card,.template-card,.section-card,.library-item,.item-card,.block-row{background:rgba(35,31,24,.94)!important;border:1px solid rgba(205,166,88,.22)!important;border-radius:20px!important;box-shadow:0 8px 25px rgba(0,0,0,.2)!important;color:#eee2cc!important}
  .block-row button{background:#302819!important;color:#e5c982!important;border-color:#70572d!important}
- .active,.selected,[aria-pressed=true],.device-tools button.active{background:linear-gradient(110deg,#d7b66e,#98702f)!important;color:#17120a!important;border-color:#d7b66e!important;box-shadow:0 0 0 2px rgba(205,166,88,.14)!important}
+ .active,.selected,[aria-pressed=true],.device-tools button.active{background:linear-gradient(110deg,#d7b66e,#98702f)!important;color:#17120a!important;border-color:#d7b66e!important}
  .editor-hint,.project-status,p,.muted,.hint,.description,.subtitle{color:#b8ac97!important}
- .divider,hr{border-color:rgba(205,166,88,.2)!important}
- a{color:#dfbf75}
- @media(max-width:720px){header,.topbar,.toolbar,.project-bar{border-radius:15px!important}.preview,.preview-area,.canvas,.site-preview{border-radius:18px!important}}
-
- /* Исправление мобильной типографики и полей редактирования */
+ .divider,hr{border-color:rgba(205,166,88,.2)!important}a{color:#dfbf75}
+ #editorToggle{background:linear-gradient(110deg,#e0c27b,#a77b35)!important;color:#17120a!important;border-radius:999px!important;box-shadow:0 8px 22px rgba(190,148,66,.22)!important}
+ /* Mobile editor text wrapping */
  *,*::before,*::after{box-sizing:border-box}
  #editor{max-width:100vw;overflow-x:hidden}
  .editor-group{min-width:0;max-width:100%;overflow:visible}
- .editor-group h3{line-height:1.35;white-space:normal;overflow-wrap:anywhere}
- .editor label{display:block;max-width:100%;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+ .editor-group h3,.editor label{line-height:1.4;white-space:normal;overflow-wrap:anywhere}
  .editor input,.editor textarea,.editor select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;line-height:1.45}
- .editor textarea{min-height:96px;height:auto;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;resize:vertical}
- .editor input,.editor textarea,.editor select{margin:0 0 5px}
- @media(max-width:800px){
-  .extra-grid{grid-template-columns:minmax(0,1fr)}
-  .section-head{grid-template-columns:minmax(0,1fr);gap:12px}
-  .section-head>* ,.split>* ,.contact>*{min-width:0;max-width:100%}
-  .content-section p,.section-head p,.card p,.step p,.extra-card p,.faq-a{overflow-wrap:anywhere;word-break:normal;line-height:1.55}
-  .card,.step,.price-card,.quote,.extra-card,.contact{min-width:0;max-width:100%;overflow-wrap:anywhere}
-  .section-head h2,.contact h2{line-height:1.14;overflow-wrap:anywhere;hyphens:auto}
- }
+ .editor textarea{min-height:96px;height:auto;white-space:pre-wrap;overflow-wrap:anywhere;resize:vertical}
+ @media(max-width:800px){.section-head,.section-head>* ,.split>* ,.contact>*{min-width:0;max-width:100%}.content-section p,.section-head p,.card p,.step p,.extra-card p,.faq-a{overflow-wrap:anywhere;line-height:1.55}.card,.step,.price-card,.quote,.extra-card,.contact{min-width:0;max-width:100%;overflow-wrap:anywhere}}
  @media(max-width:520px){
-  #editor{width:100vw;max-width:100vw;padding:16px 14px calc(24px + env(safe-area-inset-bottom));border-radius:0;overflow-x:hidden}
-  .editor-head{top:-16px;padding:10px 0 13px}
-  .editor-head h2{font-size:18px;line-height:1.25}
-  .editor-group{padding:16px 0}
-  .editor-group h3{font-size:11px;letter-spacing:.08em;margin-bottom:10px}
-  .editor label{font-size:12px;margin:13px 0 6px}
-  .editor input,.editor textarea,.editor select{font-size:16px;padding:12px;min-height:44px}
-  .editor textarea{min-height:104px}
-  .editor-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}
-  .editor-actions button{min-width:0;white-space:normal;line-height:1.3;padding:12px 8px}
-  .project-tools{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .project-tools>*{min-width:0;max-width:100%;overflow-wrap:anywhere}
-  .block-row{grid-template-columns:minmax(0,1fr) auto auto;gap:6px;min-width:0}
-  .block-row span{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
-  .block-row button{min-width:34px;padding:7px 8px;white-space:nowrap}
-  .block-library{grid-template-columns:minmax(0,1fr);gap:8px}
-  .device-tools{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .device-tools button{min-width:0;white-space:normal;line-height:1.25;font-size:12px}
-  .preview-mobile .shell{width:calc(100% - 32px)!important;max-width:390px}
-  .preview-mobile .section-head{grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-bottom:24px}
-  .preview-mobile .section-head>*{min-width:0;max-width:100%}
-  .preview-mobile .section-head h2{font-size:clamp(27px,8vw,34px);line-height:1.12;overflow-wrap:anywhere;hyphens:auto}
-  .preview-mobile .section-head p,.preview-mobile .content-section p,.preview-mobile .extra-card p{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
-  .preview-mobile .cards,.preview-mobile .steps,.preview-mobile .gallery,.preview-mobile .extra-grid{grid-template-columns:minmax(0,1fr)!important}
-  .preview-mobile .card,.preview-mobile .step,.preview-mobile .price-card,.preview-mobile .quote,.preview-mobile .extra-card,.preview-mobile .contact{min-width:0;max-width:100%;overflow-wrap:anywhere}
-  .preview-mobile .statement{font-size:clamp(26px,7.5vw,34px);line-height:1.2;overflow-wrap:anywhere;hyphens:auto}
-  .preview-mobile .hero h1{font-size:clamp(34px,9vw,42px);line-height:1.08;overflow-wrap:anywhere;hyphens:auto}
-  .preview-mobile .contact h2{font-size:clamp(27px,8vw,34px);line-height:1.14;overflow-wrap:anywhere}
+ #editor{width:100vw;max-width:100vw;padding:16px 14px calc(24px + env(safe-area-inset-bottom));border-radius:0;overflow-x:hidden}
+ .editor-head{top:-16px;padding:10px 0 13px}.editor-head h2{font-size:18px;line-height:1.25}
+ .editor-group{padding:16px 0}.editor-group h3{font-size:11px;margin-bottom:10px}
+ .editor label{font-size:12px;margin:13px 0 6px}
+ .editor input,.editor textarea,.editor select{font-size:16px;padding:12px;min-height:44px}.editor textarea{min-height:104px}
+ .editor-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}.editor-actions button{min-width:0;white-space:normal;line-height:1.3;padding:12px 8px}
+ .block-row{grid-template-columns:minmax(0,1fr) auto auto;gap:6px;min-width:0}.block-row span{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+ .block-row button{min-width:34px;padding:7px 8px;white-space:nowrap}
+ .device-tools{grid-template-columns:repeat(3,minmax(0,1fr))}.device-tools button{min-width:0;white-space:normal;line-height:1.25;font-size:12px}
+ .preview-mobile .section-head{grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin-bottom:24px}
+ .preview-mobile .section-head h2{font-size:clamp(27px,8vw,34px);line-height:1.12;overflow-wrap:anywhere;hyphens:auto}
+ .preview-mobile .section-head p,.preview-mobile .content-section p,.preview-mobile .extra-card p{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+ .preview-mobile .cards,.preview-mobile .steps,.preview-mobile .gallery,.preview-mobile .extra-grid{grid-template-columns:minmax(0,1fr)!important}
+ .preview-mobile .statement{font-size:clamp(26px,7.5vw,34px);line-height:1.2;overflow-wrap:anywhere;hyphens:auto}
+ .preview-mobile .hero h1{font-size:clamp(34px,9vw,42px);line-height:1.08;overflow-wrap:anywhere;hyphens:auto}
+ .preview-mobile .contact h2{font-size:clamp(27px,8vw,34px);line-height:1.14;overflow-wrap:anywhere}
  }
-
  `;
  html=html.replace("</style>",polish+"</style>");
+ html=html.replace(/(<button id="editorToggle"[^>]*>)[\s\S]*?(<\/button>)/i,'$1⚙ Настройка сайта$2');
  document.open();document.write(html);document.close();
- }catch(e){status.textContent=e.message;button.disabled=false;button.textContent="Повторить загрузку";}});
+ }catch(e){status.textContent=e.message+" Обновите страницу или скачайте ZIP-архив.";}})();
 </script>
 </body></html>
