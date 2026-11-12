@@ -18,6 +18,24 @@ h1{font-size:clamp(34px,5vw,58px);line-height:1.05;letter-spacing:-.055em;margin
 .types{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:17px}.type{background:#ffffffa6;border:1px solid #ffffffd9;border-radius:17px;padding:14px 12px;text-align:center;color:#615c75;font-size:13px;font-weight:650}.type b{display:block;font-size:20px;margin-bottom:4px;font-weight:500}
 .footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:#8a8699;font-size:12px;padding:18px 8px 0}.footer a{color:#77709a;text-decoration:none}
 @media(max-width:720px){body{padding:15px}.topline{margin-bottom:17px}.hero{grid-template-columns:1fr;border-radius:25px;padding:25px 21px;gap:22px}.preview{min-height:235px}.types{grid-template-columns:repeat(2,1fr)}.private{font-size:10px;padding:7px 10px}.footer{padding:16px 4px}.lead{font-size:15px}}
+
+/* Чёрно-золотая тема главного экрана */
+:root{color-scheme:dark;--ink:#f3ead8;--muted:#b9ad98}
+body{color:#f3ead8;background:radial-gradient(ellipse at 12% 8%,rgba(173,132,58,.18),transparent 38%),radial-gradient(ellipse at 90% 88%,rgba(117,84,35,.16),transparent 35%),linear-gradient(135deg,#090909,#171511 58%,#0c0b09)}
+.mark{background:linear-gradient(140deg,#f0d18a,#9b7130);color:#17120a;box-shadow:0 8px 24px rgba(194,151,71,.25)}
+.private{color:#e2c27e;background:#1c1913;border-color:#5b4725}
+.hero{background:linear-gradient(145deg,rgba(31,28,22,.97),rgba(18,17,15,.96));border-color:rgba(207,168,91,.28);box-shadow:0 24px 70px rgba(0,0,0,.42)}
+.eyebrow{color:#d8b66f}.eyebrow:before{background:#c9a45a}
+h1{color:#f5eddf}h1 span{color:#d6b36b}.lead{color:#c0b6a5}
+.cta{background:linear-gradient(110deg,#e4c47b,#a77b35);color:#17120a;box-shadow:0 9px 24px rgba(190,148,66,.2)}.cta:hover{box-shadow:0 13px 28px rgba(190,148,66,.28)}
+.note,.footer{color:#9f9585}.footer a{color:#d7b56c}
+.preview{background:linear-gradient(145deg,#211c13,#11100d);border-color:#5c4827}
+.preview:before{background:#8d6b32}.preview:after{background:#51401f}
+.browser{background:#171511;box-shadow:0 12px 32px #0009}.browserbar{border-color:#393124}.dot{background:#8b713f}
+.mockhero{background:linear-gradient(120deg,#3c301b,#211c12);color:#e2c27e}
+.line{background:#403728}.mockbutton{background:linear-gradient(100deg,#e2c27e,#a47b3c)}
+.type{background:rgba(29,26,20,.88);border-color:rgba(207,168,91,.24);color:#d9cdb8}.type b{color:#d9b96f}
+
 </style>
 </head>
 <body>
@@ -84,6 +102,31 @@ button.addEventListener("click",async()=>{button.disabled=true;button.textConten
  p,.muted,.hint,.description,.subtitle{color:#77738a}
  .active,.selected,[aria-pressed=true]{border-color:#a99ad2!important;box-shadow:0 0 0 2px rgba(156,139,209,.13)!important}
  .divider,hr{border-color:rgba(103,91,132,.13)!important}
+ @media(max-width:720px){header,.topbar,.toolbar,.project-bar{border-radius:15px!important}.preview,.preview-area,.canvas,.site-preview{border-radius:18px!important}}
+
+ /* Основная чёрно-золотая тема конструктора */
+ :root{color-scheme:dark;--studio-ink:#f1e8d7;--studio-muted:#b8ac97;--studio-gold:#d1ad62;--studio-gold-deep:#99712f;--studio-border:rgba(205,166,88,.24);--studio-surface:rgba(30,27,21,.94)}
+ html,body{background:radial-gradient(ellipse at 10% 8%,rgba(174,132,56,.16),transparent 38%),radial-gradient(ellipse at 92% 90%,rgba(126,91,37,.13),transparent 35%),linear-gradient(135deg,#090909,#171511 58%,#0c0b09)!important;color:#f1e8d7!important}
+ #app,.app,.workspace,.main,.main-content,.builder,.builder-layout{background:transparent!important;color:#f1e8d7!important}
+ #editor,aside,.sidebar,.left-panel,.right-panel,.settings-panel,.editor,.panel,.section-panel{background:linear-gradient(155deg,rgba(34,30,23,.98),rgba(21,20,17,.98) 60%,rgba(29,25,18,.98))!important;color:#f1e8d7!important;border-color:rgba(205,166,88,.24)!important}
+ .editor-head,.editor-group{background:rgba(26,23,18,.92)!important;border-color:rgba(205,166,88,.18)!important}
+ .editor-head h2,.editor-group h3,h1,h2,h3,h4,.title{color:#f0e4ca!important}
+ .editor label,.editor label span{color:#d2c4a8!important}
+ header,.topbar,.toolbar,.project-bar,.workspace-header{background:rgba(25,23,19,.94)!important;border:1px solid rgba(205,166,88,.23)!important;border-radius:20px!important;box-shadow:0 8px 28px rgba(0,0,0,.25)!important;backdrop-filter:blur(14px)}
+ .preview,.preview-area,.canvas,.site-preview,.device-frame{background:rgba(20,19,16,.88)!important;border:1px solid rgba(205,166,88,.24)!important;border-radius:26px!important;box-shadow:0 18px 48px rgba(0,0,0,.3)!important}
+ button,.btn,[role=button]{border-radius:999px!important;transition:transform .18s ease,box-shadow .18s ease,background .18s ease!important}
+ button:hover,.btn:hover,[role=button]:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(190,148,66,.16)!important}
+ button.primary,.btn-primary,.primary,[type=submit],#addBlock,#addSection,.project-tools button.primary,.editor-actions button:not(.secondary),#validateSite,.block-library button{background:linear-gradient(110deg,#e0c27b,#a77b35)!important;color:#17120a!important;border:0!important;box-shadow:0 7px 18px rgba(190,148,66,.18)!important}
+ button:not(.primary):not(.active),.btn:not(.primary),.secondary,.close,.block-row button,.device-tools button{background:rgba(42,36,25,.92)!important;color:#e3d4b7!important;border:1px solid rgba(205,166,88,.25)!important}
+ input,textarea,select,.editor input,.editor textarea,.editor select{border-radius:14px!important;border:1px solid rgba(205,166,88,.3)!important;background:#171511!important;color:#f1e8d7!important;box-shadow:0 2px 8px rgba(0,0,0,.18)!important}
+ input::placeholder,textarea::placeholder{color:#897f6e!important}
+ input:focus,textarea:focus,select:focus,.editor input:focus,.editor textarea:focus{outline:none!important;border-color:#d2ad60!important;box-shadow:0 0 0 3px rgba(204,166,88,.17)!important}
+ .card,.panel-card,.block-card,.project-card,.template-card,.section-card,.library-item,.item-card,.block-row{background:rgba(35,31,24,.94)!important;border:1px solid rgba(205,166,88,.22)!important;border-radius:20px!important;box-shadow:0 8px 25px rgba(0,0,0,.2)!important;color:#eee2cc!important}
+ .block-row button{background:#302819!important;color:#e5c982!important;border-color:#70572d!important}
+ .active,.selected,[aria-pressed=true],.device-tools button.active{background:linear-gradient(110deg,#d7b66e,#98702f)!important;color:#17120a!important;border-color:#d7b66e!important;box-shadow:0 0 0 2px rgba(205,166,88,.14)!important}
+ .editor-hint,.project-status,p,.muted,.hint,.description,.subtitle{color:#b8ac97!important}
+ .divider,hr{border-color:rgba(205,166,88,.2)!important}
+ a{color:#dfbf75}
  @media(max-width:720px){header,.topbar,.toolbar,.project-bar{border-radius:15px!important}.preview,.preview-area,.canvas,.site-preview{border-radius:18px!important}}
 
  `;
