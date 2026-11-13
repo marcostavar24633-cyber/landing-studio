@@ -17,7 +17,7 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
     steps:
-      - name: Check project workflows and report failures
+      - name: Check the latest run of every workflow in each project
         uses: actions/github-script@v7
         with:
           script: |
@@ -44,9 +44,10 @@ jobs:
               const [projectOwner, projectRepo] = fullName.split("/");
               try {
                 const response = await fetch(
-                  `https://api.github.com/repos/${projectOwner}/${projectRepo}/actions/runs?branch=main&per_page=20`,
+                  `https://api.github.com/repos/${projectOwner}/${projectRepo}/actions/runs?branch=main&per_page=100`,
                   { headers }
                 );
+
                 if (response.status === 404) {
                   report.push(`⚪ ${fullName}: репозиторий или Actions недоступны`);
                   continue;
@@ -54,63 +55,78 @@ jobs:
                 if (!response.ok) throw new Error(`GitHub API HTTP ${response.status}`);
 
                 const payload = await response.json();
-                const completed = (payload.workflow_runs || [])
-                  .filter(run => run.status === "completed")
+                const sortedRuns = (payload.workflow_runs || [])
                   .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-                const latest = completed[0];
+                const latestByWorkflow = new Map();
 
-                if (!latest) {
-                  report.push(`⚪ ${fullName}: завершённых запусков пока нет`);
+                for (const run of sortedRuns) {
+                  const key = String(run.workflow_id || run.name || run.id);
+                  if (!latestByWorkflow.has(key)) latestByWorkflow.set(key, run);
+                }
+
+                if (latestByWorkflow.size === 0) {
+                  report.push(`⚪ ${fullName}: запусков Actions в main пока нет`);
                   continue;
                 }
 
-                const titlePrefix = `[CI] ${fullName} —`;
                 const openIssues = await github.paginate(github.rest.issues.listForRepo, {
                   owner, repo, state: "open", per_page: 100
                 });
-                const existing = openIssues.filter(issue =>
-                  !issue.pull_request && issue.title.startsWith(titlePrefix)
+                const projectIssues = openIssues.filter(issue =>
+                  !issue.pull_request && issue.body?.includes(`<!-- monitored-project:${fullName} -->`)
                 );
 
-                if (latest.conclusion === "success") {
-                  for (const issue of existing) {
-                    await github.rest.issues.createComment({
-                      owner, repo, issue_number: issue.number,
-                      body: `Автоматическая проверка обнаружила успешный запуск: [${latest.name || "workflow"} #${latest.run_number}](${latest.html_url}). Закрываю уведомление.`
-                    });
-                    await github.rest.issues.update({
-                      owner, repo, issue_number: issue.number, state: "closed"
-                    });
+                for (const latest of latestByWorkflow.values()) {
+                  const workflowName = latest.name || `workflow ${latest.workflow_id || "unknown"}`;
+                  const marker = `<!-- monitored-workflow:${fullName}:${latest.workflow_id || workflowName} -->`;
+                  const projectMarker = `<!-- monitored-project:${fullName} -->`;
+                  const existing = projectIssues.find(issue => issue.body?.includes(marker));
+
+                  if (latest.status !== "completed") {
+                    report.push(`🟡 ${fullName} / ${workflowName}: ${latest.status || "выполняется"}`);
+                    continue;
                   }
-                  report.push(`🟢 ${fullName}: ${latest.name || "workflow"} — success`);
-                } else if (latest.conclusion === "failure") {
-                  const marker = `<!-- monitored-run:${fullName}:${latest.id} -->`;
-                  const alreadyReported = openIssues.some(issue =>
-                    !issue.pull_request && issue.body?.includes(marker)
-                  );
-                  if (!alreadyReported) {
-                    await github.rest.issues.create({
-                      owner, repo,
-                      title: `${titlePrefix} ${latest.name || "workflow"} #${latest.run_number}`,
-                      body: [
-                        "Автоматический монитор обнаружил неуспешную сборку проекта.",
-                        "",
-                        `- Репозиторий: [${fullName}](https://github.com/${fullName})`,
-                        `- Ветка: ${latest.head_branch || "main"}`,
-                        `- Workflow: ${latest.name || "неизвестно"}`,
-                        `- Результат: ${latest.conclusion}`,
-                        `- Завершён: ${latest.updated_at}`,
-                        `- Запуск: [Открыть GitHub Actions](${latest.html_url})`,
-                        "",
-                        "Уведомление будет автоматически закрыто после обнаружения успешного завершённого запуска в main.",
-                        "",
-                        marker
-                      ].join("\n")
-                    });
+
+                  if (latest.conclusion === "failure") {
+                    const body = [
+                      "Автоматический монитор обнаружил неуспешный запуск GitHub Actions.",
+                      "",
+                      `- Репозиторий: [${fullName}](https://github.com/${fullName})`,
+                      `- Ветка: ${latest.head_branch || "main"}`,
+                      `- Workflow: ${workflowName}`,
+                      `- Результат: ${latest.conclusion}`,
+                      `- Завершён: ${latest.updated_at}`,
+                      `- Запуск: [Открыть GitHub Actions](${latest.html_url})`,
+                      "",
+                      "Issue обновляется при каждом новом неуспешном запуске этого workflow и закрывается после успешного запуска того же workflow.",
+                      "",
+                      projectMarker,
+                      marker
+                    ].join("\n");
+                    const title = `[CI] ${fullName} — ${workflowName}`;
+
+                    if (existing) {
+                      await github.rest.issues.update({
+                        owner, repo, issue_number: existing.number, title, body, state: "open"
+                      });
+                    } else {
+                      await github.rest.issues.create({ owner, repo, title, body });
+                    }
+                    report.push(`🔴 ${fullName} / ${workflowName}: failure`);
+                  } else if (latest.conclusion === "success") {
+                    if (existing) {
+                      await github.rest.issues.createComment({
+                        owner, repo, issue_number: existing.number,
+                        body: `Обнаружен успешный запуск [${workflowName}](${latest.html_url}). Уведомление закрыто автоматически.`
+                      });
+                      await github.rest.issues.update({
+                        owner, repo, issue_number: existing.number, state: "closed"
+                      });
+                    }
+                    report.push(`🟢 ${fullName} / ${workflowName}: success`);
+                  } else {
+                    report.push(`⚪ ${fullName} / ${workflowName}: ${latest.conclusion || "unknown"}`);
                   }
-                  report.push(`🔴 ${fullName}: ${latest.name || "workflow"} — failure`);
-                } else {
-                  report.push(`🟡 ${fullName}: последний результат — ${latest.conclusion || "unknown"}`);
                 }
               } catch (error) {
                 core.warning(`${fullName}: ${error.message}`);
@@ -121,8 +137,8 @@ jobs:
             await core.summary
               .addHeading("Project health monitor")
               .addTable([
-                [{data:"Проект",header:true},{data:"Результат",header:true}],
+                [{data:"Проект / workflow",header:true},{data:"Результат",header:true}],
                 ...report.map(line => [{data:line,header:false},{data:"Проверено",header:false}])
               ])
-              .addRaw("\nПроверка выполняется каждый час и по ручному запуску. Ошибки публикуются как Issues в этом репозитории.")
+              .addRaw("\nПроверяется последний запуск каждого workflow в main. Расписание: каждый час; также доступен ручной запуск.")
               .write();
