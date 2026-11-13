@@ -50,9 +50,9 @@ https://marcostavar24633-cyber.github.io/landing-studio/
 
 В репозитории добавлен GitHub Actions workflow `.github/workflows/project-health-monitor.yml`:
 - запускается автоматически каждый час и вручную из вкладки Actions;
-- проверяет последние завершённые запуски ветки `main` в проектах `hair`, `slopay-buket`, `raki`, `landing-studio`, `Penka`, `Photograf` и `doma-tech`;
-- при обнаружении ошибки создаёт Issue в репозитории Landing Studio со ссылкой на упавший запуск;
-- после успешного завершённого запуска автоматически закрывает соответствующее уведомление;
+- проверяет последний запуск каждого отдельного workflow в ветке `main` проектов `hair`, `slopay-buket`, `raki`, `landing-studio`, `Penka`, `Photograf` и `doma-tech`;
+- при обнаружении ошибки создаёт или обновляет отдельный Issue для соответствующего workflow в репозитории Landing Studio;
+- после успешного запуска того же workflow автоматически закрывает соответствующее уведомление;
 - публикует сводку каждого запуска в GitHub Actions Summary.
 
 Для работы нужны включённые GitHub Actions и разрешение workflow на создание и закрытие Issues (`Settings → Actions → General → Workflow permissions`). Мониторинг читает статусы публичных репозиториев; секреты и персональные токены в код не добавляются. Это не гарантирует мгновенные push-уведомления: уведомления о новых Issues настраиваются в настройках GitHub пользователя.
