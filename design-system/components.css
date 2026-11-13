@@ -1,0 +1,13 @@
+.ds-container { width: min(100% - 2 * var(--ds-gutter), var(--ds-container)); margin-inline: auto; }
+.ds-section { padding-block: var(--ds-section-space); }
+.ds-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(12px, 2vw, 24px); }
+.ds-card { min-width: 0; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); overflow: hidden; }
+.ds-button { display: inline-flex; align-items: center; justify-content: center; gap: .65em; min-height: 48px; padding: 12px 22px; border: 1px solid transparent; border-radius: var(--ds-radius-pill); background: var(--ds-accent); color: var(--ds-accent-contrast); font: inherit; font-weight: 650; text-decoration: none; cursor: pointer; transition: transform var(--ds-duration-base) var(--ds-ease), box-shadow var(--ds-duration-base) var(--ds-ease), background var(--ds-duration-base) var(--ds-ease); }
+.ds-button:hover { transform: translateY(-2px); }
+.ds-button:active { transform: translateY(0) scale(.98); }
+.ds-button--secondary { background: transparent; color: var(--ds-text); border-color: var(--ds-border); }
+.ds-field { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-md); background: var(--ds-surface); color: var(--ds-text); font: inherit; }
+.ds-media { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ds-pill { display: inline-flex; align-items: center; border-radius: var(--ds-radius-pill); padding: 6px 11px; background: color-mix(in srgb, var(--ds-accent) 12%, transparent); color: var(--ds-text); font-size: .8rem; }
+@media (max-width: 760px) { .ds-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .ds-grid { grid-template-columns: 1fr; } .ds-button { width: 100%; } }
