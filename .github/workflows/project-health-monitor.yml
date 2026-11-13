@@ -1,0 +1,128 @@
+name: Project health monitor
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: project-health-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check project workflows and report failures
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repos = [
+              "marcostavar24633-cyber/hair",
+              "marcostavar24633-cyber/slopay-buket",
+              "marcostavar24633-cyber/raki",
+              "marcostavar24633-cyber/landing-studio",
+              "marcostavar24633-cyber/Penka",
+              "marcostavar24633-cyber/Photograf",
+              "marcostavar24633-cyber/doma-tech"
+            ];
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const report = [];
+            const headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "Landing-Studio-Project-Monitor"
+            };
+
+            for (const fullName of repos) {
+              const [projectOwner, projectRepo] = fullName.split("/");
+              try {
+                const response = await fetch(
+                  `https://api.github.com/repos/${projectOwner}/${projectRepo}/actions/runs?branch=main&per_page=20`,
+                  { headers }
+                );
+                if (response.status === 404) {
+                  report.push(`⚪ ${fullName}: репозиторий или Actions недоступны`);
+                  continue;
+                }
+                if (!response.ok) throw new Error(`GitHub API HTTP ${response.status}`);
+
+                const payload = await response.json();
+                const completed = (payload.workflow_runs || [])
+                  .filter(run => run.status === "completed")
+                  .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+                const latest = completed[0];
+
+                if (!latest) {
+                  report.push(`⚪ ${fullName}: завершённых запусков пока нет`);
+                  continue;
+                }
+
+                const titlePrefix = `[CI] ${fullName} —`;
+                const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+                  owner, repo, state: "open", per_page: 100
+                });
+                const existing = openIssues.filter(issue =>
+                  !issue.pull_request && issue.title.startsWith(titlePrefix)
+                );
+
+                if (latest.conclusion === "success") {
+                  for (const issue of existing) {
+                    await github.rest.issues.createComment({
+                      owner, repo, issue_number: issue.number,
+                      body: `Автоматическая проверка обнаружила успешный запуск: [${latest.name || "workflow"} #${latest.run_number}](${latest.html_url}). Закрываю уведомление.`
+                    });
+                    await github.rest.issues.update({
+                      owner, repo, issue_number: issue.number, state: "closed"
+                    });
+                  }
+                  report.push(`🟢 ${fullName}: ${latest.name || "workflow"} — success`);
+                } else if (latest.conclusion === "failure") {
+                  const marker = `<!-- monitored-run:${fullName}:${latest.id} -->`;
+                  const alreadyReported = openIssues.some(issue =>
+                    !issue.pull_request && issue.body?.includes(marker)
+                  );
+                  if (!alreadyReported) {
+                    await github.rest.issues.create({
+                      owner, repo,
+                      title: `${titlePrefix} ${latest.name || "workflow"} #${latest.run_number}`,
+                      body: [
+                        "Автоматический монитор обнаружил неуспешную сборку проекта.",
+                        "",
+                        `- Репозиторий: [${fullName}](https://github.com/${fullName})`,
+                        `- Ветка: ${latest.head_branch || "main"}`,
+                        `- Workflow: ${latest.name || "неизвестно"}`,
+                        `- Результат: ${latest.conclusion}`,
+                        `- Завершён: ${latest.updated_at}`,
+                        `- Запуск: [Открыть GitHub Actions](${latest.html_url})`,
+                        "",
+                        "Уведомление будет автоматически закрыто после обнаружения успешного завершённого запуска в main.",
+                        "",
+                        marker
+                      ].join("\n")
+                    });
+                  }
+                  report.push(`🔴 ${fullName}: ${latest.name || "workflow"} — failure`);
+                } else {
+                  report.push(`🟡 ${fullName}: последний результат — ${latest.conclusion || "unknown"}`);
+                }
+              } catch (error) {
+                core.warning(`${fullName}: ${error.message}`);
+                report.push(`🟠 ${fullName}: ошибка проверки — ${error.message}`);
+              }
+            }
+
+            await core.summary
+              .addHeading("Project health monitor")
+              .addTable([
+                [{data:"Проект",header:true},{data:"Результат",header:true}],
+                ...report.map(line => [{data:line,header:false},{data:"Проверено",header:false}])
+              ])
+              .addRaw("\nПроверка выполняется каждый час и по ручному запуску. Ошибки публикуются как Issues в этом репозитории.")
+              .write();
