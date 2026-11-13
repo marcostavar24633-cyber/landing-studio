@@ -1,0 +1,47 @@
+:root {
+  /* Core neutrals */
+  --ds-color-ink: #171a18;
+  --ds-color-paper: #f4f1eb;
+  --ds-color-white: #ffffff;
+  --ds-color-muted: #777b75;
+  --ds-color-border: rgba(23, 26, 24, .14);
+
+  /* Semantic roles — override per brand */
+  --ds-bg: var(--ds-color-paper);
+  --ds-surface: var(--ds-color-white);
+  --ds-text: var(--ds-color-ink);
+  --ds-text-muted: var(--ds-color-muted);
+  --ds-border: var(--ds-color-border);
+  --ds-accent: #9b754d;
+  --ds-accent-contrast: #ffffff;
+  --ds-focus: #246bce;
+
+  /* Layout */
+  --ds-container: 1200px;
+  --ds-gutter: clamp(18px, 4vw, 56px);
+  --ds-section-space: clamp(64px, 9vw, 128px);
+
+  /* Shape */
+  --ds-radius-sm: 10px;
+  --ds-radius-md: 18px;
+  --ds-radius-lg: 28px;
+  --ds-radius-pill: 999px;
+
+  /* Motion */
+  --ds-duration-fast: 180ms;
+  --ds-duration-base: 320ms;
+  --ds-duration-slow: 650ms;
+  --ds-ease: cubic-bezier(.2, .75, .2, 1);
+
+  /* Typography — set brand fonts in each project profile */
+  --ds-font-body: system-ui, sans-serif;
+  --ds-font-display: Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ds-bg); color: var(--ds-text); font-family: var(--ds-font-body); }
+:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
