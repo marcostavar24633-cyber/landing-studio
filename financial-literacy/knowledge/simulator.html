@@ -33,7 +33,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <div class="field"><div class="field-head"><label for="leisure">Отдых и свободные расходы</label><span class="amount" id="leisureVal">10000 ₽</span></div><small>Гибкая категория, которую можно корректировать</small><input id="leisure" type="range" min="0" max="120000" step="1000" value="10000"></div>
 </div>
 </div>
-<div id="prioritiesPanel" hidden>
+<div id="prioritiesPanel" role="tabpanel" aria-labelledby="tab-priorities" tabindex="0" hidden>
 <h2>Выберите приоритеты</h2><p class="sub">В условном месяце доход сократился. Решите, какие расходы сохранить в первую очередь.</p>
 <div class="income-row"><label>Доступно на месяц</label><strong class="amount" id="priorityIncome">85000 ₽</strong></div>
 <p class="sub">Отметьте категории, которые вы хотите защитить. Это учебное упражнение, а не универсальная рекомендация.</p>
@@ -47,7 +47,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 </div>
 <div class="insight" id="priorityInsight" aria-live="polite">Отметьте расходы, чтобы увидеть общую сумму выбранных приоритетов.</div>
 </div>
-<div id="shockPanel" hidden>
+<div id="shockPanel" role="tabpanel" aria-labelledby="tab-shock" tabindex="0" hidden>
 <h2>Проверьте устойчивость бюджета</h2><p class="sub">Условный старт: доход 120 000 ₽, ежемесячные расходы 82 000 ₽, резерв 90 000 ₽.</p>
 <div class="scenario-row"><button class="scenario" data-shock="repair" aria-pressed="true">Ремонт · 25 000 ₽</button><button class="scenario" data-shock="income" aria-pressed="false">Снижение дохода · 20%</button><button class="scenario" data-shock="medical" aria-pressed="false">Незапланированный расход · 45 000 ₽</button></div>
 <div class="field"><div class="field-head"><label for="reserveStart">Размер резерва, ₽</label><span class="amount" id="reserveStartVal">90 000 ₽</span></div><input id="reserveStart" type="range" min="0" max="500000" step="5000" value="90000"></div>
