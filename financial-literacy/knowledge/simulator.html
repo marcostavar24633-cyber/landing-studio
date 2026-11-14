@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090d12">
+<meta name="description" content="Интерактивный учебный тренажёр финансовой грамотности: распределение бюджета, приоритеты расходов и непредвиденные ситуации.">
+<meta name="robots" content="index,follow"><link rel="canonical" href="https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/simulator.html">
+<title>Финансовый тренажёр — практикум</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d12;--panel:#111c26;--panel2:#172630;--gold:#d8b875;--gold2:#f0d9a2;--ink:#f5f2eb;--muted:#a8b1b8;--line:rgba(216,184,117,.2);--green:#8bc6a4;--red:#e49b91}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,rgba(40,75,91,.2),transparent 36%),var(--bg);color:var(--ink);font:15px/1.65 "DM Sans",Arial,sans-serif}.wrap{width:min(1080px,calc(100% - 38px));margin:auto}a{color:inherit;text-decoration:none}.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.brand{font-size:10px;letter-spacing:.17em;color:var(--gold2)}.back{font-size:12px;color:var(--gold2)}.hero{padding:65px 0 35px}.eyebrow{color:var(--gold);font-size:10px;letter-spacing:.2em;text-transform:uppercase}.hero h1{font:500 clamp(42px,7vw,68px)/1.08 "Playfair Display",Georgia,serif;letter-spacing:-.04em;margin:15px 0}.hero p{max-width:690px;color:var(--muted);margin:0}.tabs{display:flex;flex-wrap:wrap;gap:9px;margin:28px 0 22px}.tab,.scenario{cursor:pointer;border:1px solid var(--line);background:transparent;color:#c3cbd0;padding:12px 16px;font:600 11px "DM Sans";letter-spacing:.04em}.tab[aria-selected=true],.scenario[aria-pressed=true]{background:linear-gradient(120deg,#f0d9a2,#c6a45f);color:#14181b;border-color:var(--gold)}.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}.panel{border:1px solid var(--line);background:linear-gradient(145deg,rgba(25,39,50,.9),rgba(13,22,30,.96));padding:25px}.panel h2{font:500 26px "Playfair Display";margin:0 0 7px}.sub{color:var(--muted);font-size:12px;margin:0 0 23px}.scenario-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}.field{padding:15px 0;border-top:1px solid rgba(216,184,117,.12)}.field-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.field label{font-size:13px;font-weight:600}.amount{color:var(--gold2);font-variant-numeric:tabular-nums;font-weight:700}.field small{display:block;color:#89969e;font-size:11px;margin-top:3px}.field input[type=range]{width:100%;accent-color:#d8b875;margin:14px 0 0;cursor:pointer}.income-row{display:flex;align-items:center;gap:12px;margin:15px 0 20px}.income-row label{font-size:12px;color:var(--muted)}.income-row input{width:150px;max-width:45%;background:#091119;color:var(--ink);border:1px solid var(--line);padding:10px;font:600 14px "DM Sans"}.metric{padding:18px;border:1px solid var(--line);background:rgba(5,11,16,.3);margin-bottom:12px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{font:500 29px "Playfair Display";display:block;margin-top:3px}.status{padding:13px 15px;border:1px solid var(--line);font-size:12px;margin-top:14px}.status.good{border-color:rgba(139,198,164,.45);color:var(--green)}.status.bad{border-color:rgba(228,155,145,.5);color:var(--red)}.bars{margin-top:18px}.barline{margin:13px 0}.barlabel{display:flex;justify-content:space-between;font-size:11px;color:#bdc5ca;margin-bottom:6px}.track{height:9px;background:#26333b;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#a9874c,#f0d9a2);width:0%;transition:width .2s}.insight{margin-top:18px;padding:17px;border-left:2px solid var(--gold);background:rgba(216,184,117,.07);color:#c6cdd1;font-size:12px}.event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:18px 0}.event{padding:14px;border:1px solid var(--line);background:#101a22;color:var(--ink);cursor:pointer;text-align:left;font:12px "DM Sans"}.event[aria-pressed=true]{border-color:var(--gold);background:rgba(216,184,117,.1)}.event strong{display:block;color:var(--gold2);font-size:13px;margin-bottom:4px}.result-list{padding-left:18px;color:#bdc5ca;font-size:12px}.reset{border:1px solid var(--line);background:transparent;color:var(--gold2);padding:11px 15px;cursor:pointer;font:600 10px "DM Sans";letter-spacing:.08em;text-transform:uppercase}.notice{margin:28px 0 60px;padding:17px 20px;border:1px solid rgba(216,184,117,.14);color:#89969e;font-size:11px}.footer{border-top:1px solid var(--line);padding:22px 0 35px;color:#7f8d96;font-size:10px;display:flex;justify-content:space-between;gap:15px}@media(max-width:760px){.layout{grid-template-columns:1fr}.hero{padding-top:48px}.panel{padding:19px}.footer{display:block}.footer span{display:block;margin:6px 0}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style></head>
+<body>
+<header class="top wrap"><a class="brand" href="../">FINANCE / PRACTICE</a><a class="back" href="index.html">← К базе знаний</a></header>
+<main class="wrap">
+<section class="hero"><span class="eyebrow">ПРАКТИКУМ / ИНТЕРАКТИВНЫЙ ТРЕНАЖЁР</span><h1>Решения, которые<br>проясняют бюджет.</h1><p>Потренируйтесь распределять условный месячный доход, выбирать приоритеты и реагировать на неожиданные расходы. Меняйте значения и сразу наблюдайте результат.</p></section>
+<nav class="tabs" aria-label="Сценарии тренажёра"><button class="tab" data-tab="budget" aria-selected="true">01 · Бюджет</button><button class="tab" data-tab="priorities" aria-selected="false">02 · Приоритеты</button><button class="tab" data-tab="shock" aria-selected="false">03 · Непредвиденное</button></nav>
+<section class="layout">
+<div class="panel">
+<div id="budgetPanel">
+<h2>Распределите месячный доход</h2><p class="sub">Начните с учебного примера. Все суммы условные — изменяйте их под сценарий.</p>
+<div class="income-row"><label for="income">Доход за месяц, ₽</label><input id="income" type="number" min="10000" max="10000000" step="5000" value="120000"></div>
+<div id="sliders">
+<div class="field"><div class="field-head"><label for="housing">Жильё и обязательные платежи</label><span class="amount" id="housingVal">42000 ₽</span></div><small>Аренда, коммунальные услуги, связь и обязательства</small><input id="housing" type="range" min="0" max="120000" step="1000" value="42000"></div>
+<div class="field"><div class="field-head"><label for="daily">Повседневные расходы</label><span class="amount" id="dailyVal">30000 ₽</span></div><small>Продукты, транспорт и регулярные покупки</small><input id="daily" type="range" min="0" max="120000" step="1000" value="30000"></div>
+<div class="field"><div class="field-head"><label for="goals">Накопления и цели</label><span class="amount" id="goalsVal">18000 ₽</span></div><small>Плановые накопления на выбранные цели</small><input id="goals" type="range" min="0" max="120000" step="1000" value="18000"></div>
+<div class="field"><div class="field-head"><label for="reserve">Пополнение резерва</label><span class="amount" id="reserveVal">12000 ₽</span></div><small>Отдельный запас на непредвиденные ситуации</small><input id="reserve" type="range" min="0" max="120000" step="1000" value="12000"></div>
+<div class="field"><div class="field-head"><label for="leisure">Отдых и свободные расходы</label><span class="amount" id="leisureVal">10000 ₽</span></div><small>Гибкая категория, которую можно корректировать</small><input id="leisure" type="range" min="0" max="120000" step="1000" value="10000"></div>
+</div>
+</div>
+<div id="prioritiesPanel" hidden>
+<h2>Выберите приоритеты</h2><p class="sub">В условном месяце доход сократился. Решите, какие расходы сохранить в первую очередь.</p>
+<div class="income-row"><label>Доступно на месяц</label><strong class="amount" id="priorityIncome">85000 ₽</strong></div>
+<p class="sub">Отметьте категории, которые вы хотите защитить. Это учебное упражнение, а не универсальная рекомендация.</p>
+<div id="priorityChoices">
+<label class="field"><input type="checkbox" value="housing" checked> Жильё и обязательные платежи — 35 000 ₽</label>
+<label class="field"><input type="checkbox" value="food" checked> Базовые повседневные расходы — 25 000 ₽</label>
+<label class="field"><input type="checkbox" value="health"> Здоровье и необходимые лекарства — 8 000 ₽</label>
+<label class="field"><input type="checkbox" value="debt"> Минимальные платежи по обязательствам — 10 000 ₽</label>
+<label class="field"><input type="checkbox" value="goals"> Накопления на цель — 12 000 ₽</label>
+<label class="field"><input type="checkbox" value="leisure"> Развлечения и необязательные покупки — 9 000 ₽</label>
+</div>
+<div class="insight" id="priorityInsight" aria-live="polite">Отметьте расходы, чтобы увидеть общую сумму выбранных приоритетов.</div>
+</div>
+<div id="shockPanel" hidden>
+<h2>Проверьте устойчивость бюджета</h2><p class="sub">Условный старт: доход 120 000 ₽, ежемесячные расходы 82 000 ₽, резерв 90 000 ₽.</p>
+<div class="scenario-row"><button class="scenario" data-shock="repair" aria-pressed="true">Ремонт · 25 000 ₽</button><button class="scenario" data-shock="income" aria-pressed="false">Снижение дохода · 20%</button><button class="scenario" data-shock="medical" aria-pressed="false">Незапланированный расход · 45 000 ₽</button></div>
+<div class="field"><div class="field-head"><label for="reserveStart">Размер резерва, ₽</label><span class="amount" id="reserveStartVal">90 000 ₽</span></div><input id="reserveStart" type="range" min="0" max="500000" step="5000" value="90000"></div>
+<div class="field"><div class="field-head"><label for="monthlyCost">Ежемесячные необходимые расходы, ₽</label><span class="amount" id="monthlyCostVal">82 000 ₽</span></div><input id="monthlyCost" type="range" min="10000" max="200000" step="1000" value="82000"></div>
+<div class="insight" id="shockInsight" aria-live="polite"></div>
+</div>
+</div>
+<aside class="panel" aria-live="polite">
+<h2 id="resultTitle">Сводка бюджета</h2><p class="sub" id="resultSub">Результат меняется вместе с вашими настройками.</p>
+<div class="metric"><span id="primaryLabel">Свободный остаток</span><strong id="primaryValue">8 000 ₽</strong></div>
+<div class="metric"><span id="secondaryLabel">Доля распределённого дохода</span><strong id="secondaryValue">93,3%</strong></div>
+<div class="status good" id="status">Баланс положительный</div>
+<div class="bars" id="bars">
+<div class="barline"><div class="barlabel"><span>Жильё</span><span id="housingPct">35%</span></div><div class="track"><div class="fill" id="housingBar"></div></div></div>
+<div class="barline"><div class="barlabel"><span>Повседневные расходы</span><span id="dailyPct">25%</span></div><div class="track"><div class="fill" id="dailyBar"></div></div></div>
+<div class="barline"><div class="barlabel"><span>Накопления и резерв</span><span id="savingPct">25%</span></div><div class="track"><div class="fill" id="savingBar"></div></div></div>
+<div class="barline"><div class="barlabel"><span>Отдых и свободные расходы</span><span id="leisurePct">8%</span></div><div class="track"><div class="fill" id="leisureBar"></div></div></div>
+</div>
+<div class="insight" id="insight">Измените суммы слева, чтобы увидеть, как меняется баланс.</div>
+<button class="reset" id="reset">Сбросить сценарий</button>
+</aside>
+</section>
+<div class="notice">Важно: все исходные значения в тренажёре условные. Результаты предназначены только для обучения базовым принципам планирования бюджета и не являются индивидуальной финансовой или инвестиционной рекомендацией. Данные, которые вы вводите, обрабатываются в текущей вкладке и не отправляются на сервер.</div>
+</main>
+<footer class="footer wrap"><span>© <span id="year"></span> Финансовая грамотность</span><a href="../">К образовательным программам ↑</a></footer>
+<script>
+const fmt=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const tabs=[...document.querySelectorAll('.tab')];
+const panels={budget:document.getElementById('budgetPanel'),priorities:document.getElementById('prioritiesPanel'),shock:document.getElementById('shockPanel')};
+let current='budget',shock='repair';
+const ids=['housing','daily','goals','reserve','leisure'];
+const defaults={income:120000,housing:42000,daily:30000,goals:18000,reserve:12000,leisure:10000};
+const val=id=>Math.max(0,Number(document.getElementById(id).value)||0);
+function setMetric(label,value,label2,value2,title,sub,statusText,statusClass,insight){document.getElementById('primaryLabel').textContent=label;document.getElementById('primaryValue').textContent=value;document.getElementById('secondaryLabel').textContent=label2;document.getElementById('secondaryValue').textContent=value2;document.getElementById('resultTitle').textContent=title;document.getElementById('resultSub').textContent=sub;const s=document.getElementById('status');s.textContent=statusText;s.className='status '+statusClass;document.getElementById('insight').textContent=insight}
+function updateBudget(){const income=Math.max(1,val('income'));let total=0;ids.forEach(id=>{const n=val(id);total+=n;document.getElementById(id+'Val').textContent=fmt(n);document.getElementById(id).max=Math.max(income,Number(document.getElementById(id).max)||income)});const rest=income-total,ratio=total/income*100;setMetric('Свободный остаток',fmt(rest),'Доля распределённого дохода',ratio.toFixed(1).replace('.',',')+'%','Сводка бюджета','Распределено '+fmt(total)+' из '+fmt(income),rest>=0?'Баланс положительный':'Расходы превышают доход',rest>=0?'good':'bad',rest>0?'Остаток не распределён. Можно оставить его свободным или отдельно определить назначение.':rest===0?'Весь доход распределён. Проверьте, достаточно ли предусмотрено на переменные расходы.':'План превышает доход на '+fmt(-rest)+'. Попробуйте скорректировать гибкие категории.');const groups={housing:val('housing'),daily:val('daily'),saving:val('goals')+val('reserve'),leisure:val('leisure')};Object.entries(groups).forEach(([id,n])=>{const p=n/income*100;document.getElementById(id+'Pct').textContent=p.toFixed(0)+'%';document.getElementById(id+'Bar').style.width=Math.min(100,p)+'%'})}
+ids.concat('income').forEach(id=>document.getElementById(id).addEventListener('input',updateBudget));
+const priorityCosts={housing:35000,food:25000,health:8000,debt:10000,goals:12000,leisure:9000};
+function updatePriorities(){const selected=[...document.querySelectorAll('#priorityChoices input:checked')];const sum=selected.reduce((a,x)=>a+priorityCosts[x.value],0),budget=85000,diff=budget-sum;document.getElementById('priorityInsight').textContent='Выбрано '+selected.length+' категорий на '+fmt(sum)+'. '+(diff>=0?'В рамках условного лимита остаётся '+fmt(diff)+'.':'Выбор превышает лимит на '+fmt(-diff)+'. Подумайте, какие расходы можно перенести или пересмотреть, не игнорируя обязательства и базовые потребности.');setMetric('Сумма выбранных приоритетов',fmt(sum),'Остаток / превышение',fmt(Math.abs(diff)),'Приоритеты расходов','Условный лимит: '+fmt(budget),diff>=0?'Выбор укладывается в лимит':'Выбор выше лимита',diff>=0?'good':'bad','Сравните обязательные потребности и гибкие цели. Контекст и реальные обязательства важнее универсального шаблона.');document.getElementById('bars').hidden=true}
+document.querySelectorAll('#priorityChoices input').forEach(x=>x.addEventListener('change',updatePriorities));
+const shockValues={repair:{cost:25000,drop:0,title:'Ремонт'},income:{cost:0,drop:.2,title:'Снижение дохода'},medical:{cost:45000,drop:0,title:'Незапланированный расход'}};
+function updateShock(){const reserve=val('reserveStart'),cost=val('monthlyCost'),scenario=shockValues[shock],income=120000*(1-scenario.drop),hit=scenario.cost,after=reserve-hit,months=cost?Math.max(0,after)/cost:0;document.getElementById('reserveStartVal').textContent=fmt(reserve);document.getElementById('monthlyCostVal').textContent=fmt(cost);document.getElementById('shockInsight').textContent=scenario.drop?'При условном снижении дохода на 20% месячный доход составит '+fmt(income)+'. Сравните его с необходимыми расходами '+fmt(cost)+'.': 'После условного расхода '+fmt(hit)+' в резерве останется '+fmt(after)+'. Это около '+months.toFixed(1).replace('.',',')+' месяца необходимых расходов при неизменных условиях.';setMetric('Остаток резерва',fmt(after),'Покрытие расходов',months.toFixed(1).replace('.',',')+' мес.','Устойчивость бюджета',scenario.title,diffText(after,cost,income),after>=0?'good':'bad',scenario.drop?'При падении дохода оцените разницу между новым поступлением и необходимыми расходами.':'Показатель — упрощённая модель: реальные сроки и расходы могут меняться.');document.getElementById('bars').hidden=true}
+function diffText(after,cost,income){if(shock==='income')return income>=cost?'Доход покрывает указанные расходы':'Доход ниже указанных расходов';return after>=0?'Резерв покрывает выбранный расход':'Резерва недостаточно для полного покрытия расхода'}
+document.getElementById('reserveStart').addEventListener('input',updateShock);document.getElementById('monthlyCost').addEventListener('input',updateShock);
+document.querySelectorAll('[data-shock]').forEach(b=>b.addEventListener('click',()=>{shock=b.dataset.shock;document.querySelectorAll('[data-shock]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));updateShock()}));
+function switchTab(tab){current=tab;tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===tab)));Object.entries(panels).forEach(([k,p])=>p.hidden=k!==tab);document.getElementById('bars').hidden=tab!=='budget';if(tab==='budget')updateBudget();if(tab==='priorities')updatePriorities();if(tab==='shock')updateShock()}
+tabs.forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+function reset(){Object.entries(defaults).forEach(([id,n])=>document.getElementById(id).value=n);document.querySelectorAll('#priorityChoices input').forEach(x=>x.checked=['housing','food'].includes(x.value));document.getElementById('reserveStart').value=90000;document.getElementById('monthlyCost').value=82000;shock='repair';document.querySelectorAll('[data-shock]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.shock===shock)));switchTab('budget')}
+document.getElementById('reset').addEventListener('click',reset);document.getElementById('year').textContent=new Date().getFullYear();updateBudget();
+</script></body></html>
