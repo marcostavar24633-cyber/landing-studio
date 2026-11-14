@@ -84,7 +84,11 @@ function safeLogEntries(value){
  }
  return clean;
 }
-function csvCell(value){let s=String(value??"");if(s&&["=","+","@","-","\t","\r"].includes(s[0]))s="'"+s;return '"'+s.replace(/"/g,'""')+'"}
+function csvCell(value){
+ let s=String(value??"");
+ if(s&&["=","+","@","-","\t","\r"].includes(s[0]))s="'"+s;
+ return '"' + s.replace(/"/g,'""') + '"';
+}
 function renderLog(){
  const list=$("operationLog");if(!list)return;list.replaceChildren();const entries=readLog();
  if(!entries.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Операций пока нет.";list.append(empty)}
