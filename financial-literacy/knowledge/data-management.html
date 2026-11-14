@@ -178,7 +178,7 @@ async function runDiagnostics(){
  if(navigator.storage&&navigator.storage.estimate){try{const e=await navigator.storage.estimate();if(Number.isFinite(e.quota)&&Number.isFinite(e.usage))estimate.textContent+=" Общая оценка хранилища сайта: "+formatBytes(e.usage)+" из "+formatBytes(e.quota)+" (включает не только localStorage и не является точным лимитом для него).";}catch(e){}}
 }
 let repairSnapshot=null;
-function validRecord(v,max,total){return !!v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&(v.at===undefined||typeof v.at==="string")}
+function validRecord(v,max,total){return !!v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&typeof v.at==="string"&&v.at.length<=80&&Number.isFinite(Date.parse(v.at))}
 const KEY_LABELS={reads:"Отметки чтения",quiz:"Последний базовый тест",quizHistory:"История базового теста",topics:"Тематические результаты",topicHistory:"История тематических тестов",scenarios:"Практические сценарии"};
 function renderRepairReport(items){
  const list=$("repairReport");list.replaceChildren();
