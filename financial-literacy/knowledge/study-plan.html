@@ -22,7 +22,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <footer class="foot wrap"><span>© <span id="year"></span> Финансовая грамотность</span><a href="../">Главная проекта ↑</a></footer>
 <script>
 (()=>{const $=id=>document.getElementById(id);function read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch(e){return fallback}}
-const readRaw=read('finance-literacy-read-v1',[]),readSet=new Set(Array.isArray(readRaw)?readRaw:[]),quiz=read('finance-literacy-quiz-v1',null),topicData=read('finance-literacy-topic-checks-v1',{}),scenarioData=read('finance-literacy-scenarios-v1',{});
+const readRaw=read('finance-literacy-read-v1',[]),quizRaw=read('finance-literacy-quiz-v1',null),topicRaw=read('finance-literacy-topic-checks-v1',{}),scenarioRaw=read('finance-literacy-scenarios-v1',{});
 const articles=[
 {id:'budget-basics',topic:'budget',name:'Личный бюджет',article:'budget-basics.html',test:'budget'},
 {id:'emergency-fund',topic:'reserve',name:'Накопления и резерв',article:'emergency-fund.html',test:'reserve'},
@@ -30,14 +30,19 @@ const articles=[
 {id:'financial-scams',topic:'security',name:'Финансовая безопасность',article:'financial-scams.html',test:'security'},
 {id:'financial-goals',topic:'goals',name:'Финансовые цели',article:'financial-goals.html',test:'goals'},
 {id:'business-cashflow',topic:'business',name:'Финансы предпринимателя',article:'business-cashflow.html',test:'business'}];
-const topicResults=articles.map(a=>({article:a,read:readSet.has(a.id),result:topicData&&topicData[a.test],score:topicData&&topicData[a.test]&&Number.isFinite(topicData[a.test].score)?topicData[a.test].score:null}));
-const passed=topicResults.filter(x=>x.score!==null&&x.score>=2).length,readCount=topicResults.filter(x=>x.read).length,quizOk=quiz&&Number.isFinite(quiz.score)&&quiz.score>=6;
+const validRecord=(v,max,total)=>!!v&&typeof v==='object'&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&typeof v.at==='string'&&v.at.length<=80&&Number.isFinite(Date.parse(v.at));
+const readSet=new Set(Array.isArray(readRaw)?readRaw.filter(id=>articles.some(a=>a.id===id)):[]);
+const quiz=validRecord(quizRaw,8,8)?quizRaw:null;
+const topicData=topicRaw&&typeof topicRaw==='object'&&!Array.isArray(topicRaw)?topicRaw:{};
+const scenarioAnswers=scenarioRaw&&typeof scenarioRaw==='object'&&!Array.isArray(scenarioRaw)&&scenarioRaw.answers&&typeof scenarioRaw.answers==='object'&&!Array.isArray(scenarioRaw.answers)?scenarioRaw.answers:{};
+const topicResults=articles.map(a=>{const result=topicData[a.test],valid=validRecord(result,3,3);return{article:a,read:readSet.has(a.id),result:valid?result:null,score:valid?result.score:null}});
+const passed=topicResults.filter(x=>x.score!==null&&x.score>=2).length,readCount=topicResults.filter(x=>x.read).length,quizOk=!!quiz&&quiz.score>=6;
 $('readCount').textContent=readCount+' / 6';$('topicCount').textContent=passed+' / 6';$('quizScore').textContent=quiz&&Number.isFinite(quiz.score)?quiz.score+' / '+(quiz.total||8):'—';
 const tasks=[];
 topicResults.sort((a,b)=>{const rank=x=>x.score===null?0:x.score<2?1:2;return rank(a)-rank(b)});
 topicResults.forEach(x=>{const a=x.article;if(!x.read)tasks.push({title:'Изучить: '+a.name,desc:'Материал ещё не отмечен как прочитанный. Начните с краткой статьи и основных понятий.',url:a.article,label:'Открыть статью',done:false,priority:x.score===null?'Сначала изучение':'Повторение'});if(x.score===null||x.score<2)tasks.push({title:'Проверить тему: '+a.name,desc:x.score===null?'Тематический мини-тест ещё не пройден. Ответьте на три вопроса и прочитайте объяснения.':'Последний результат '+x.score+'/3. Перечитайте материал и повторите проверку.',url:'skills-check.html',label:'Открыть мини-тест',done:false,priority:x.score===null?'После статьи':'Нужно повторить',topic:a.test})});
 if(!quizOk)tasks.push({title:'Пройти базовый тест',desc:quiz&&Number.isFinite(quiz.score)?'Последний результат '+quiz.score+'/8. Повторите ключевые принципы и попробуйте ещё раз.':'Базовая проверка ещё не пройдена. В ней восемь вопросов по основным темам.',url:'quiz.html',label:'Пройти тест',done:false,priority:'Общий уровень'});
-const scenarioAnswers=scenarioData&&scenarioData.answers?scenarioData.answers:{},scenarioIds=['cashflow','scam','goal','business'],scenarioCorrect=[1,2,1,1],scenarioPerfect=scenarioIds.every((id,i)=>scenarioAnswers[id]===scenarioCorrect[i]);
+const scenarioIds=['cashflow','scam','goal','business'],scenarioCorrect=[1,2,1,1],scenarioPerfect=scenarioIds.every((id,i)=>Number.isInteger(scenarioAnswers[id])&&scenarioAnswers[id]>=0&&scenarioAnswers[id]<=2&&scenarioAnswers[id]===scenarioCorrect[i]);
 if(!scenarioPerfect)tasks.push({title:'Закрепить знания на практике',desc:'Пройдите четыре ситуации: непредвиденный расход, подозрительный звонок, накопления и денежный поток бизнеса.',url:'scenarios.html',label:'Пройти сценарии',done:false,priority:'Практика'});
 if(tasks.length===0)tasks.push({title:'Поддерживайте знания в актуальном состоянии',desc:'Основные учебные шаги выполнены. Можно повторить любой тест или разобрать практические сценарии ещё раз.',url:'scenarios.html',label:'Повторить практику',done:true,priority:'Маршрут завершён'});
 $('routeIntro').textContent=tasks.length===1&&tasks[0].done?'Основные учебные условия выполнены. Выберите материал для повторения.':'Сначала выполните наиболее важные незавершённые шаги. Порядок сформирован по вашим результатам.';
