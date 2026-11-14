@@ -5,7 +5,7 @@
 </style></head><body>
 <header class="top wrap"><a class="brand" href="../">FINANCE / LEARNING</a><a class="back" href="learning-path.html">← Мой прогресс</a></header>
 <main class="wrap"><section class="hero"><span class="eyebrow">ОБУЧЕНИЕ / ЛИЧНАЯ АНАЛИТИКА</span><h1>Прогресс в цифрах.</h1><p>Сводка активности в учебных материалах на этом устройстве: прочитанные статьи, результаты проверок и доступная история попыток.</p><div class="actions export-actions"><button class="btn" type="button" id="exportCsv">Скачать CSV-отчёт ↓</button><button class="btn" type="button" id="printReport">Печать / сохранить PDF ↗</button></div></section>
-<section class="panel" style="margin:0 0 14px"><h2>Резервная копия прогресса</h2><p class="sub">Сохраните учебные результаты в JSON-файл или восстановите их на другом устройстве. Файл обрабатывается только в этом браузере.</p><div class="actions export-actions"><button class="btn" type="button" id="exportJson">Скачать резервную копию JSON ↓</button><label class="btn" for="importJson" style="cursor:pointer">Выбрать JSON для восстановления ↑</label><input id="importJson" type="file" accept="application/json,.json" hidden></div><p class="sub" style="margin:12px 0 0">При восстановлении текущие учебные данные на этом устройстве будут заменены данными из файла. Перед импортом можно скачать текущую копию. Максимальный размер файла — 1 МБ.</p><p id="backupStatus" class="sub" role="status" aria-live="polite" style="margin:10px 0 0"></p></section>
+<section class="panel" style="margin:0 0 14px"><h2>Резервная копия прогресса</h2><p class="sub">Сохраните учебные результаты в JSON-файл или восстановите их на другом устройстве. Файл обрабатывается только в этом браузере.</p><div class="actions export-actions"><button class="btn" type="button" id="exportJson">Скачать резервную копию JSON ↓</button><label class="btn" for="importJson" style="cursor:pointer">Выбрать JSON для восстановления ↑</label><input id="importJson" type="file" accept="application/json,.json" hidden></div><p class="sub" style="margin:12px 0 0">При восстановлении текущие учебные данные на этом устройстве будут заменены данными из файла. Перед импортом можно скачать текущую копию. Максимальный размер файла — 1 МБ.</p><p id="backupStatus" class="sub" role="status" aria-live="polite" style="margin:10px 0 0"></p><div id="backupPreview" hidden style="margin-top:14px;padding:14px;border:1px solid var(--line);background:rgba(7,13,19,.55)"><strong style="color:var(--gold2)">Предпросмотр резервной копии</strong><p id="backupPreviewText" class="sub" style="margin:8px 0 12px"></p><button class="btn" type="button" id="restoreBackup">Подтвердить восстановление</button></div></section>
 <section class="stats"><div class="stat"><small>Прочитано статей</small><strong id="articles">0 / 6</strong></div><div class="stat"><small>Темы с результатом 2/3+</small><strong id="topics">0 / 6</strong></div><div class="stat"><small>Средний тематический балл</small><strong id="average">—</strong></div><div class="stat"><small>Всего попыток тестов</small><strong id="attempts">0</strong></div></section>
 <section class="grid"><div class="panel"><h2>Результаты по направлениям</h2><p class="sub">Последняя сохранённая попытка по каждой теме из трёх вопросов.</p><div class="topic-list" id="topicList"></div></div>
 <div class="panel"><h2>Динамика тематических тестов</h2><p class="sub">Последние сохранённые попытки. Шкала — от 0 до 3 баллов.</p><div class="chart" id="topicHistory"></div></div>
@@ -64,31 +64,62 @@ function currentBackupData(){
  return validateBackupData(data);
 }
 function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$("exportJson").addEventListener("click",()=>{
+async function sha256(value){
+ if(!window.crypto||!crypto.subtle)throw new Error("Проверка целостности недоступна в этом браузере. Откройте страницу по HTTPS или обновите браузер.");
+ const bytes=new TextEncoder().encode(JSON.stringify(value));
+ const digest=await crypto.subtle.digest("SHA-256",bytes);
+ return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+let pendingBackup=null;
+const preview=$("backupPreview"),previewText=$("backupPreviewText"),restoreButton=$("restoreBackup");
+function countAttempts(data){
+ const base=Array.isArray(data["finance-literacy-quiz-history-v1"])?data["finance-literacy-quiz-history-v1"].length:0;
+ const topical=Object.values(data["finance-literacy-topic-history-v1"]||{}).reduce((n,a)=>n+a.length,0);
+ return base+topical;
+}
+function showBackupPreview(parsed,data,file){
+ const articles=Array.isArray(data["finance-literacy-read-v1"])?data["finance-literacy-read-v1"].length:0;
+ const topicsSaved=Object.keys(data["finance-literacy-topic-checks-v1"]||{}).length;
+ const base=data["finance-literacy-quiz-v1"];
+ const scenarios=Object.keys((data["finance-literacy-scenarios-v1"]||{}).answers||{}).length;
+ const exported=new Date(parsed.exportedAt);
+ previewText.textContent="Файл: "+file.name+" · Дата создания: "+(Number.isNaN(exported.getTime())?"не указана":exported.toLocaleString("ru-RU"))+". Статей отмечено: "+articles+"/6; тематических результатов: "+topicsSaved+"/6; базовый тест: "+(base?base.score+"/8":"нет данных")+"; ответов в практике: "+scenarios+"/4; записей в истории тестов: "+countAttempts(data)+". После подтверждения текущие данные этих разделов будут заменены.";
+ preview.hidden=false;
+}
+$("exportJson").addEventListener("click",async()=>{
  try{
-  const backup={product:"finance-literacy",schemaVersion:1,exportedAt:new Date().toISOString(),data:currentBackupData()};
+  const data=currentBackupData();
+  const backup={product:"finance-literacy",schemaVersion:2,exportedAt:new Date().toISOString(),checksum:{algorithm:"SHA-256",value:await sha256(data)},data};
   downloadBlob(new Blob([JSON.stringify(backup,null,2)],{type:"application/json;charset=utf-8"}),"financial-literacy-backup-"+new Date().toISOString().slice(0,10)+".json");
-  status.textContent="Резервная копия подготовлена. Сохраните файл в надёжном месте.";
+  status.textContent="Резервная копия создана. Контрольная сумма SHA-256 добавлена в файл.";
  }catch(e){status.textContent="Экспорт не выполнен: "+e.message}
 });
 $("importJson").addEventListener("change",async event=>{
  const file=event.target.files&&event.target.files[0];event.target.value="";
+ pendingBackup=null;preview.hidden=true;
  if(!file)return;
  try{
   if(file.size>1024*1024)throw new Error("Размер файла превышает 1 МБ.");
   const parsed=JSON.parse(await file.text());
-  if(!isObj(parsed)||parsed.product!=="finance-literacy"||parsed.schemaVersion!==1||!validDate(parsed.exportedAt)||!("data" in parsed))throw new Error("Формат файла не распознан. Выберите резервную копию этого проекта.");
-  const data=validateBackupData(parsed.data);
-  if(!window.confirm("Восстановить прогресс из выбранного файла? Все шесть текущих учебных разделов на этом устройстве будут заменены содержимым копии. Остальные данные браузера не затрагиваются."))return;
-  const previous={};BACKUP_KEYS.forEach(key=>{previous[key]=localStorage.getItem(key)});
-  try{
-   BACKUP_KEYS.forEach(key=>{if(Object.prototype.hasOwnProperty.call(data,key))localStorage.setItem(key,JSON.stringify(data[key]));else localStorage.removeItem(key)});
-  }catch(writeError){
-   BACKUP_KEYS.forEach(key=>{if(previous[key]===null)localStorage.removeItem(key);else localStorage.setItem(key,previous[key])});
-   throw new Error("Браузер не разрешил восстановить данные. Исходный прогресс сохранён.");
-  }
-  status.textContent="Прогресс восстановлен. Обновляем аналитику…";window.location.reload();
+  if(!isObj(parsed)||parsed.product!=="finance-literacy"||parsed.schemaVersion!==2||!validDate(parsed.exportedAt)||!isObj(parsed.checksum)||parsed.checksum.algorithm!=="SHA-256"||typeof parsed.checksum.value!=="string"||!/^[a-f0-9]{64}$/.test(parsed.checksum.value)||!("data" in parsed))throw new Error("Формат или версия файла не распознаны. Выберите новую резервную копию проекта.");
+  const data=validateBackupData(parsed.data),actual=await sha256(data);
+  if(actual!==parsed.checksum.value)throw new Error("Контрольная сумма не совпадает. Файл повреждён или был изменён; восстановление отменено.");
+  pendingBackup={data,exportedAt:parsed.exportedAt};
+  showBackupPreview(parsed,data,file);
+  status.textContent="Файл проверен: структура корректна, контрольная сумма совпадает. Проверьте сводку и подтвердите восстановление.";
  }catch(e){status.textContent="Импорт не выполнен: "+e.message}
+});
+restoreButton.addEventListener("click",()=>{
+ if(!pendingBackup)return;
+ if(!window.confirm("Подтвердить восстановление? Текущие учебные данные из шести разделов будут заменены содержимым проверенной копии. Остальные данные браузера не затрагиваются."))return;
+ const previous={};BACKUP_KEYS.forEach(key=>{previous[key]=localStorage.getItem(key)});
+ try{
+  BACKUP_KEYS.forEach(key=>{if(Object.prototype.hasOwnProperty.call(pendingBackup.data,key))localStorage.setItem(key,JSON.stringify(pendingBackup.data[key]));else localStorage.removeItem(key)});
+ }catch(writeError){
+  try{BACKUP_KEYS.forEach(key=>{if(previous[key]===null)localStorage.removeItem(key);else localStorage.setItem(key,previous[key])})}catch(rollbackError){}
+  status.textContent="Не удалось восстановить данные. Выполнена попытка вернуть прежний прогресс.";return;
+ }
+ pendingBackup=null;status.textContent="Прогресс восстановлен. Обновляем аналитику…";window.location.reload();
 });
 })();
 </script></body></html>
