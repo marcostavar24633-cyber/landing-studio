@@ -35,11 +35,17 @@ button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;t
 @media(max-width:720px){.summary{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.item{align-items:flex-start;flex-direction:column}.action{width:100%}.foot{display:block}.foot span{display:block;margin:6px 0}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Accessibility: keyboard focus, skip navigation and reduced motion. */
+.skip-link{position:fixed;z-index:9999;top:12px;left:12px;transform:translateY(-160%);padding:12px 16px;background:#f0d9a2;color:#111;border:2px solid #111;border-radius:6px;font-weight:700;}
+.skip-link:focus{transform:translateY(0);outline:3px solid #fff;outline-offset:3px;}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #f0d9a2;outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
-<body>
+<body><a class="skip-link" href="#main-content">Перейти к содержимому</a>
 <header class="top wrap"><a class="brand" href="../">FINANCE / LEARNING</a><a class="back" href="learning-path.html">← Мой прогресс</a></header>
-<main class="wrap">
+<main id="main-content" class="wrap">
 <section class="hero"><span class="eyebrow">ЛИЧНЫЕ ДАННЫЕ / УПРАВЛЕНИЕ</span><h1>Ваш прогресс. Ваш контроль.</h1><p>Просматривайте и удаляйте результаты обучения на этом устройстве. Изменения касаются только перечисленных учебных данных и не затрагивают другие сайты или данные браузера.</p></section>
 <section class="summary" aria-label="Сводка учебных данных">
 <div class="metric"><small>Прочитано статей</small><strong id="readCount">0 / 6</strong></div>
