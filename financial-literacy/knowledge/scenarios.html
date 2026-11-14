@@ -63,7 +63,7 @@ function renderScore(){const count=scenarios.filter(s=>answers[s.id]!==undefined
 $('hintBtn').addEventListener('click',()=>$('hint').classList.toggle('show'));
 $('checkBtn').addEventListener('click',()=>{const selected=document.querySelector('input[name="scenarioChoice"]:checked');if(!selected){$('feedbackTitle').textContent='Сначала выберите вариант';$('feedbackText').textContent='Отметьте один ответ, затем нажмите «Проверить решение».';$('feedback').classList.add('show');return}answers[scenarios[active].id]=Number(selected.value);const saved=persist();showFeedback(Number(selected.value));$('feedbackText').textContent+=saved?' Ваш ответ сохранён в этом браузере.':' Не удалось сохранить ответ в браузере; после закрытия страницы он может потеряться.';renderList();renderScore()});
 $('nextBtn').addEventListener('click',()=>{active=(active+1)%scenarios.length;render()});
-$('resetBtn').addEventListener('click',()=>{answers={};persist();active=0;render()});
+$('resetBtn').addEventListener('click',()=>{const previous=answers;answers={};active=0;const saved=persist();if(!saved)answers=previous;render();$('feedbackTitle').textContent=saved?'Прогресс сброшен':'Не удалось сбросить прогресс';$('feedbackText').textContent=saved?'Ответы удалены и сброс сохранён в этом браузере.':'Браузер не разрешил сохранить сброс. Прежние ответы оставлены на странице и не будут потеряны из текущего состояния.';$('feedback').classList.add('show')});
 $('year').textContent=new Date().getFullYear();render();
 })();
 </script></body></html>
