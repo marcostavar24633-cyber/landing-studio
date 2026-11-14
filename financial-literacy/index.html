@@ -48,6 +48,15 @@
     footer{border-top:1px solid var(--line);padding:28px 0 36px;color:#85919a;font-size:10px}.footer-row{display:flex;justify-content:space-between;gap:25px;align-items:center}.footer-brand{color:#d4c4a2;letter-spacing:.15em;text-transform:uppercase;font-size:10px}.disclaimer{margin-top:20px;max-width:900px;line-height:1.7}
     .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:none}
     @keyframes rotate{to{transform:rotate(360deg)}}@keyframes pulse{50%{box-shadow:0 0 50px rgba(216,184,117,.25)}}
+
+    .knowledge-preview{padding:105px 0;background:linear-gradient(180deg,rgba(14,24,33,.88),rgba(9,15,21,.92));border-block:1px solid rgba(216,184,117,.1)}
+    .knowledge-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .knowledge-preview-card{padding:25px;border:1px solid var(--line);background:rgba(17,28,38,.66);min-height:185px}
+    .knowledge-preview-card span{display:block;color:var(--gold);font-size:9px;letter-spacing:.15em;margin-bottom:24px}
+    .knowledge-preview-card strong{font:500 22px var(--serif);color:var(--gold2)}
+    .knowledge-preview-card p{font-size:12px;color:var(--muted);margin:10px 0 0}
+    .knowledge-open{margin-top:28px}
+    @media(max-width:760px){.knowledge-preview{padding:70px 0}.knowledge-preview-grid{grid-template-columns:1fr}.knowledge-preview-card{min-height:0}}
     .calculator-section{background:linear-gradient(180deg,rgba(15,25,34,.92),rgba(9,15,21,.9));border-block:1px solid rgba(216,184,117,.09)}
     .calculator-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:22px;align-items:stretch}
     .calc-form,.calc-results{padding:34px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(24,39,50,.9),rgba(13,22,30,.96))}
@@ -90,7 +99,7 @@
       <span class="brand-mark">F</span><span class="brand-name">FINANCE<br><small>ОБРАЗОВАНИЕ И СИСТЕМА</small></span>
     </a>
     <nav class="nav-links" id="navLinks" aria-label="Основная навигация">
-      <a href="#programs">Программы</a><a href="#calculator">Калькулятор</a><a href="#approach">Подход</a><a href="#path">Как проходит</a><a href="#faq">Вопросы</a><a href="#contacts">Контакты</a>
+      <a href="#programs">Программы</a><a href="knowledge/">База знаний</a><a href="#calculator">Калькулятор</a><a href="#approach">Подход</a><a href="#path">Как проходит</a><a href="#faq">Вопросы</a><a href="#contacts">Контакты</a>
     </nav>
     <a class="nav-cta" href="#contacts">Запросить программу <span>↗</span></a>
     <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
@@ -128,6 +137,17 @@
         <article class="program-card reveal" data-number="05"><div class="card-top"><span>05 / ЗАЩИТА</span><span class="card-icon">◇</span></div><h3>Финансовая безопасность</h3><p>Распознавание мошеннических схем, защита данных, понимание долговой нагрузки и договорных условий.</p><a class="card-link" href="programs/financial-security.html">Изучить направление <span>→</span></a></article>
         <article class="program-card reveal" data-number="06"><div class="card-top"><span>06 / БИЗНЕС</span><span class="card-icon">▱</span></div><h3>Финансы предпринимателя</h3><p>Разделение личных и деловых денег, базовый денежный поток, планирование расходов и резервов.</p><a class="card-link" href="programs/business-finance.html">Изучить направление <span>→</span></a></article>
       </div>
+    </div>
+  </section>
+  <section class="knowledge-preview" id="knowledge">
+    <div class="wrap">
+      <div class="section-head reveal"><div><span class="eyebrow">Библиотека знаний</span><h2>Разбирайтесь в деньгах<br><span class="gold">в своём темпе.</span></h2></div><p>Практические статьи о бюджете, накоплениях, инвестиционном риске и финансовой безопасности — с поиском и тематическими категориями.</p></div>
+      <div class="knowledge-preview-grid">
+        <div class="knowledge-preview-card"><span>01 / БАЗА ЗНАНИЙ</span><strong>6 образовательных статей</strong><p>Короткие материалы с понятной структурой и практическими выводами.</p></div>
+        <div class="knowledge-preview-card"><span>02 / УДОБНЫЙ ПОИСК</span><strong>Темы и категории</strong><p>Найдите нужный материал по ключевому слову или тематическому разделу.</p></div>
+        <div class="knowledge-preview-card"><span>03 / БЕЗ РЕГИСТРАЦИИ</span><strong>Открытый доступ</strong><p>Все материалы доступны прямо на сайте. Аккаунт и отправка личных данных не нужны.</p></div>
+      </div>
+      <a class="btn knowledge-open" href="knowledge/">Открыть базу знаний <span>↗</span></a>
     </div>
   </section>
   <section class="calculator-section" id="calculator">
