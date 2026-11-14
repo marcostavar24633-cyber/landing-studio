@@ -5,6 +5,7 @@
 </style></head><body>
 <header class="top wrap"><a class="brand" href="../">FINANCE / LEARNING</a><a class="back" href="learning-path.html">← Мой прогресс</a></header>
 <main class="wrap"><section class="hero"><span class="eyebrow">ОБУЧЕНИЕ / ЛИЧНАЯ АНАЛИТИКА</span><h1>Прогресс в цифрах.</h1><p>Сводка активности в учебных материалах на этом устройстве: прочитанные статьи, результаты проверок и доступная история попыток.</p><div class="actions export-actions"><button class="btn" type="button" id="exportCsv">Скачать CSV-отчёт ↓</button><button class="btn" type="button" id="printReport">Печать / сохранить PDF ↗</button></div></section>
+<section class="panel" style="margin:0 0 14px"><h2>Резервная копия прогресса</h2><p class="sub">Сохраните учебные результаты в JSON-файл или восстановите их на другом устройстве. Файл обрабатывается только в этом браузере.</p><div class="actions export-actions"><button class="btn" type="button" id="exportJson">Скачать резервную копию JSON ↓</button><label class="btn" for="importJson" style="cursor:pointer">Выбрать JSON для восстановления ↑</label><input id="importJson" type="file" accept="application/json,.json" hidden></div><p class="sub" style="margin:12px 0 0">При восстановлении текущие учебные данные на этом устройстве будут заменены данными из файла. Перед импортом можно скачать текущую копию. Максимальный размер файла — 1 МБ.</p><p id="backupStatus" class="sub" role="status" aria-live="polite" style="margin:10px 0 0"></p></section>
 <section class="stats"><div class="stat"><small>Прочитано статей</small><strong id="articles">0 / 6</strong></div><div class="stat"><small>Темы с результатом 2/3+</small><strong id="topics">0 / 6</strong></div><div class="stat"><small>Средний тематический балл</small><strong id="average">—</strong></div><div class="stat"><small>Всего попыток тестов</small><strong id="attempts">0</strong></div></section>
 <section class="grid"><div class="panel"><h2>Результаты по направлениям</h2><p class="sub">Последняя сохранённая попытка по каждой теме из трёх вопросов.</p><div class="topic-list" id="topicList"></div></div>
 <div class="panel"><h2>Динамика тематических тестов</h2><p class="sub">Последние сохранённые попытки. Шкала — от 0 до 3 баллов.</p><div class="chart" id="topicHistory"></div></div>
@@ -32,5 +33,62 @@ rows.push(["Базовый тест","Последний результат",qui
 const correctMap={cashflow:1,scam:2,goal:1,business:1},scenarioLabels={cashflow:"Сломалась бытовая техника",scam:"Звонок из службы безопасности",goal:"Цель и нестабильный доход",business:"Денежный поток бизнеса"};Object.keys(scenarioLabels).forEach(id=>rows.push(["Практика",scenarioLabels[id],scenarioAnswers[id]===undefined?"Не пройдено":scenarioAnswers[id]===correctMap[id]?"Ответ верный":"Ответ изучен",""]));
 const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(";")).join("\r\n"),blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="financial-literacy-learning-report-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 $("exportCsv").addEventListener("click",downloadCsv);$("printReport").addEventListener("click",()=>window.print());
+
+const BACKUP_KEYS=["finance-literacy-read-v1","finance-literacy-quiz-v1","finance-literacy-quiz-history-v1","finance-literacy-topic-checks-v1","finance-literacy-topic-history-v1","finance-literacy-scenarios-v1"];
+const ARTICLE_IDS=["budget-basics","emergency-fund","investment-risk","financial-scams","financial-goals","business-cashflow"];
+const TOPIC_IDS=topics.map(([id])=>id),SCENARIO_IDS=["cashflow","scam","goal","business"];
+const status=$("backupStatus");
+const isObj=v=>!!v&&typeof v==="object"&&!Array.isArray(v);
+const validDate=v=>v===undefined||(typeof v==="string"&&v.length<=80);
+function validAttempt(v,max,total){return isObj(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&validDate(v.at)}
+function validateBackupData(data){
+ if(!isObj(data))throw new Error("В файле отсутствует объект с учебными данными.");
+ const allowed=new Set(BACKUP_KEYS);
+ if(Object.keys(data).some(k=>!allowed.has(k)))throw new Error("Файл содержит неизвестные поля.");
+ if("finance-literacy-read-v1" in data&&(!Array.isArray(data["finance-literacy-read-v1"])||data["finance-literacy-read-v1"].length>6||data["finance-literacy-read-v1"].some(x=>!ARTICLE_IDS.includes(x))||new Set(data["finance-literacy-read-v1"]).size!==data["finance-literacy-read-v1"].length))throw new Error("Некорректный список прочитанных статей.");
+ const qk="finance-literacy-quiz-v1";
+ if(qk in data&&!validAttempt(data[qk],8,8))throw new Error("Некорректный результат базового теста.");
+ const qhk="finance-literacy-quiz-history-v1";
+ if(qhk in data&&(!Array.isArray(data[qhk])||data[qhk].length>20||data[qhk].some(x=>!validAttempt(x,8,8))))throw new Error("Некорректная история базового теста.");
+ const tk="finance-literacy-topic-checks-v1";
+ if(tk in data&&(!isObj(data[tk])||Object.keys(data[tk]).some(k=>!TOPIC_IDS.includes(k))||Object.values(data[tk]).some(x=>!validAttempt(x,3,3))))throw new Error("Некорректные результаты тематических тестов.");
+ const thk="finance-literacy-topic-history-v1";
+ if(thk in data&&(!isObj(data[thk])||Object.keys(data[thk]).some(k=>!TOPIC_IDS.includes(k))||Object.values(data[thk]).some(a=>!Array.isArray(a)||a.length>10||a.some(x=>!validAttempt(x,3,3)))))throw new Error("Некорректная история тематических тестов.");
+ const sk="finance-literacy-scenarios-v1";
+ if(sk in data&&(!isObj(data[sk])||!isObj(data[sk].answers)||Object.keys(data[sk].answers).some(k=>!SCENARIO_IDS.includes(k))||Object.values(data[sk].answers).some(v=>!Number.isInteger(v)||v<0||v>2)||!validDate(data[sk].updatedAt)))throw new Error("Некорректные результаты практических сценариев.");
+ return data;
+}
+function currentBackupData(){
+ const data={};
+ BACKUP_KEYS.forEach(key=>{const raw=localStorage.getItem(key);if(raw!==null){try{data[key]=JSON.parse(raw)}catch(e){throw new Error("Не удалось прочитать локальные данные: "+key)}}});
+ return validateBackupData(data);
+}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$("exportJson").addEventListener("click",()=>{
+ try{
+  const backup={product:"finance-literacy",schemaVersion:1,exportedAt:new Date().toISOString(),data:currentBackupData()};
+  downloadBlob(new Blob([JSON.stringify(backup,null,2)],{type:"application/json;charset=utf-8"}),"financial-literacy-backup-"+new Date().toISOString().slice(0,10)+".json");
+  status.textContent="Резервная копия подготовлена. Сохраните файл в надёжном месте.";
+ }catch(e){status.textContent="Экспорт не выполнен: "+e.message}
+});
+$("importJson").addEventListener("change",async event=>{
+ const file=event.target.files&&event.target.files[0];event.target.value="";
+ if(!file)return;
+ try{
+  if(file.size>1024*1024)throw new Error("Размер файла превышает 1 МБ.");
+  const parsed=JSON.parse(await file.text());
+  if(!isObj(parsed)||parsed.product!=="finance-literacy"||parsed.schemaVersion!==1||!validDate(parsed.exportedAt)||!("data" in parsed))throw new Error("Формат файла не распознан. Выберите резервную копию этого проекта.");
+  const data=validateBackupData(parsed.data);
+  if(!window.confirm("Восстановить прогресс из выбранного файла? Все шесть текущих учебных разделов на этом устройстве будут заменены содержимым копии. Остальные данные браузера не затрагиваются."))return;
+  const previous={};BACKUP_KEYS.forEach(key=>{previous[key]=localStorage.getItem(key)});
+  try{
+   BACKUP_KEYS.forEach(key=>{if(Object.prototype.hasOwnProperty.call(data,key))localStorage.setItem(key,JSON.stringify(data[key]));else localStorage.removeItem(key)});
+  }catch(writeError){
+   BACKUP_KEYS.forEach(key=>{if(previous[key]===null)localStorage.removeItem(key);else localStorage.setItem(key,previous[key])});
+   throw new Error("Браузер не разрешил восстановить данные. Исходный прогресс сохранён.");
+  }
+  status.textContent="Прогресс восстановлен. Обновляем аналитику…";window.location.reload();
+ }catch(e){status.textContent="Импорт не выполнен: "+e.message}
+});
 })();
 </script></body></html>
