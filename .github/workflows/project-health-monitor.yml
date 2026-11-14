@@ -31,7 +31,9 @@ jobs:
               "marcostavar24633-cyber/landing-studio",
               "marcostavar24633-cyber/Penka",
               "marcostavar24633-cyber/Photograf",
-              "marcostavar24633-cyber/doma-tech"
+              "marcostavar24633-cyber/doma-tech",
+              "marcostavar24633-cyber/remont",
+              "marcostavar24633-cyber/rovno-otdelka"
             ];
 
             const owner = context.repo.owner;
