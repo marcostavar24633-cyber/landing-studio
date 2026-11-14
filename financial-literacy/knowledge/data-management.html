@@ -54,7 +54,7 @@ button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;t
 <section class="panel"><h2>Полный сброс обучения</h2><p class="sub">Удалит все шесть типов учебных данных: отметки чтения, базовый тест и его историю, тематические результаты и их историю, ответы практических сценариев.</p><button class="action danger" id="clearAll">Удалить весь учебный прогресс</button><p class="status" id="status" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Диагностика хранилища</h2><p class="sub">Проверьте структуру шести учебных записей, примерный объём и возможность записывать данные в браузере. Проверка не изменяет ваши результаты.</p><div class="actions"><button class="action" id="runDiagnostics" type="button">Проверить хранилище</button></div><div id="diagnosticSummary" class="status" role="status" aria-live="polite">Нажмите «Проверить хранилище», чтобы выполнить диагностику.</div><div id="diagnosticList" class="item-list" style="margin-top:12px"></div><p id="storageEstimate" class="sub" style="margin:12px 0 0"></p></section>
 <section class="panel"><h2>Безопасное исправление данных</h2><p class="sub">Система может удалить неизвестные идентификаторы и некорректные элементы из читаемых записей. Перед исправлением будет скачана копия исходных данных. Повреждённые JSON-строки автоматически не перезаписываются.</p><div class="actions"><button class="action" id="repairData" type="button">Создать копию и исправить</button><button class="action" id="undoRepair" type="button" disabled>Отменить исправление</button></div><p class="status" id="repairStatus" role="status" aria-live="polite"></p></section>
-<section class="panel"><h2>Журнал операций</h2><p class="sub">Последние 30 действий с учебными данными на этом устройстве. Журнал не содержит ответов тестов, сумм или содержимого записей и не входит в резервную копию учебного прогресса.</p><div class="item-list" id="operationLog"></div><div class="actions"><button class="action danger" id="clearLog" type="button">Очистить журнал</button></div><p class="status" id="logStatus" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Журнал операций</h2><p class="sub">Последние 30 действий с учебными данными на этом устройстве. Журнал не содержит ответов тестов, сумм или содержимого записей и не входит в резервную копию учебного прогресса.</p><div class="item-list" id="operationLog"></div><div class="actions"><button class="action" id="exportLogJson" type="button">Экспорт JSON</button><button class="action" id="exportLogCsv" type="button">Экспорт CSV</button><button class="action" id="importLogButton" type="button">Импорт JSON</button><button class="action danger" id="clearLog" type="button">Очистить журнал</button><input id="importLogFile" type="file" accept=".json,application/json" hidden></div><p class="sub">Импорт объединяет записи из файла с текущим журналом, удаляет дубликаты и оставляет 30 последних событий. Принимаются только файлы журнала этого проекта.</p><p class="status" id="logStatus" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Резервная копия</h2><p class="sub">Перед удалением можно сохранить данные в JSON. Для переноса или восстановления используйте страницу аналитики.</p><div class="actions"><a class="link-btn" href="analytics.html">Открыть экспорт и восстановление ↗</a><a class="link-btn" href="learning-path.html">Вернуться к обучению ↗</a></div></section>
 <div class="notice">Все действия выполняются в localStorage этого браузера. Они не отправляют данные на сервер. Удаление необратимо, если заранее не сохранена резервная копия. Введённые суммы из тренажёра и планировщика эта страница не читает и не изменяет.</div>
 </main>
@@ -71,6 +71,20 @@ function readLog(){try{const v=JSON.parse(localStorage.getItem(LOG_KEY)||"[]");r
 function logOperation(action,label,affected,status="Выполнено"){
  try{const entries=readLog();entries.unshift({time:new Date().toISOString(),action,label,affected,status});localStorage.setItem(LOG_KEY,JSON.stringify(entries.slice(0,30)));renderLog()}catch(e){$("logStatus").textContent="Не удалось обновить журнал; основное действие не затронуто."}
 }
+function downloadFile(filename,content,type){
+ const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+function safeLogEntries(value){
+ if(!Array.isArray(value)||value.length>500)return null;
+ const clean=[];
+ for(const item of value){
+  if(!item||typeof item!=="object"||Array.isArray(item)||typeof item.time!=="string"||!Number.isFinite(Date.parse(item.time))||typeof item.action!=="string"||typeof item.label!=="string"||!Array.isArray(item.affected)||typeof item.status!=="string")return null;
+  if(item.action.length>80||item.label.length>180||item.status.length>180||item.affected.length>12||item.affected.some(x=>typeof x!=="string"||x.length>100))return null;
+  clean.push({time:item.time,action:item.action,label:item.label,affected:item.affected,status:item.status});
+ }
+ return clean;
+}
+function csvCell(value){let s=String(value??"");if(/^[=+@\\-\\t\\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
 function renderLog(){
  const list=$("operationLog");if(!list)return;list.replaceChildren();const entries=readLog();
  if(!entries.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Операций пока нет.";list.append(empty)}
@@ -205,6 +219,33 @@ $("undoRepair").addEventListener("click",()=>{
  catch(e){$("repairStatus").textContent="Не удалось полностью восстановить исходные данные. Используйте скачанную резервную копию."}
 });
 $("runDiagnostics").addEventListener("click",runDiagnostics);
+$("exportLogJson").addEventListener("click",()=>{
+ const entries=readLog();const data={product:"finance-literacy-operation-log",schemaVersion:1,exportedAt:new Date().toISOString(),entries};
+ downloadFile("finance-literacy-operation-log-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(data,null,2),"application/json;charset=utf-8");
+ $("logStatus").textContent="Журнал экспортирован в JSON.";
+});
+$("exportLogCsv").addEventListener("click",()=>{
+ const entries=readLog();const rows=[["Время (ISO)","Действие","Описание","Затронутые разделы","Результат"],...entries.map(x=>[x.time,x.action,x.label,x.affected.join("; "),x.status])];
+ const csv="\\uFEFF"+rows.map(row=>row.map(csvCell).join(";")).join("\\r\\n");
+ downloadFile("finance-literacy-operation-log-"+new Date().toISOString().slice(0,10)+".csv",csv,"text/csv;charset=utf-8");
+ $("logStatus").textContent="Журнал экспортирован в CSV.";
+});
+$("importLogButton").addEventListener("click",()=>$("importLogFile").click());
+$("importLogFile").addEventListener("change",async event=>{
+ const file=event.target.files&&event.target.files[0];event.target.value="";if(!file)return;
+ if(file.size>256*1024){$("logStatus").textContent="Файл слишком большой. Максимальный размер — 256 КБ.";return}
+ try{
+  const parsed=JSON.parse(await file.text());
+  if(!parsed||parsed.product!=="finance-literacy-operation-log"||parsed.schemaVersion!==1){$("logStatus").textContent="Формат файла не распознан. Учебные данные не изменены.";return}
+  const imported=safeLogEntries(parsed.entries);
+  if(!imported){$("logStatus").textContent="Файл содержит некорректные или слишком объёмные записи. Импорт отменён.";return}
+  if(!confirm("Импортировать "+imported.length+" записей журнала? Они будут объединены с текущими, учебный прогресс не изменится."))return;
+  const current=readLog(),seen=new Set(),merged=[];
+  [...imported,...current].forEach(entry=>{const signature=[entry.time,entry.action,entry.label,entry.affected.join("|"),entry.status].join("¦");if(!seen.has(signature)){seen.add(signature);merged.push(entry)}});
+  merged.sort((a,b)=>Date.parse(b.time)-Date.parse(a.time));
+  localStorage.setItem(LOG_KEY,JSON.stringify(merged.slice(0,30)));renderLog();$("logStatus").textContent="Импорт завершён. Добавлено записей с учётом объединения: "+Math.max(0,merged.length-current.length)+".";
+ }catch(e){$("logStatus").textContent="Не удалось прочитать файл или сохранить журнал. Текущие учебные данные не изменены."}
+});
 $("clearLog").addEventListener("click",()=>{if(!confirm("Удалить журнал операций? Учебный прогресс не изменится."))return;try{localStorage.removeItem(LOG_KEY);renderLog();$("logStatus").textContent="Журнал очищен."}catch(e){$("logStatus").textContent="Не удалось очистить журнал."}});
 $("year").textContent=new Date().getFullYear();render();renderLog();
 })();
