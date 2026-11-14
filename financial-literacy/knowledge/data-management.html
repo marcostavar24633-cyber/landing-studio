@@ -139,12 +139,12 @@ function prepareRepairs(raw){
   if(raw[key]===null)continue;
   let value;
   try{value=JSON.parse(raw[key])}catch(e){skipped.push(name+": некорректный JSON — оставлено без изменений");continue}
-  let next=value;
+  let next=value,remove=false;
   if(name==="reads"){
    if(Array.isArray(value))next=[...new Set(value.filter(x=>allowedArticles.includes(x)))].slice(0,6);
    else next=[];
   }else if(name==="quiz"){
-   next=validRecord(value,8,8)?value:null;
+   if(validRecord(value,8,8))next=value;else remove=true;
   }else if(name==="quizHistory"){
    next=Array.isArray(value)?value.filter(x=>validRecord(x,8,8)).slice(-20):[];
   }else if(name==="topics"){
@@ -157,7 +157,7 @@ function prepareRepairs(raw){
     next={answers};if(typeof value.updatedAt==="string")next.updatedAt=value.updatedAt;
    }else next={answers:{}};
   }
-  const serialized=JSON.stringify(next);
+  const serialized=remove?null:JSON.stringify(next);
   if(serialized!==raw[key]){out[key]=serialized;changed.push(name)}
  }
  return {out,changed,skipped};
@@ -178,9 +178,9 @@ $("repairData").addEventListener("click",()=>{
  if(!confirm("Будет скачана резервная копия исходных шести учебных записей. Затем будут исправлены только читаемые JSON-записи: удалены неизвестные и некорректные элементы. Продолжить?"))return;
  try{downloadRawBackup(raw)}catch(e){status.textContent="Не удалось создать файл резервной копии. Исправление не выполнено.";return}
  try{
-  Object.entries(plan.out).forEach(([key,value])=>localStorage.setItem(key,value));
+  Object.entries(plan.out).forEach(([key,value])=>{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});
   repairSnapshot=raw;$("undoRepair").disabled=false;render();
-  status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Резервная копия скачана. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");
+  status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Подготовлена резервная копия исходных данных. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");
  }catch(e){
   try{restoreRaw(raw)}catch(rollbackError){}
   status.textContent="Не удалось завершить исправление. Выполнена попытка восстановить исходные записи из снимка.";
