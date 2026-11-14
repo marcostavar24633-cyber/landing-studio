@@ -36,7 +36,8 @@ const articles=[['budget-basics','Бюджет: основа личного пл
 function safeRead(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)||'null');return v??fallback}catch(e){return fallback}}
 const done=safeRead(KEY_READ,[]),quiz=safeRead(KEY_QUIZ,null);
 const validDone=Array.isArray(done)?articles.filter(a=>done.includes(a[0])):[];
-const validQuiz=quiz&&Number.isInteger(quiz.score)&&quiz.score>=0&&quiz.score<=8&&quiz.total===8;
+const validDate=x=>typeof x?.at==='string'&&x.at.length<=80&&Number.isFinite(Date.parse(x.at));
+const validQuiz=quiz&&Number.isInteger(quiz.score)&&quiz.score>=0&&quiz.score<=8&&quiz.total===8&&validDate(quiz);
 document.getElementById('readCount').textContent=validDone.length+' / '+articles.length;
 document.getElementById('readBar').style.width=(validDone.length/articles.length*100)+'%';
 let level='Старт',levelText='Начните с первой статьи';
