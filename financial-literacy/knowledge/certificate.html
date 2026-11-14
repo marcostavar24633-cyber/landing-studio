@@ -14,8 +14,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 (()=>{const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch(e){return fallback}};
 const articles=['budget-basics','emergency-fund','investment-risk','financial-scams','financial-goals','business-cashflow'],topics=['budget','reserve','investing','security','goals','business'];
 const r=read('finance-literacy-read-v1',[]),q=read('finance-literacy-quiz-v1',null),t=read('finance-literacy-topic-checks-v1',{});
-const allRead=Array.isArray(r)&&articles.every(id=>r.includes(id)),quizOk=q&&Number.isInteger(q.score)&&q.score>=6&&q.score<=8&&q.total===8;
-const allTopics=topics.every(id=>{const x=t&&t[id];return x&&Number.isInteger(x.score)&&x.score>=2&&x.score<=3&&x.total===3});
+const validDate=x=>typeof x?.at==='string'&&x.at.length<=80&&Number.isFinite(Date.parse(x.at));
+const allRead=Array.isArray(r)&&articles.every(id=>r.includes(id)),quizOk=q&&Number.isInteger(q.score)&&q.score>=6&&q.score<=8&&q.total===8&&validDate(q);
+const allTopics=topics.every(id=>{const x=t&&t[id];return x&&Number.isInteger(x.score)&&x.score>=2&&x.score<=3&&x.total===3&&validDate(x)});
 const allowed=allRead&&quizOk&&allTopics;document.getElementById('locked').hidden=allowed;document.getElementById('paper').hidden=!allowed;document.getElementById('controls').hidden=!allowed;
 if(allowed){const input=document.getElementById('participantName'),name=document.getElementById('participant');input.addEventListener('input',()=>{name.textContent=input.value.trim()||'Участник программы'});document.getElementById('date').textContent=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});document.getElementById('printBtn').addEventListener('click',()=>window.print())}else{document.getElementById('printBtn').hidden=true}
 })();
