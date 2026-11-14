@@ -187,10 +187,11 @@ function renderRepairReport(items){
 }
 function snapshotRaw(){const raw={};Object.values(KEYS).forEach(key=>{raw[key]=localStorage.getItem(key)});return raw}
 function restoreRaw(raw){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw)||Object.values(KEYS).some(key=>!Object.prototype.hasOwnProperty.call(raw,key)||(raw[key]!==null&&typeof raw[key]!=="string")))return false;
  let before;
  try{before=snapshotRaw()}catch(e){return false}
- try{Object.entries(KEYS).forEach(([name,key])=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});return true}
- catch(e){try{Object.entries(KEYS).forEach(([name,key])=>{const value=before[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}catch(rollbackError){}return false}
+ try{Object.values(KEYS).forEach(key=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});return true}
+ catch(e){try{Object.values(KEYS).forEach(key=>{const value=before[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}catch(rollbackError){}return false}
 }
 function prepareRepairs(raw){
  const out={},changed=[],skipped=[];
@@ -214,7 +215,7 @@ function prepareRepairs(raw){
   }else if(name==="scenarios"){
    if(value&&typeof value==="object"&&!Array.isArray(value)&&value.answers&&typeof value.answers==="object"&&!Array.isArray(value.answers)){
     const answers={};Object.entries(value.answers).forEach(([id,answer])=>{if(allowedScenarios.includes(id)&&Number.isInteger(answer)&&answer>=0&&answer<=2)answers[id]=answer});
-    next={answers};if(typeof value.updatedAt==="string")next.updatedAt=value.updatedAt;
+    next={answers};if(typeof value.updatedAt==="string"&&value.updatedAt.length<=80&&Number.isFinite(Date.parse(value.updatedAt)))next.updatedAt=value.updatedAt;
    }else next={answers:{}};
   }
   const serialized=remove?null:JSON.stringify(next);
