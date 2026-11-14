@@ -73,7 +73,7 @@ const topics=[
 ['Почему прибыльный бизнес может испытывать нехватку денег?',['Потому что прибыль всегда равна остатку на счёте','Потому что расходы никогда не совпадают с доходами','Из-за разрыва между сроками поступлений и выплат или денег, связанных в запасах и дебиторской задолженности'],2,'Прибыль и доступные деньги — разные показатели; сроки платежей и поступлений имеют значение.']]}
 ];
 let active=0;try{const selectedTopic=sessionStorage.getItem('finance-literacy-selected-topic-v1');const selectedIndex=topics.findIndex(t=>t.id===selectedTopic);if(selectedIndex>=0)active=selectedIndex;sessionStorage.removeItem('finance-literacy-selected-topic-v1')}catch(e){}
-function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch(e){return {}}}
+function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');if(!x||typeof x!=='object'||Array.isArray(x))return {};const clean={};topics.forEach(t=>{const a=x[t.id];if(a&&typeof a==='object'&&!Array.isArray(a)&&Number.isInteger(a.score)&&a.score>=0&&a.score<=3&&a.total===3&&typeof a.at==='string'&&Number.isFinite(Date.parse(a.at)))clean[t.id]={score:a.score,total:3,at:a.at}});return clean}catch(e){return {}}}
 function write(x){try{localStorage.setItem(KEY,JSON.stringify(x));return true}catch(e){return false}}
 let saved=read();
 const topicsEl=document.getElementById('topics'),questionsEl=document.getElementById('questions'),result=document.getElementById('result');
