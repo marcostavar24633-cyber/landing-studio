@@ -1,6 +1,9 @@
 name: Project health monitor
 
 on:
+  push:
+    paths:
+      - ".github/workflows/project-health-monitor.yml"
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
