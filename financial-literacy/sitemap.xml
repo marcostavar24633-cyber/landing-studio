@@ -5,4 +5,34 @@
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/personal-finance.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/savings.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/investing-basics.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/financial-planning.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/financial-security.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/programs/business-finance.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
