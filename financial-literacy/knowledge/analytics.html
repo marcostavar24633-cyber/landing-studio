@@ -49,8 +49,8 @@ const ARTICLE_IDS=["budget-basics","emergency-fund","investment-risk","financial
 const TOPIC_IDS=topics.map(([id])=>id),SCENARIO_IDS=["cashflow","scam","goal","business"];
 const status=$("backupStatus");
 const isObj=v=>!!v&&typeof v==="object"&&!Array.isArray(v);
-const validDate=v=>v===undefined||(typeof v==="string"&&v.length<=80);
-function validAttempt(v,max,total){return isObj(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&validDate(v.at)}
+const validDate=v=>v===undefined||(typeof v==="string"&&v.length>0&&v.length<=80&&!Number.isNaN(Date.parse(v)));
+function validAttempt(v,max,total){return isObj(v)&&Object.keys(v).every(k=>["score","total","at"].includes(k))&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&validDate(v.at)}
 function validateBackupData(data){
  if(!isObj(data))throw new Error("В файле отсутствует объект с учебными данными.");
  const allowed=new Set(BACKUP_KEYS);
@@ -65,7 +65,7 @@ function validateBackupData(data){
  const thk="finance-literacy-topic-history-v1";
  if(thk in data&&(!isObj(data[thk])||Object.keys(data[thk]).some(k=>!TOPIC_IDS.includes(k))||Object.values(data[thk]).some(a=>!Array.isArray(a)||a.length>10||a.some(x=>!validAttempt(x,3,3)))))throw new Error("Некорректная история тематических тестов.");
  const sk="finance-literacy-scenarios-v1";
- if(sk in data&&(!isObj(data[sk])||!isObj(data[sk].answers)||Object.keys(data[sk].answers).some(k=>!SCENARIO_IDS.includes(k))||Object.values(data[sk].answers).some(v=>!Number.isInteger(v)||v<0||v>2)||!validDate(data[sk].updatedAt)))throw new Error("Некорректные результаты практических сценариев.");
+ if(sk in data&&(!isObj(data[sk])||Object.keys(data[sk]).some(k=>!["answers","updatedAt"].includes(k))||!isObj(data[sk].answers)||Object.keys(data[sk].answers).some(k=>!SCENARIO_IDS.includes(k))||Object.values(data[sk].answers).some(v=>!Number.isInteger(v)||v<0||v>2)||!validDate(data[sk].updatedAt)))throw new Error("Некорректные результаты практических сценариев.");
  return data;
 }
 function currentBackupData(){
@@ -130,7 +130,8 @@ $("importJson").addEventListener("change",async event=>{
 restoreButton.addEventListener("click",()=>{
  if(!pendingBackup)return;
  if(!window.confirm("Подтвердить восстановление? Текущие учебные данные из шести разделов будут заменены содержимым проверенной копии. Остальные данные браузера не затрагиваются."))return;
- const previous={};BACKUP_KEYS.forEach(key=>{previous[key]=localStorage.getItem(key)});
+ const previous={};
+ try{BACKUP_KEYS.forEach(key=>{previous[key]=localStorage.getItem(key)})}catch(snapshotError){status.textContent="Не удалось прочитать текущие данные браузера. Восстановление не запускалось; исходный прогресс не изменён.";return}
  try{
   BACKUP_KEYS.forEach(key=>{if(Object.prototype.hasOwnProperty.call(pendingBackup.data,key))localStorage.setItem(key,JSON.stringify(pendingBackup.data[key]));else localStorage.removeItem(key)});
  }catch(writeError){
