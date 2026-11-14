@@ -262,7 +262,7 @@ $("exportLogJson").addEventListener("click",()=>{
 });
 $("exportLogCsv").addEventListener("click",()=>{
  const entries=readLog();const rows=[["Время (ISO)","Действие","Описание","Затронутые разделы","Результат"],...entries.map(x=>[x.time,x.action,x.label,x.affected.join("; "),x.status])];
- const csv="\\uFEFF"+rows.map(row=>row.map(csvCell).join(";")).join("\\r\\n");
+ const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(";")).join("\r\n");
  downloadFile("finance-literacy-operation-log-"+new Date().toISOString().slice(0,10)+".csv",csv,"text/csv;charset=utf-8");
  $("logStatus").textContent="Журнал экспортирован в CSV.";
 });
