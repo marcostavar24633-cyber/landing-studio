@@ -52,6 +52,7 @@ button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;t
 <section class="panel"><h2>Базовый тест</h2><p class="sub" id="quizDetail">Последний результат и сохранённая история попыток.</p><div class="actions"><button class="action danger" id="clearQuiz">Удалить результаты базового теста</button></div></section>
 <section class="panel"><h2>Практические сценарии</h2><p class="sub" id="scenarioDetail">Сохранённые ответы в четырёх учебных ситуациях.</p><div class="actions"><button class="action danger" id="clearScenarios">Удалить результаты практики</button></div></section>
 <section class="panel"><h2>Полный сброс обучения</h2><p class="sub">Удалит все шесть типов учебных данных: отметки чтения, базовый тест и его историю, тематические результаты и их историю, ответы практических сценариев.</p><button class="action danger" id="clearAll">Удалить весь учебный прогресс</button><p class="status" id="status" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Диагностика хранилища</h2><p class="sub">Проверьте структуру шести учебных записей, примерный объём и возможность записывать данные в браузере. Проверка не изменяет ваши результаты.</p><div class="actions"><button class="action" id="runDiagnostics" type="button">Проверить хранилище</button></div><div id="diagnosticSummary" class="status" role="status" aria-live="polite">Нажмите «Проверить хранилище», чтобы выполнить диагностику.</div><div id="diagnosticList" class="item-list" style="margin-top:12px"></div><p id="storageEstimate" class="sub" style="margin:12px 0 0"></p></section>
 <section class="panel"><h2>Резервная копия</h2><p class="sub">Перед удалением можно сохранить данные в JSON. Для переноса или восстановления используйте страницу аналитики.</p><div class="actions"><a class="link-btn" href="analytics.html">Открыть экспорт и восстановление ↗</a><a class="link-btn" href="learning-path.html">Вернуться к обучению ↗</a></div></section>
 <div class="notice">Все действия выполняются в localStorage этого браузера. Они не отправляют данные на сервер. Удаление необратимо, если заранее не сохранена резервная копия. Введённые суммы из тренажёра и планировщика эта страница не читает и не изменяет.</div>
 </main>
@@ -94,6 +95,39 @@ $("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить по�
 $("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;localStorage.removeItem(KEYS.quiz);localStorage.removeItem(KEYS.quizHistory);render();message("Результаты базового теста удалены.")});
 $("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;localStorage.removeItem(KEYS.scenarios);render();message("Результаты практики удалены.")});
 $("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;Object.values(KEYS).forEach(key=>localStorage.removeItem(key));render();message("Учебный прогресс полностью очищен.")});
+const diagnosticSpecs=[
+ {key:KEYS.reads,label:"Отметки чтения",check:v=>Array.isArray(v)&&v.length<=6&&v.every(x=>articles.some(a=>a[0]===x))&&new Set(v).size===v.length},
+ {key:KEYS.quiz,label:"Последний базовый тест",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=8&&v.total===8&&(v.at===undefined||typeof v.at==="string")},
+ {key:KEYS.quizHistory,label:"История базового теста",check:v=>Array.isArray(v)&&v.length<=20&&v.every(x=>x&&typeof x==="object"&&!Array.isArray(x)&&Number.isInteger(x.score)&&x.score>=0&&x.score<=8&&x.total===8&&(x.at===undefined||typeof x.at==="string"))},
+ {key:KEYS.topics,label:"Последние тематические результаты",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&Object.keys(v).every(k=>topics.some(t=>t[0]===k))&&Object.values(v).every(x=>x&&typeof x==="object"&&!Array.isArray(x)&&Number.isInteger(x.score)&&x.score>=0&&x.score<=3&&x.total===3&&(x.at===undefined||typeof x.at==="string"))},
+ {key:KEYS.topicHistory,label:"История тематических тестов",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&Object.keys(v).every(k=>topics.some(t=>t[0]===k))&&Object.values(v).every(a=>Array.isArray(a)&&a.length<=10&&a.every(x=>x&&typeof x==="object"&&!Array.isArray(x)&&Number.isInteger(x.score)&&x.score>=0&&x.score<=3&&x.total===3&&(x.at===undefined||typeof x.at==="string")))},
+ {key:KEYS.scenarios,label:"Практические сценарии",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&v.answers&&typeof v.answers==="object"&&!Array.isArray(v.answers)&&Object.keys(v.answers).every(k=>scenarios.some(s=>s[0]===k))&&Object.values(v.answers).every(x=>Number.isInteger(x)&&x>=0&&x<=2)&&(v.updatedAt===undefined||typeof v.updatedAt==="string")}
+];
+function formatBytes(bytes){if(bytes<1024)return bytes+" Б";if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" КБ";return (bytes/1024/1024).toFixed(2)+" МБ"}
+async function runDiagnostics(){
+ const list=$("diagnosticList"),summary=$("diagnosticSummary"),estimate=$("storageEstimate");
+ list.replaceChildren();summary.textContent="Выполняется проверка…";estimate.textContent="";
+ let valid=0,issues=0,used=0,available=true;
+ try{
+  for(const spec of diagnosticSpecs){
+   let raw=null,state="Нет записи",detail="Ключ отсутствует — это нормально, если раздел ещё не использовался.",ok=true;
+   try{raw=localStorage.getItem(spec.key);if(raw!==null){used+=(spec.key.length+raw.length)*2;const value=JSON.parse(raw);ok=spec.check(value);state=ok?"Структура корректна":"Структура не соответствует ожидаемому формату";detail=ok?"JSON читается, основные поля и ограничения проверены.":"Запись прочитана, но её структура или значения требуют внимания.";}}
+   catch(e){ok=false;state="Ошибка чтения или JSON";detail="Не удалось безопасно прочитать или разобрать запись.";}
+   if(raw===null)valid++;else if(ok)valid++;else issues++;
+   const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=spec.label;const meta=document.createElement("small");meta.className="item-meta";meta.textContent=state+" · "+detail;info.append(title,meta);const badge=document.createElement("strong");badge.className="item-meta";badge.style.color=raw===null||ok?"var(--green)":"var(--red)";badge.textContent=raw===null?"Пусто":ok?"OK":"Проверить";row.append(info,badge);list.append(row);
+  }
+ }catch(e){available=false;summary.textContent="Не удалось прочитать localStorage. Возможно, браузер блокирует локальное хранилище.";}
+ if(!available)return;
+ let writeTest="не выполнен";
+ const probe="__finance_literacy_diagnostic_probe__";
+ try{const previous=localStorage.getItem(probe);localStorage.setItem(probe,"ok");const passed=localStorage.getItem(probe)==="ok";if(previous===null)localStorage.removeItem(probe);else localStorage.setItem(probe,previous);writeTest=passed?"запись и чтение работают":"проверка записи не пройдена";}
+ catch(e){try{localStorage.removeItem(probe)}catch(ignore){}writeTest="запись запрещена или хранилище заполнено";}
+ summary.textContent=issues===0?"Проверка завершена: ошибок структуры не обнаружено.":"Проверка завершена: обнаружено проблемных записей — "+issues+".";
+ summary.style.color=issues===0&&writeTest.startsWith("запись и чтение")?"var(--green)":"var(--red)";
+ estimate.textContent="Проверено записей: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
+ if(navigator.storage&&navigator.storage.estimate){try{const e=await navigator.storage.estimate();if(Number.isFinite(e.quota)&&Number.isFinite(e.usage))estimate.textContent+=" Общая оценка хранилища сайта: "+formatBytes(e.usage)+" из "+formatBytes(e.quota)+" (включает не только localStorage и не является точным лимитом для него).";}catch(e){}}
+}
+$("runDiagnostics").addEventListener("click",runDiagnostics);
 $("year").textContent=new Date().getFullYear();render();
 })();
 </script>
