@@ -186,7 +186,11 @@ function renderRepairReport(items){
  items.forEach(item=>{const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=item.title;const meta=document.createElement("small");meta.className="item-meta";meta.textContent=item.detail;info.append(title,meta);const badge=document.createElement("strong");badge.className="item-meta";badge.style.color=item.ok?"var(--green)":"var(--red)";badge.textContent=item.status;row.append(info,badge);list.append(row)});
 }
 function snapshotRaw(){const raw={};Object.values(KEYS).forEach(key=>{raw[key]=localStorage.getItem(key)});return raw}
-function restoreRaw(raw){Object.entries(KEYS).forEach(([name,key])=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}
+function restoreRaw(raw){
+ const before=snapshotRaw();
+ try{Object.entries(KEYS).forEach(([name,key])=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});return true}
+ catch(e){try{Object.entries(KEYS).forEach(([name,key])=>{const value=before[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}catch(rollbackError){}return false}
+}
 function prepareRepairs(raw){
  const out={},changed=[],skipped=[];
  const allowedArticles=articles.map(x=>x[0]),allowedTopics=topics.map(x=>x[0]),allowedScenarios=scenarios.map(x=>x[0]);
@@ -239,15 +243,15 @@ $("repairData").addEventListener("click",()=>{
   renderRepairReport(reportItems);
   status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Подготовлена резервная копия исходных данных. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");logOperation("Исправление","Выполнена очистка структуры учебных записей",plan.changed,plan.skipped.length?"Исправлено; часть записей пропущена":"Успешно");
  }catch(e){
-  try{restoreRaw(raw);renderRepairReport([{title:"Откат операции",detail:"После ошибки записи исходные значения были возвращены из временного снимка.",status:"Откат выполнен",ok:true}])}catch(rollbackError){renderRepairReport([{title:"Ошибка восстановления",detail:"Автоматический откат не завершился. Используйте скачанную резервную копию исходных данных.",status:"Требуется внимание",ok:false}])}
+  const rolledBack=restoreRaw(raw);renderRepairReport([{title:rolledBack?"Откат операции":"Ошибка восстановления",detail:rolledBack?"После ошибки записи исходные значения возвращены из временного снимка.":"Не удалось полностью вернуть исходные значения. Используйте скачанную резервную копию исходных данных.",status:rolledBack?"Откат выполнен":"Требуется внимание",ok:rolledBack}])
   status.textContent="Не удалось завершить исправление. Выполнена попытка восстановить исходные записи из снимка.";
  }
 });
 $("undoRepair").addEventListener("click",()=>{
  if(!repairSnapshot)return;
  if(!confirm("Вернуть исходное состояние всех шести учебных записей, сохранённое перед исправлением?"))return;
- try{restoreRaw(repairSnapshot);repairSnapshot=null;$("undoRepair").disabled=true;render();$("repairStatus").textContent="Исходные данные восстановлены.";renderRepairReport(Object.entries(KEYS).map(([name,key])=>({title:KEY_LABELS[name],detail:"Восстановлено исходное состояние до исправления.",status:"Восстановлено",ok:true})));logOperation("Отмена исправления","Восстановлен снимок до исправления",["Все шесть учебных разделов"])}
- catch(e){$("repairStatus").textContent="Не удалось полностью восстановить исходные данные. Используйте скачанную резервную копию.";renderRepairReport([{title:"Восстановление не завершено",detail:"Не все исходные значения удалось вернуть. Скачанная копия остаётся доступной для ручного восстановления.",status:"Ошибка",ok:false}])}
+ try{if(!restoreRaw(repairSnapshot))throw new Error("Не удалось завершить транзакционное восстановление");repairSnapshot=null;$("undoRepair").disabled=true;render();$("repairStatus").textContent="Исходные данные восстановлены.";renderRepairReport(Object.entries(KEYS).map(([name,key])=>({title:KEY_LABELS[name],detail:"Восстановлено исходное состояние до исправления.",status:"Восстановлено",ok:true})));logOperation("Отмена исправления","Восстановлен снимок до исправления",["Все шесть учебных разделов"])}
+ catch(e){$("repairStatus").textContent="Не удалось полностью восстановить исходные данные. Предпринята попытка сохранить текущее состояние; используйте скачанную резервную копию при необходимости.";renderRepairReport([{title:"Восстановление не завершено",detail:"Не все исходные значения удалось вернуть. Скачанная копия остаётся доступной для ручного восстановления.",status:"Ошибка",ok:false}])}
 });
 $("runDiagnostics").addEventListener("click",runDiagnostics);
 $("exportLogJson").addEventListener("click",()=>{
