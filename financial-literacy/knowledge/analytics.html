@@ -26,7 +26,11 @@ $("quizLast").textContent=quiz&&Number.isFinite(Number(quiz.score))?quiz.score+"
 const answers=scenarioData.answers||{},scenarioIds=["cashflow","scam","goal","business"],correctMap={cashflow:1,scam:2,goal:1,business:1},count=scenarioIds.filter(id=>Object.prototype.hasOwnProperty.call(answers,id)).length,score=scenarioIds.filter(id=>answers[id]===correctMap[id]).length;$("scenarioScore").textContent=count?score+" / 4":"—";$("scenarioDetail").textContent=count?"Заданий с выбранным ответом: "+count+" из 4.":"Данные появятся после прохождения сценариев.";
 $("year").textContent=new Date().getFullYear();
 const topicHistory=history&&typeof history==="object"?history:{},baseHistory=Array.isArray(quizHistory)?quizHistory:[],scenarioAnswers=scenarioData.answers||{};
-function csvCell(value){const s=String(value??"");return '"'+s.replace(/"/g,'""')+'"'}
+function csvCell(value){
+ const s=String(value??"");
+ const safe=s&&["=","+","@","-","\t","\r"].includes(s[0])?"'"+s:s;
+ return '"'+safe.replace(/"/g,'""')+'"';
+}
 function downloadCsv(){const rows=[["Раздел","Показатель","Значение","Дата/комментарий"],["Сводка","Прочитано статей",Math.min(validDone,6)+"/6",""],["Сводка","Темы с результатом не ниже 2/3",topics.filter(([id])=>latest[id]&&Number(latest[id].score)>=2).length+"/6",""],["Сводка","Средний тематический результат",avg===null?"Нет данных":Math.round(avg*100)+"%",""],["Сводка","Количество сохранённых попыток",topicAttempts+baseAttempts,""]];
 topics.forEach(([id,label])=>{const item=latest[id];rows.push(["Тема",label,item&&item.score!==undefined?item.score+"/"+(item.total||3):"Нет результата",item&&item.at||""]);(Array.isArray(topicHistory[id])?topicHistory[id]:[]).forEach((a,i)=>rows.push(["История темы",label+" — попытка "+(i+1),a.score+"/"+(a.total||3),a.at||""]))});
 rows.push(["Базовый тест","Последний результат",quiz&&quiz.score!==undefined?quiz.score+"/"+(quiz.total||8):"Нет результата",quiz&&quiz.at||""]);baseHistory.forEach((a,i)=>rows.push(["История базового теста","Попытка "+(i+1),a.score+"/"+(a.total||8),a.at||""]));
