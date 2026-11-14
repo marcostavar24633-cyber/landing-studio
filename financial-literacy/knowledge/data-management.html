@@ -54,17 +54,29 @@ button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;t
 <section class="panel"><h2>Полный сброс обучения</h2><p class="sub">Удалит все шесть типов учебных данных: отметки чтения, базовый тест и его историю, тематические результаты и их историю, ответы практических сценариев.</p><button class="action danger" id="clearAll">Удалить весь учебный прогресс</button><p class="status" id="status" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Диагностика хранилища</h2><p class="sub">Проверьте структуру шести учебных записей, примерный объём и возможность записывать данные в браузере. Проверка не изменяет ваши результаты.</p><div class="actions"><button class="action" id="runDiagnostics" type="button">Проверить хранилище</button></div><div id="diagnosticSummary" class="status" role="status" aria-live="polite">Нажмите «Проверить хранилище», чтобы выполнить диагностику.</div><div id="diagnosticList" class="item-list" style="margin-top:12px"></div><p id="storageEstimate" class="sub" style="margin:12px 0 0"></p></section>
 <section class="panel"><h2>Безопасное исправление данных</h2><p class="sub">Система может удалить неизвестные идентификаторы и некорректные элементы из читаемых записей. Перед исправлением будет скачана копия исходных данных. Повреждённые JSON-строки автоматически не перезаписываются.</p><div class="actions"><button class="action" id="repairData" type="button">Создать копию и исправить</button><button class="action" id="undoRepair" type="button" disabled>Отменить исправление</button></div><p class="status" id="repairStatus" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Журнал операций</h2><p class="sub">Последние 30 действий с учебными данными на этом устройстве. Журнал не содержит ответов тестов, сумм или содержимого записей и не входит в резервную копию учебного прогресса.</p><div class="item-list" id="operationLog"></div><div class="actions"><button class="action danger" id="clearLog" type="button">Очистить журнал</button></div><p class="status" id="logStatus" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Резервная копия</h2><p class="sub">Перед удалением можно сохранить данные в JSON. Для переноса или восстановления используйте страницу аналитики.</p><div class="actions"><a class="link-btn" href="analytics.html">Открыть экспорт и восстановление ↗</a><a class="link-btn" href="learning-path.html">Вернуться к обучению ↗</a></div></section>
 <div class="notice">Все действия выполняются в localStorage этого браузера. Они не отправляют данные на сервер. Удаление необратимо, если заранее не сохранена резервная копия. Введённые суммы из тренажёра и планировщика эта страница не читает и не изменяет.</div>
 </main>
 <footer class="foot wrap"><span>© <span id="year"></span> Финансовая грамотность</span><a href="../">Главная проекта ↑</a></footer>
 <script>
 (()=>{
+const LOG_KEY="finance-literacy-data-log-v1";
 const KEYS={reads:"finance-literacy-read-v1",quiz:"finance-literacy-quiz-v1",quizHistory:"finance-literacy-quiz-history-v1",topics:"finance-literacy-topic-checks-v1",topicHistory:"finance-literacy-topic-history-v1",scenarios:"finance-literacy-scenarios-v1"};
 const articles=[["budget-basics","Бюджет: основа личного плана"],["emergency-fund","Финансовый резерв"],["investment-risk","Риск и доходность"],["financial-scams","Финансовая безопасность"],["financial-goals","Финансовые цели"],["business-cashflow","Денежный поток бизнеса"]];
 const topics=[["budget","Личные финансы"],["reserve","Накопления и резерв"],["investing","Основы инвестирования"],["security","Финансовая безопасность"],["goals","Финансовое планирование"],["business","Финансы предпринимателя"]];
 const scenarios=[["cashflow","Непредвиденный расход"],["scam","Звонок из службы безопасности"],["goal","Накопления при нестабильном доходе"],["business","Денежный поток бизнеса"]];
 const $=id=>document.getElementById(id);
+function readLog(){try{const v=JSON.parse(localStorage.getItem(LOG_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x==="object"&&typeof x.time==="string"&&typeof x.action==="string"&&typeof x.label==="string"&&Array.isArray(x.affected)&&typeof x.status==="string").slice(0,30):[]}catch(e){return[]}}
+function logOperation(action,label,affected,status="Выполнено"){
+ try{const entries=readLog();entries.unshift({time:new Date().toISOString(),action,label,affected,status});localStorage.setItem(LOG_KEY,JSON.stringify(entries.slice(0,30)));renderLog()}catch(e){$("logStatus").textContent="Не удалось обновить журнал; основное действие не затронуто."}
+}
+function renderLog(){
+ const list=$("operationLog");if(!list)return;list.replaceChildren();const entries=readLog();
+ if(!entries.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Операций пока нет.";list.append(empty)}
+ entries.forEach(entry=>{const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=entry.label;const meta=document.createElement("small");meta.className="item-meta";const date=new Date(entry.time);meta.textContent=(Number.isNaN(date.getTime())?entry.time:date.toLocaleString("ru-RU"))+" · "+entry.action+" · "+entry.affected.join(", ")+" · "+entry.status;info.append(title,meta);row.append(info);list.append(row)});
+ $("clearLog").disabled=!entries.length;
+}
 const read=(key,fallback)=>{try{const value=JSON.parse(localStorage.getItem(key)||"null");return value??fallback}catch(e){return fallback}};
 const countAttempts=()=>{const base=read(KEYS.quizHistory,[]),history=read(KEYS.topicHistory,{});return (Array.isArray(base)?base.length:0)+Object.values(history&&typeof history==="object"?history:{}).reduce((n,a)=>n+(Array.isArray(a)?a.length:0),0)};
 function render(){
@@ -76,7 +88,7 @@ function render(){
  $("quizCount").textContent=countAttempts();$("scenarioCount").textContent+="";
  $("scenarioCount").textContent=scenarios.filter(([id])=>Object.prototype.hasOwnProperty.call(answers,id)).length+" / 4";
  $("articleList").replaceChildren();
- articles.forEach(([id,label])=>{const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=label;const meta=document.createElement("small");meta.className="item-meta";const isDone=validDone.includes(id);meta.textContent=isDone?"Отмечено как прочитанное":"Нет отметки";info.append(title,meta);row.append(info);if(isDone){const btn=document.createElement("button");btn.className="action";btn.textContent="Снять отметку";btn.addEventListener("click",()=>{if(!confirm("Снять отметку о прочтении: "+label+"?"))return;writeArray(KEYS.reads,validDone.filter(x=>x!==id));render();message("Отметка удалена.")});row.append(btn)}$("articleList").append(row)});
+ articles.forEach(([id,label])=>{const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=label;const meta=document.createElement("small");meta.className="item-meta";const isDone=validDone.includes(id);meta.textContent=isDone?"Отмечено как прочитанное":"Нет отметки";info.append(title,meta);row.append(info);if(isDone){const btn=document.createElement("button");btn.className="action";btn.textContent="Снять отметку";btn.addEventListener("click",()=>{if(!confirm("Снять отметку о прочтении: "+label+"?"))return;writeArray(KEYS.reads,validDone.filter(x=>x!==id));render();logOperation("Удаление отметки","Снята отметка о прочтении",["Отметки чтения"]);message("Отметка удалена.")});row.append(btn)}$("articleList").append(row)});
  $("topicList").replaceChildren();
  topics.forEach(([id,label])=>{const result=validTopics[id],attempts=Array.isArray(history&&history[id])?history[id]:[];const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=label;const meta=document.createElement("small");meta.className="item-meta";meta.textContent=(result?"Последний результат: "+result.score+"/3":"Нет результата")+" · История: "+attempts.length+" попыток";info.append(title,meta);row.append(info);if(result||attempts.length){const btn=document.createElement("button");btn.className="action";btn.textContent="Очистить тему";btn.addEventListener("click",()=>clearTopic(id,label));row.append(btn)}$("topicList").append(row)});
  $("quizDetail").textContent=(quiz&&Number.isFinite(Number(quiz.score))?"Последний результат: "+quiz.score+"/"+(quiz.total||8)+". ":"Последнего результата нет. ")+(Array.isArray(quizHistory)?quizHistory.length:0)+" сохранённых попыток.";
@@ -89,13 +101,13 @@ function clearTopic(id,label){
  if(!confirm("Удалить последний результат и историю темы «"+label+"»?"))return;
  const latest=read(KEYS.topics,{}),history=read(KEYS.topicHistory,{});
  if(latest&&typeof latest==="object")delete latest[id];if(history&&typeof history==="object")delete history[id];
- try{localStorage.setItem(KEYS.topics,JSON.stringify(latest||{}));localStorage.setItem(KEYS.topicHistory,JSON.stringify(history||{}));render();message("Данные темы удалены.")}catch(e){message("Не удалось сохранить изменения.")}
+ try{localStorage.setItem(KEYS.topics,JSON.stringify(latest||{}));localStorage.setItem(KEYS.topicHistory,JSON.stringify(history||{}));render();logOperation("Очистка раздела","Удалены данные темы: "+label,["Тематические результаты","История темы"]);message("Данные темы удалены.")}catch(e){message("Не удалось сохранить изменения.")}
 }
-$("clearReads").addEventListener("click",()=>{if(!confirm("Удалить все отметки о прочитанных статьях?"))return;localStorage.removeItem(KEYS.reads);render();message("Отметки чтения очищены.")});
-$("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить последние результаты и историю всех шести тематических тестов?"))return;localStorage.removeItem(KEYS.topics);localStorage.removeItem(KEYS.topicHistory);render();message("Тематические результаты удалены.")});
-$("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;localStorage.removeItem(KEYS.quiz);localStorage.removeItem(KEYS.quizHistory);render();message("Результаты базового теста удалены.")});
-$("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;localStorage.removeItem(KEYS.scenarios);render();message("Результаты практики удалены.")});
-$("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;Object.values(KEYS).forEach(key=>localStorage.removeItem(key));render();message("Учебный прогресс полностью очищен.")});
+$("clearReads").addEventListener("click",()=>{if(!confirm("Удалить все отметки о прочитанных статьях?"))return;localStorage.removeItem(KEYS.reads);render();logOperation("Очистка раздела","Очищены отметки чтения",["Отметки чтения"]);message("Отметки чтения очищены.")});
+$("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить последние результаты и историю всех шести тематических тестов?"))return;localStorage.removeItem(KEYS.topics);localStorage.removeItem(KEYS.topicHistory);render();logOperation("Очистка раздела","Очищены все тематические результаты",["Тематические результаты","История тематических тестов"]);message("Тематические результаты удалены.")});
+$("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;localStorage.removeItem(KEYS.quiz);localStorage.removeItem(KEYS.quizHistory);render();logOperation("Очистка раздела","Удалены результаты базового теста",["Базовый тест","История базового теста"]);message("Результаты базового теста удалены.")});
+$("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;localStorage.removeItem(KEYS.scenarios);render();logOperation("Очистка раздела","Удалены результаты практики",["Практические сценарии"]);message("Результаты практики удалены.")});
+$("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;Object.values(KEYS).forEach(key=>localStorage.removeItem(key));render();logOperation("Полный сброс","Удалён весь учебный прогресс",["Все шесть разделов"]);message("Учебный прогресс полностью очищен.")});
 const diagnosticSpecs=[
  {key:KEYS.reads,label:"Отметки чтения",check:v=>Array.isArray(v)&&v.length<=6&&v.every(x=>articles.some(a=>a[0]===x))&&new Set(v).size===v.length},
  {key:KEYS.quiz,label:"Последний базовый тест",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=8&&v.total===8&&(v.at===undefined||typeof v.at==="string")},
@@ -123,7 +135,7 @@ async function runDiagnostics(){
  const probe="__finance_literacy_diagnostic_probe__";
  try{const previous=localStorage.getItem(probe);localStorage.setItem(probe,"ok");const passed=localStorage.getItem(probe)==="ok";if(previous===null)localStorage.removeItem(probe);else localStorage.setItem(probe,previous);writeTest=passed?"запись и чтение работают":"проверка записи не пройдена";}
  catch(e){try{localStorage.removeItem(probe)}catch(ignore){}writeTest="запись запрещена или хранилище заполнено";}
- summary.textContent=issues===0?"Проверка завершена: ошибок структуры не обнаружено.":"Проверка завершена: обнаружено проблемных записей — "+issues+".";
+ summary.textContent=issues===0?"Проверка завершена: ошибок структуры не обнаружено.":"Проверка завершена: обнаружено проблемных записей — "+issues+".";logOperation("Диагностика","Проверено локальное хранилище",["Шесть учебных разделов"],issues===0?"Ошибок не найдено":"Есть проблемные записи: "+issues);
  summary.style.color=issues===0&&writeTest.startsWith("запись и чтение")?"var(--green)":"var(--red)";
  estimate.textContent="Разделов без ошибок: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
  if(navigator.storage&&navigator.storage.estimate){try{const e=await navigator.storage.estimate();if(Number.isFinite(e.quota)&&Number.isFinite(e.usage))estimate.textContent+=" Общая оценка хранилища сайта: "+formatBytes(e.usage)+" из "+formatBytes(e.quota)+" (включает не только localStorage и не является точным лимитом для него).";}catch(e){}}
@@ -180,7 +192,7 @@ $("repairData").addEventListener("click",()=>{
  try{
   Object.entries(plan.out).forEach(([key,value])=>{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});
   repairSnapshot=raw;$("undoRepair").disabled=false;render();
-  status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Подготовлена резервная копия исходных данных. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");
+  status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Подготовлена резервная копия исходных данных. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");logOperation("Исправление","Выполнена очистка структуры учебных записей",plan.changed,plan.skipped.length?"Исправлено; часть записей пропущена":"Успешно");
  }catch(e){
   try{restoreRaw(raw)}catch(rollbackError){}
   status.textContent="Не удалось завершить исправление. Выполнена попытка восстановить исходные записи из снимка.";
@@ -189,11 +201,12 @@ $("repairData").addEventListener("click",()=>{
 $("undoRepair").addEventListener("click",()=>{
  if(!repairSnapshot)return;
  if(!confirm("Вернуть исходное состояние всех шести учебных записей, сохранённое перед исправлением?"))return;
- try{restoreRaw(repairSnapshot);repairSnapshot=null;$("undoRepair").disabled=true;render();$("repairStatus").textContent="Исходные данные восстановлены."}
+ try{restoreRaw(repairSnapshot);repairSnapshot=null;$("undoRepair").disabled=true;render();$("repairStatus").textContent="Исходные данные восстановлены.";logOperation("Отмена исправления","Восстановлен снимок до исправления",["Все шесть учебных разделов"])}
  catch(e){$("repairStatus").textContent="Не удалось полностью восстановить исходные данные. Используйте скачанную резервную копию."}
 });
 $("runDiagnostics").addEventListener("click",runDiagnostics);
-$("year").textContent=new Date().getFullYear();render();
+$("clearLog").addEventListener("click",()=>{if(!confirm("Удалить журнал операций? Учебный прогресс не изменится."))return;try{localStorage.removeItem(LOG_KEY);renderLog();$("logStatus").textContent="Журнал очищен."}catch(e){$("logStatus").textContent="Не удалось очистить журнал."}});
+$("year").textContent=new Date().getFullYear();render();renderLog();
 })();
 </script>
 </body></html>
