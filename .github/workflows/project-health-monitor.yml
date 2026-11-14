@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Check the latest run of every workflow in each project
         uses: actions/github-script@v7
+        env:
+          PROJECTS_READ_TOKEN: ${{ secrets.PROJECTS_READ_TOKEN }}
         with:
           script: |
             const repos = [
@@ -34,8 +36,17 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const report = [];
+            const failures = [];
+            const token = process.env.PROJECTS_READ_TOKEN;
+
+            if (!token) {
+              core.setFailed("Не задан секрет PROJECTS_READ_TOKEN. Добавьте fine-grained token с Actions: read для всех 7 репозиториев.");
+              return;
+            }
+
             const headers = {
               "Accept": "application/vnd.github+json",
+              "Authorization": `Bearer ${token}`,
               "X-GitHub-Api-Version": "2022-11-28",
               "User-Agent": "Landing-Studio-Project-Monitor"
             };
@@ -48,11 +59,12 @@ jobs:
                   { headers }
                 );
 
-                if (response.status === 404) {
-                  report.push(`⚪ ${fullName}: репозиторий или Actions недоступны`);
+                if (!response.ok) {
+                  const message = `GitHub API HTTP ${response.status}`;
+                  failures.push(`${fullName}: ${message}`);
+                  report.push(`🔴 ${fullName}: проверка не выполнена — ${message}`);
                   continue;
                 }
-                if (!response.ok) throw new Error(`GitHub API HTTP ${response.status}`);
 
                 const payload = await response.json();
                 const sortedRuns = (payload.workflow_runs || [])
@@ -102,7 +114,7 @@ jobs:
                       "",
                       projectMarker,
                       marker
-                    ].join("\n");
+                    ].join("\\n");
                     const title = `[CI] ${fullName} — ${workflowName}`;
 
                     if (existing) {
@@ -113,6 +125,7 @@ jobs:
                       await github.rest.issues.create({ owner, repo, title, body });
                     }
                     report.push(`🔴 ${fullName} / ${workflowName}: failure`);
+                    failures.push(`${fullName} / ${workflowName}: failure`);
                   } else if (latest.conclusion === "success") {
                     if (existing) {
                       await github.rest.issues.createComment({
@@ -130,7 +143,8 @@ jobs:
                 }
               } catch (error) {
                 core.warning(`${fullName}: ${error.message}`);
-                report.push(`🟠 ${fullName}: ошибка проверки — ${error.message}`);
+                failures.push(`${fullName}: ${error.message}`);
+                report.push(`🔴 ${fullName}: ошибка проверки — ${error.message}`);
               }
             }
 
@@ -140,5 +154,9 @@ jobs:
                 [{data:"Проект / workflow",header:true},{data:"Результат",header:true}],
                 ...report.map(line => [{data:line,header:false},{data:"Проверено",header:false}])
               ])
-              .addRaw("\nПроверяется последний запуск каждого workflow в main. Расписание: каждый час; также доступен ручной запуск.")
+              .addRaw("\\nПроверяется последний запуск каждого workflow в main. Расписание: каждый час; также доступен ручной запуск.")
               .write();
+
+            if (failures.length > 0) {
+              core.setFailed(`Мониторинг завершён с ошибками: ${failures.join("; ")}`);
+            }
