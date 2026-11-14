@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090d12">
+<meta name="description" content="Локальное управление учебным прогрессом проекта «Финансовая грамотность».">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/data-management.html">
+<title>Управление учебными данными — Финансовая грамотность</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090d12;--gold:#d8b875;--gold2:#f0d9a2;--ink:#f5f2eb;--muted:#a8b1b8;--line:rgba(216,184,117,.2);--red:#e7a39a;--green:#9bc8aa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,rgba(40,75,91,.2),transparent 36%),var(--bg);color:var(--ink);font:15px/1.65 "DM Sans",Arial,sans-serif}
+.wrap{width:min(960px,calc(100% - 38px));margin:auto}a{color:inherit;text-decoration:none}
+.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.brand,.back{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}
+.hero{padding:58px 0 30px}.eyebrow{font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+h1{font:500 clamp(40px,7vw,64px)/1.08 "Playfair Display",Georgia,serif;letter-spacing:-.04em;margin:14px 0}
+.hero p,.sub{color:var(--muted);font-size:13px;max-width:720px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.metric,.panel{border:1px solid var(--line);background:linear-gradient(145deg,rgba(25,39,50,.88),rgba(13,22,30,.96));padding:18px}
+.metric small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}.metric strong{display:block;color:var(--gold2);font:500 28px "Playfair Display";margin-top:5px}
+.panel{margin:14px 0}.panel h2{font:500 25px "Playfair Display";margin:0 0 5px}.panel .sub{margin:0 0 16px}
+.item-list{display:grid;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 13px;border:1px solid rgba(216,184,117,.13);background:rgba(3,9,14,.24)}
+.item-title{font-size:12px}.item-meta{display:block;color:#87949c;font-size:10px;margin-top:2px}
+button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.action{border:1px solid var(--line);background:transparent;color:var(--gold2);padding:10px 12px;white-space:nowrap}
+.action:hover,.action:focus-visible{border-color:var(--gold2);outline:none}
+.danger{border-color:rgba(231,163,154,.35);color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.link-btn{display:inline-flex;padding:12px 15px;border:1px solid var(--line);color:var(--gold2)}
+.notice{padding:15px;border:1px solid rgba(216,184,117,.14);color:#89969e;font-size:11px;margin:18px 0 38px}
+.status{min-height:22px;color:var(--green);font-size:12px;margin:12px 0 0}
+.empty{padding:13px;border:1px dashed rgba(216,184,117,.25);color:var(--muted);font-size:12px}
+.foot{border-top:1px solid var(--line);padding:22px 0 35px;color:#7f8d96;font-size:10px;display:flex;justify-content:space-between;gap:15px}
+@media(max-width:720px){.summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.item{align-items:flex-start;flex-direction:column}.action{width:100%}.foot{display:block}.foot span{display:block;margin:6px 0}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top wrap"><a class="brand" href="../">FINANCE / LEARNING</a><a class="back" href="learning-path.html">← Мой прогресс</a></header>
+<main class="wrap">
+<section class="hero"><span class="eyebrow">ЛИЧНЫЕ ДАННЫЕ / УПРАВЛЕНИЕ</span><h1>Ваш прогресс. Ваш контроль.</h1><p>Просматривайте и удаляйте результаты обучения на этом устройстве. Изменения касаются только перечисленных учебных данных и не затрагивают другие сайты или данные браузера.</p></section>
+<section class="summary" aria-label="Сводка учебных данных">
+<div class="metric"><small>Прочитано статей</small><strong id="readCount">0 / 6</strong></div>
+<div class="metric"><small>Тематических результатов</small><strong id="topicCount">0 / 6</strong></div>
+<div class="metric"><small>Попыток базового теста</small><strong id="quizCount">0</strong></div>
+<div class="metric"><small>Ответов в практике</small><strong id="scenarioCount">0 / 4</strong></div>
+</section>
+<section class="panel"><h2>Прочитанные статьи</h2><p class="sub">Можно снять отметку о прочтении для отдельной статьи или очистить весь список.</p><div class="item-list" id="articleList"></div><div class="actions"><button class="action danger" id="clearReads">Очистить отметки чтения</button></div></section>
+<section class="panel"><h2>Тематические тесты</h2><p class="sub">Удаление темы очищает её последний результат и историю попыток, не затрагивая остальные направления.</p><div class="item-list" id="topicList"></div><div class="actions"><button class="action danger" id="clearTopics">Очистить все тематические результаты</button></div></section>
+<section class="panel"><h2>Базовый тест</h2><p class="sub" id="quizDetail">Последний результат и сохранённая история попыток.</p><div class="actions"><button class="action danger" id="clearQuiz">Удалить результаты базового теста</button></div></section>
+<section class="panel"><h2>Практические сценарии</h2><p class="sub" id="scenarioDetail">Сохранённые ответы в четырёх учебных ситуациях.</p><div class="actions"><button class="action danger" id="clearScenarios">Удалить результаты практики</button></div></section>
+<section class="panel"><h2>Полный сброс обучения</h2><p class="sub">Удалит все шесть типов учебных данных: отметки чтения, базовый тест и его историю, тематические результаты и их историю, ответы практических сценариев.</p><button class="action danger" id="clearAll">Удалить весь учебный прогресс</button><p class="status" id="status" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Резервная копия</h2><p class="sub">Перед удалением можно сохранить данные в JSON. Для переноса или восстановления используйте страницу аналитики.</p><div class="actions"><a class="link-btn" href="analytics.html">Открыть экспорт и восстановление ↗</a><a class="link-btn" href="learning-path.html">Вернуться к обучению ↗</a></div></section>
+<div class="notice">Все действия выполняются в localStorage этого браузера. Они не отправляют данные на сервер. Удаление необратимо, если заранее не сохранена резервная копия. Введённые суммы из тренажёра и планировщика эта страница не читает и не изменяет.</div>
+</main>
+<footer class="foot wrap"><span>© <span id="year"></span> Финансовая грамотность</span><a href="../">Главная проекта ↑</a></footer>
+<script>
+(()=>{
+const KEYS={reads:"finance-literacy-read-v1",quiz:"finance-literacy-quiz-v1",quizHistory:"finance-literacy-quiz-history-v1",topics:"finance-literacy-topic-checks-v1",topicHistory:"finance-literacy-topic-history-v1",scenarios:"finance-literacy-scenarios-v1"};
+const articles=[["budget-basics","Бюджет: основа личного плана"],["emergency-fund","Финансовый резерв"],["investment-risk","Риск и доходность"],["financial-scams","Финансовая безопасность"],["financial-goals","Финансовые цели"],["business-cashflow","Денежный поток бизнеса"]];
+const topics=[["budget","Личные финансы"],["reserve","Накопления и резерв"],["investing","Основы инвестирования"],["security","Финансовая безопасность"],["goals","Финансовое планирование"],["business","Финансы предпринимателя"]];
+const scenarios=[["cashflow","Непредвиденный расход"],["scam","Звонок из службы безопасности"],["goal","Накопления при нестабильном доходе"],["business","Денежный поток бизнеса"]];
+const $=id=>document.getElementById(id);
+const read=(key,fallback)=>{try{const value=JSON.parse(localStorage.getItem(key)||"null");return value??fallback}catch(e){return fallback}};
+const countAttempts=()=>{const base=read(KEYS.quizHistory,[]),history=read(KEYS.topicHistory,{});return (Array.isArray(base)?base.length:0)+Object.values(history&&typeof history==="object"?history:{}).reduce((n,a)=>n+(Array.isArray(a)?a.length:0),0)};
+function render(){
+ const done=read(KEYS.reads,[]),quiz=read(KEYS.quiz,null),quizHistory=read(KEYS.quizHistory,[]),latest=read(KEYS.topics,{}),history=read(KEYS.topicHistory,{}),scenario=read(KEYS.scenarios,{});
+ const validDone=Array.isArray(done)?done.filter(id=>articles.some(a=>a[0]===id)):[];
+ const validTopics=latest&&typeof latest==="object"?latest:{};
+ const answers=scenario&&scenario.answers&&typeof scenario.answers==="object"?scenario.answers:{};
+ $("readCount").textContent=validDone.length+" / 6";$("topicCount").textContent=topics.filter(([id])=>validTopics[id]).length+" / 6";
+ $("quizCount").textContent=countAttempts();$("scenarioCount").textContent+="";
+ $("scenarioCount").textContent=scenarios.filter(([id])=>Object.prototype.hasOwnProperty.call(answers,id)).length+" / 4";
+ $("articleList").replaceChildren();
+ articles.forEach(([id,label])=>{const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=label;const meta=document.createElement("small");meta.className="item-meta";const isDone=validDone.includes(id);meta.textContent=isDone?"Отмечено как прочитанное":"Нет отметки";info.append(title,meta);row.append(info);if(isDone){const btn=document.createElement("button");btn.className="action";btn.textContent="Снять отметку";btn.addEventListener("click",()=>{if(!confirm("Снять отметку о прочтении: "+label+"?"))return;writeArray(KEYS.reads,validDone.filter(x=>x!==id));render();message("Отметка удалена.")});row.append(btn)}$("articleList").append(row)});
+ $("topicList").replaceChildren();
+ topics.forEach(([id,label])=>{const result=validTopics[id],attempts=Array.isArray(history&&history[id])?history[id]:[];const row=document.createElement("div");row.className="item";const info=document.createElement("div");const title=document.createElement("div");title.className="item-title";title.textContent=label;const meta=document.createElement("small");meta.className="item-meta";meta.textContent=(result?"Последний результат: "+result.score+"/3":"Нет результата")+" · История: "+attempts.length+" попыток";info.append(title,meta);row.append(info);if(result||attempts.length){const btn=document.createElement("button");btn.className="action";btn.textContent="Очистить тему";btn.addEventListener("click",()=>clearTopic(id,label));row.append(btn)}$("topicList").append(row)});
+ $("quizDetail").textContent=(quiz&&Number.isFinite(Number(quiz.score))?"Последний результат: "+quiz.score+"/"+(quiz.total||8)+". ":"Последнего результата нет. ")+(Array.isArray(quizHistory)?quizHistory.length:0)+" сохранённых попыток.";
+ $("scenarioDetail").textContent=scenarios.map(([id,label])=>label+": "+(Object.prototype.hasOwnProperty.call(answers,id)?"ответ сохранён":"не пройдено")).join(" · ");
+ $("clearReads").disabled=!validDone.length;$("clearTopics").disabled=!topics.some(([id])=>validTopics[id]||(Array.isArray(history&&history[id])&&history[id].length));$("clearQuiz").disabled=!quiz&&!((Array.isArray(quizHistory)&&quizHistory.length));$("clearScenarios").disabled=!Object.keys(answers).length;
+}
+function message(text){$("status").textContent=text}
+function writeArray(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){message("Браузер не разрешил изменить данные. Проверьте доступное место в хранилище.")}}
+function clearTopic(id,label){
+ if(!confirm("Удалить последний результат и историю темы «"+label+"»?"))return;
+ const latest=read(KEYS.topics,{}),history=read(KEYS.topicHistory,{});
+ if(latest&&typeof latest==="object")delete latest[id];if(history&&typeof history==="object")delete history[id];
+ try{localStorage.setItem(KEYS.topics,JSON.stringify(latest||{}));localStorage.setItem(KEYS.topicHistory,JSON.stringify(history||{}));render();message("Данные темы удалены.")}catch(e){message("Не удалось сохранить изменения.")}
+}
+$("clearReads").addEventListener("click",()=>{if(!confirm("Удалить все отметки о прочитанных статьях?"))return;localStorage.removeItem(KEYS.reads);render();message("Отметки чтения очищены.")});
+$("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить последние результаты и историю всех шести тематических тестов?"))return;localStorage.removeItem(KEYS.topics);localStorage.removeItem(KEYS.topicHistory);render();message("Тематические результаты удалены.")});
+$("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;localStorage.removeItem(KEYS.quiz);localStorage.removeItem(KEYS.quizHistory);render();message("Результаты базового теста удалены.")});
+$("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;localStorage.removeItem(KEYS.scenarios);render();message("Результаты практики удалены.")});
+$("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;Object.values(KEYS).forEach(key=>localStorage.removeItem(key));render();message("Учебный прогресс полностью очищен.")});
+$("year").textContent=new Date().getFullYear();render();
+})();
+</script>
+</body></html>
