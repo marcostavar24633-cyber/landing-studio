@@ -35,4 +35,35 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/budget-basics.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/emergency-fund.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/investment-risk.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/financial-scams.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/financial-goals.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/business-cashflow.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url><loc>https://marcostavar24633-cyber.github.io/landing-studio/financial-literacy/knowledge/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>
