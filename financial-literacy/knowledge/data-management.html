@@ -53,6 +53,7 @@ button,.link-btn{font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.07em;t
 <section class="panel"><h2>Практические сценарии</h2><p class="sub" id="scenarioDetail">Сохранённые ответы в четырёх учебных ситуациях.</p><div class="actions"><button class="action danger" id="clearScenarios">Удалить результаты практики</button></div></section>
 <section class="panel"><h2>Полный сброс обучения</h2><p class="sub">Удалит все шесть типов учебных данных: отметки чтения, базовый тест и его историю, тематические результаты и их историю, ответы практических сценариев.</p><button class="action danger" id="clearAll">Удалить весь учебный прогресс</button><p class="status" id="status" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Диагностика хранилища</h2><p class="sub">Проверьте структуру шести учебных записей, примерный объём и возможность записывать данные в браузере. Проверка не изменяет ваши результаты.</p><div class="actions"><button class="action" id="runDiagnostics" type="button">Проверить хранилище</button></div><div id="diagnosticSummary" class="status" role="status" aria-live="polite">Нажмите «Проверить хранилище», чтобы выполнить диагностику.</div><div id="diagnosticList" class="item-list" style="margin-top:12px"></div><p id="storageEstimate" class="sub" style="margin:12px 0 0"></p></section>
+<section class="panel"><h2>Безопасное исправление данных</h2><p class="sub">Система может удалить неизвестные идентификаторы и некорректные элементы из читаемых записей. Перед исправлением будет скачана копия исходных данных. Повреждённые JSON-строки автоматически не перезаписываются.</p><div class="actions"><button class="action" id="repairData" type="button">Создать копию и исправить</button><button class="action" id="undoRepair" type="button" disabled>Отменить исправление</button></div><p class="status" id="repairStatus" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Резервная копия</h2><p class="sub">Перед удалением можно сохранить данные в JSON. Для переноса или восстановления используйте страницу аналитики.</p><div class="actions"><a class="link-btn" href="analytics.html">Открыть экспорт и восстановление ↗</a><a class="link-btn" href="learning-path.html">Вернуться к обучению ↗</a></div></section>
 <div class="notice">Все действия выполняются в localStorage этого браузера. Они не отправляют данные на сервер. Удаление необратимо, если заранее не сохранена резервная копия. Введённые суммы из тренажёра и планировщика эта страница не читает и не изменяет.</div>
 </main>
@@ -127,6 +128,70 @@ async function runDiagnostics(){
  estimate.textContent="Разделов без ошибок: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
  if(navigator.storage&&navigator.storage.estimate){try{const e=await navigator.storage.estimate();if(Number.isFinite(e.quota)&&Number.isFinite(e.usage))estimate.textContent+=" Общая оценка хранилища сайта: "+formatBytes(e.usage)+" из "+formatBytes(e.quota)+" (включает не только localStorage и не является точным лимитом для него).";}catch(e){}}
 }
+let repairSnapshot=null;
+function validRecord(v,max,total){return !!v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&(v.at===undefined||typeof v.at==="string")}
+function snapshotRaw(){const raw={};Object.values(KEYS).forEach(key=>{raw[key]=localStorage.getItem(key)});return raw}
+function restoreRaw(raw){Object.entries(KEYS).forEach(([name,key])=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}
+function prepareRepairs(raw){
+ const out={},changed=[],skipped=[];
+ const allowedArticles=articles.map(x=>x[0]),allowedTopics=topics.map(x=>x[0]),allowedScenarios=scenarios.map(x=>x[0]);
+ for(const [name,key] of Object.entries(KEYS)){
+  if(raw[key]===null)continue;
+  let value;
+  try{value=JSON.parse(raw[key])}catch(e){skipped.push(name+": некорректный JSON — оставлено без изменений");continue}
+  let next=value;
+  if(name==="reads"){
+   if(Array.isArray(value))next=[...new Set(value.filter(x=>allowedArticles.includes(x)))].slice(0,6);
+   else next=[];
+  }else if(name==="quiz"){
+   next=validRecord(value,8,8)?value:null;
+  }else if(name==="quizHistory"){
+   next=Array.isArray(value)?value.filter(x=>validRecord(x,8,8)).slice(-20):[];
+  }else if(name==="topics"){
+   next={};if(value&&typeof value==="object"&&!Array.isArray(value))Object.entries(value).forEach(([id,record])=>{if(allowedTopics.includes(id)&&validRecord(record,3,3))next[id]=record});
+  }else if(name==="topicHistory"){
+   next={};if(value&&typeof value==="object"&&!Array.isArray(value))Object.entries(value).forEach(([id,records])=>{if(allowedTopics.includes(id)&&Array.isArray(records)){const valid=records.filter(x=>validRecord(x,3,3)).slice(-10);if(valid.length)next[id]=valid}});
+  }else if(name==="scenarios"){
+   if(value&&typeof value==="object"&&!Array.isArray(value)&&value.answers&&typeof value.answers==="object"&&!Array.isArray(value.answers)){
+    const answers={};Object.entries(value.answers).forEach(([id,answer])=>{if(allowedScenarios.includes(id)&&Number.isInteger(answer)&&answer>=0&&answer<=2)answers[id]=answer});
+    next={answers};if(typeof value.updatedAt==="string")next.updatedAt=value.updatedAt;
+   }else next={answers:{}};
+  }
+  const serialized=JSON.stringify(next);
+  if(serialized!==raw[key]){out[key]=serialized;changed.push(name)}
+ }
+ return {out,changed,skipped};
+}
+function downloadRawBackup(raw){
+ const data={};Object.entries(raw).forEach(([key,value])=>{data[key]=value});
+ const backup={product:"finance-literacy-raw-repair-backup",schemaVersion:1,exportedAt:new Date().toISOString(),raw:data};
+ const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="finance-literacy-before-repair-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+$("repairData").addEventListener("click",()=>{
+ const status=$("repairStatus");
+ let raw;
+ try{raw=snapshotRaw()}catch(e){status.textContent="Не удалось прочитать исходные данные. Исправление отменено.";return}
+ let plan;
+ try{plan=prepareRepairs(raw)}catch(e){status.textContent="Не удалось подготовить исправления. Данные не изменены.";return}
+ if(!plan.changed.length){status.textContent=plan.skipped.length?"Изменять нечего. Некоторые повреждённые записи оставлены без изменений.":"Ошибок, требующих исправления, не найдено.";return}
+ if(!confirm("Будет скачана резервная копия исходных шести учебных записей. Затем будут исправлены только читаемые JSON-записи: удалены неизвестные и некорректные элементы. Продолжить?"))return;
+ try{downloadRawBackup(raw)}catch(e){status.textContent="Не удалось создать файл резервной копии. Исправление не выполнено.";return}
+ try{
+  Object.entries(plan.out).forEach(([key,value])=>localStorage.setItem(key,value));
+  repairSnapshot=raw;$("undoRepair").disabled=false;render();
+  status.textContent="Исправлены записи: "+plan.changed.join(", ")+". Резервная копия скачана. Кнопка отмены доступна, пока страница открыта."+(plan.skipped.length?" Не изменены: "+plan.skipped.join("; "):"");
+ }catch(e){
+  try{restoreRaw(raw)}catch(rollbackError){}
+  status.textContent="Не удалось завершить исправление. Выполнена попытка восстановить исходные записи из снимка.";
+ }
+});
+$("undoRepair").addEventListener("click",()=>{
+ if(!repairSnapshot)return;
+ if(!confirm("Вернуть исходное состояние всех шести учебных записей, сохранённое перед исправлением?"))return;
+ try{restoreRaw(repairSnapshot);repairSnapshot=null;$("undoRepair").disabled=true;render();$("repairStatus").textContent="Исходные данные восстановлены."}
+ catch(e){$("repairStatus").textContent="Не удалось полностью восстановить исходные данные. Используйте скачанную резервную копию."}
+});
 $("runDiagnostics").addEventListener("click",runDiagnostics);
 $("year").textContent=new Date().getFullYear();render();
 })();
