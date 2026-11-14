@@ -120,18 +120,26 @@ function render(){
  $("clearReads").disabled=!validDone.length;$("clearTopics").disabled=!topics.some(([id])=>validTopics[id]||(Array.isArray(history&&history[id])&&history[id].length));$("clearQuiz").disabled=!quiz&&!((Array.isArray(quizHistory)&&quizHistory.length));$("clearScenarios").disabled=!Object.keys(answers).length;
 }
 function message(text){$("status").textContent=text}
-function writeArray(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){message("Браузер не разрешил изменить данные. Проверьте доступное место в хранилище.")}}
+function updateStorageBatch(changes){
+ const keys=Object.keys(changes),before={};
+ try{keys.forEach(key=>{before[key]=localStorage.getItem(key)})}
+ catch(e){message("Браузер не разрешил прочитать данные. Изменения не выполнены.");return false}
+ try{keys.forEach(key=>{const value=changes[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});return true}
+ catch(e){try{keys.forEach(key=>{const value=before[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}catch(rollbackError){}message("Браузер не разрешил изменить данные. Предпринята попытка вернуть исходное состояние.");return false}
+}
+function writeArray(key,value){return updateStorageBatch({[key]:JSON.stringify(value)})}
 function clearTopic(id,label){
  if(!confirm("Удалить последний результат и историю темы «"+label+"»?"))return;
  const latest=read(KEYS.topics,{}),history=read(KEYS.topicHistory,{});
  if(latest&&typeof latest==="object")delete latest[id];if(history&&typeof history==="object")delete history[id];
- try{localStorage.setItem(KEYS.topics,JSON.stringify(latest||{}));localStorage.setItem(KEYS.topicHistory,JSON.stringify(history||{}));render();logOperation("Очистка раздела","Удалены данные темы: "+label,["Тематические результаты","История темы"]);message("Данные темы удалены.")}catch(e){message("Не удалось сохранить изменения.")}
+ if(!updateStorageBatch({[KEYS.topics]:JSON.stringify(latest||{}),[KEYS.topicHistory]:JSON.stringify(history||{})}))return;
+ render();logOperation("Очистка раздела","Удалены данные темы: "+label,["Тематические результаты","История темы"]);message("Данные темы удалены.")
 }
-$("clearReads").addEventListener("click",()=>{if(!confirm("Удалить все отметки о прочитанных статьях?"))return;localStorage.removeItem(KEYS.reads);render();logOperation("Очистка раздела","Очищены отметки чтения",["Отметки чтения"]);message("Отметки чтения очищены.")});
-$("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить последние результаты и историю всех шести тематических тестов?"))return;localStorage.removeItem(KEYS.topics);localStorage.removeItem(KEYS.topicHistory);render();logOperation("Очистка раздела","Очищены все тематические результаты",["Тематические результаты","История тематических тестов"]);message("Тематические результаты удалены.")});
-$("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;localStorage.removeItem(KEYS.quiz);localStorage.removeItem(KEYS.quizHistory);render();logOperation("Очистка раздела","Удалены результаты базового теста",["Базовый тест","История базового теста"]);message("Результаты базового теста удалены.")});
-$("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;localStorage.removeItem(KEYS.scenarios);render();logOperation("Очистка раздела","Удалены результаты практики",["Практические сценарии"]);message("Результаты практики удалены.")});
-$("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;Object.values(KEYS).forEach(key=>localStorage.removeItem(key));render();logOperation("Полный сброс","Удалён весь учебный прогресс",["Все шесть разделов"]);message("Учебный прогресс полностью очищен.")});
+$("clearReads").addEventListener("click",()=>{if(!confirm("Удалить все отметки о прочитанных статьях?"))return;if(!updateStorageBatch({[KEYS.reads]:null}))return;render();logOperation("Очистка раздела","Очищены отметки чтения",["Отметки чтения"]);message("Отметки чтения очищены.")});
+$("clearTopics").addEventListener("click",()=>{if(!confirm("Удалить последние результаты и историю всех шести тематических тестов?"))return;if(!updateStorageBatch({[KEYS.topics]:null,[KEYS.topicHistory]:null}))return;render();logOperation("Очистка раздела","Очищены все тематические результаты",["Тематические результаты","История тематических тестов"]);message("Тематические результаты удалены.")});
+$("clearQuiz").addEventListener("click",()=>{if(!confirm("Удалить последний результат и историю базового теста?"))return;if(!updateStorageBatch({[KEYS.quiz]:null,[KEYS.quizHistory]:null}))return;render();logOperation("Очистка раздела","Удалены результаты базового теста",["Базовый тест","История базового теста"]);message("Результаты базового теста удалены.")});
+$("clearScenarios").addEventListener("click",()=>{if(!confirm("Удалить ответы всех практических сценариев?"))return;if(!updateStorageBatch({[KEYS.scenarios]:null}))return;render();logOperation("Очистка раздела","Удалены результаты практики",["Практические сценарии"]);message("Результаты практики удалены.")});
+$("clearAll").addEventListener("click",()=>{if(!confirm("ВНИМАНИЕ: удалить весь учебный прогресс? Это действие нельзя отменить без резервной копии."))return;if(!confirm("Подтвердите полный сброс ещё раз. Удаляются только шесть учебных ключей проекта."))return;const changes={};Object.values(KEYS).forEach(key=>changes[key]=null);if(!updateStorageBatch(changes))return;render();logOperation("Полный сброс","Удалён весь учебный прогресс",["Все шесть разделов"]);message("Учебный прогресс полностью очищен.")});
 const diagnosticSpecs=[
  {key:KEYS.reads,label:"Отметки чтения",check:v=>Array.isArray(v)&&v.length<=6&&v.every(x=>articles.some(a=>a[0]===x))&&new Set(v).size===v.length},
  {key:KEYS.quiz,label:"Последний базовый тест",check:v=>v&&typeof v==="object"&&!Array.isArray(v)&&Number.isInteger(v.score)&&v.score>=0&&v.score<=8&&v.total===8&&(v.at===undefined||typeof v.at==="string")},
