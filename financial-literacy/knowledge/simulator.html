@@ -19,10 +19,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <header class="top wrap"><a class="brand" href="../">FINANCE / PRACTICE</a><a class="back" href="index.html">← К базе знаний</a></header>
 <main id="main-content" class="wrap">
 <section class="hero"><span class="eyebrow">ПРАКТИКУМ / ИНТЕРАКТИВНЫЙ ТРЕНАЖЁР</span><h1>Решения, которые<br>проясняют бюджет.</h1><p>Потренируйтесь распределять условный месячный доход, выбирать приоритеты и реагировать на неожиданные расходы. Меняйте значения и сразу наблюдайте результат.</p></section>
-<nav class="tabs" aria-label="Сценарии тренажёра"><button class="tab" data-tab="budget" aria-selected="true">01 · Бюджет</button><button class="tab" data-tab="priorities" aria-selected="false">02 · Приоритеты</button><button class="tab" data-tab="shock" aria-selected="false">03 · Непредвиденное</button></nav>
+<nav class="tabs" role="tablist" aria-label="Сценарии тренажёра"><button class="tab" id="tab-budget" type="button" role="tab" aria-controls="budgetPanel" tabindex="0" data-tab="budget" aria-selected="true">01 · Бюджет</button><button class="tab" id="tab-priorities" type="button" role="tab" aria-controls="prioritiesPanel" tabindex="-1" data-tab="priorities" aria-selected="false">02 · Приоритеты</button><button class="tab" id="tab-shock" type="button" role="tab" aria-controls="shockPanel" tabindex="-1" data-tab="shock" aria-selected="false">03 · Непредвиденное</button></nav>
 <section class="layout">
 <div class="panel">
-<div id="budgetPanel">
+<div id="budgetPanel" role="tabpanel" aria-labelledby="tab-budget" tabindex="0">
 <h2>Распределите месячный доход</h2><p class="sub">Начните с учебного примера. Все суммы условные — изменяйте их под сценарий.</p>
 <div class="income-row"><label for="income">Доход за месяц, ₽</label><input id="income" type="number" min="10000" max="10000000" step="5000" value="120000"></div>
 <div id="sliders">
@@ -92,8 +92,8 @@ function updateShock(){const reserve=val('reserveStart'),cost=val('monthlyCost')
 function diffText(after,cost,income){if(shock==='income')return income>=cost?'Доход покрывает указанные расходы':'Доход ниже указанных расходов';return after>=0?'Резерв покрывает выбранный расход':'Резерва недостаточно для полного покрытия расхода'}
 document.getElementById('reserveStart').addEventListener('input',updateShock);document.getElementById('monthlyCost').addEventListener('input',updateShock);
 document.querySelectorAll('[data-shock]').forEach(b=>b.addEventListener('click',()=>{shock=b.dataset.shock;document.querySelectorAll('[data-shock]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));updateShock()}));
-function switchTab(tab){current=tab;tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===tab)));Object.entries(panels).forEach(([k,p])=>p.hidden=k!==tab);document.getElementById('bars').hidden=tab!=='budget';if(tab==='budget')updateBudget();if(tab==='priorities')updatePriorities();if(tab==='shock')updateShock()}
-tabs.forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+function switchTab(tab){current=tab;tabs.forEach(b=>{const active=b.dataset.tab===tab;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1});Object.entries(panels).forEach(([k,p])=>p.hidden=k!==tab);document.getElementById('bars').hidden=tab!=='budget';if(tab==='budget')updateBudget();if(tab==='priorities')updatePriorities();if(tab==='shock')updateShock()}
+tabs.forEach((b,i)=>{b.addEventListener('click',()=>switchTab(b.dataset.tab));b.addEventListener('keydown',e=>{let next=null;if(e.key==='ArrowRight')next=(i+1)%tabs.length;else if(e.key==='ArrowLeft')next=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=tabs.length-1;if(next!==null){e.preventDefault();tabs[next].focus();switchTab(tabs[next].dataset.tab)}})});
 function reset(){Object.entries(defaults).forEach(([id,n])=>document.getElementById(id).value=n);document.querySelectorAll('#priorityChoices input').forEach(x=>x.checked=['housing','food'].includes(x.value));document.getElementById('reserveStart').value=90000;document.getElementById('monthlyCost').value=82000;shock='repair';document.querySelectorAll('[data-shock]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.shock===shock)));switchTab('budget')}
 document.getElementById('reset').addEventListener('click',reset);document.getElementById('year').textContent=new Date().getFullYear();updateBudget();
 </script></body></html>
