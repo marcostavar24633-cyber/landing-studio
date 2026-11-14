@@ -124,7 +124,7 @@ async function runDiagnostics(){
  catch(e){try{localStorage.removeItem(probe)}catch(ignore){}writeTest="запись запрещена или хранилище заполнено";}
  summary.textContent=issues===0?"Проверка завершена: ошибок структуры не обнаружено.":"Проверка завершена: обнаружено проблемных записей — "+issues+".";
  summary.style.color=issues===0&&writeTest.startsWith("запись и чтение")?"var(--green)":"var(--red)";
- estimate.textContent="Проверено записей: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
+ estimate.textContent="Разделов без ошибок: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
  if(navigator.storage&&navigator.storage.estimate){try{const e=await navigator.storage.estimate();if(Number.isFinite(e.quota)&&Number.isFinite(e.usage))estimate.textContent+=" Общая оценка хранилища сайта: "+formatBytes(e.usage)+" из "+formatBytes(e.quota)+" (включает не только localStorage и не является точным лимитом для него).";}catch(e){}}
 }
 $("runDiagnostics").addEventListener("click",runDiagnostics);
