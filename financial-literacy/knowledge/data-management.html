@@ -187,7 +187,8 @@ function renderRepairReport(items){
 }
 function snapshotRaw(){const raw={};Object.values(KEYS).forEach(key=>{raw[key]=localStorage.getItem(key)});return raw}
 function restoreRaw(raw){
- const before=snapshotRaw();
+ let before;
+ try{before=snapshotRaw()}catch(e){return false}
  try{Object.entries(KEYS).forEach(([name,key])=>{const value=raw[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)});return true}
  catch(e){try{Object.entries(KEYS).forEach(([name,key])=>{const value=before[key];if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)})}catch(rollbackError){}return false}
 }
