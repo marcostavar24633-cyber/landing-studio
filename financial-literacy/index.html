@@ -110,7 +110,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <a href="#programs">Программы</a><a href="knowledge/">База знаний</a><a href="#calculator">Калькулятор</a><a href="#approach">Подход</a><a href="#path">Как проходит</a><a href="#faq">Вопросы</a><a href="#contacts">Контакты</a>
     </nav>
     <a class="nav-cta" href="#contacts">Запросить программу <span>↗</span></a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Открыть меню" aria-controls="navLinks" aria-expanded="false">☰</button>
   </div>
 </header>
 <main id="top">
@@ -231,10 +231,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="wrap faq-wrap">
       <div class="faq-intro reveal"><span class="eyebrow">FAQ</span><h2>Важное —<br><span class="gold">до старта.</span></h2><p>Короткие ответы на вопросы об обучении и его содержании.</p></div>
       <div class="faq-list reveal">
-        <div class="faq-item"><button class="faq-q" aria-expanded="false"><span>Нужна ли подготовка?</span><span>＋</span></button><div class="faq-a">Для базовых направлений специальная подготовка не требуется. Содержание и глубина разбора зависят от выбранной темы.</div></div>
-        <div class="faq-item"><button class="faq-q" aria-expanded="false"><span>Можно ли учиться онлайн?</span><span>＋</span></button><div class="faq-a">Формат занятий и доступность онлайн-обучения уточняются при обращении. Проект ориентирован на аудиторию Москвы.</div></div>
-        <div class="faq-item"><button class="faq-q" aria-expanded="false"><span>Вы даёте инвестиционные рекомендации?</span><span>＋</span></button><div class="faq-a">Материалы сайта описывают образовательные темы. Они не являются индивидуальной инвестиционной рекомендацией, офертой или обещанием доходности.</div></div>
-        <div class="faq-item"><button class="faq-q" aria-expanded="false"><span>Сколько стоит обучение?</span><span>＋</span></button><div class="faq-a">Стоимость, длительность и состав конкретных программ необходимо уточнить у организатора. На сайте не указаны неподтверждённые цены.</div></div>
+        <div class="faq-item"><button class="faq-q" id="faq-question-1" aria-expanded="false" aria-controls="faq-answer-1"><span>Нужна ли подготовка?</span><span>＋</span></button><div class="faq-a" id="faq-answer-1" role="region" aria-labelledby="faq-question-1" aria-hidden="true">Для базовых направлений специальная подготовка не требуется. Содержание и глубина разбора зависят от выбранной темы.</div></div>
+        <div class="faq-item"><button class="faq-q" id="faq-question-2" aria-expanded="false" aria-controls="faq-answer-2"><span>Можно ли учиться онлайн?</span><span>＋</span></button><div class="faq-a" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true">Формат занятий и доступность онлайн-обучения уточняются при обращении. Проект ориентирован на аудиторию Москвы.</div></div>
+        <div class="faq-item"><button class="faq-q" id="faq-question-3" aria-expanded="false" aria-controls="faq-answer-3"><span>Вы даёте инвестиционные рекомендации?</span><span>＋</span></button><div class="faq-a" id="faq-answer-3" role="region" aria-labelledby="faq-question-3" aria-hidden="true">Материалы сайта описывают образовательные темы. Они не являются индивидуальной инвестиционной рекомендацией, офертой или обещанием доходности.</div></div>
+        <div class="faq-item"><button class="faq-q" id="faq-question-4" aria-expanded="false" aria-controls="faq-answer-4"><span>Сколько стоит обучение?</span><span>＋</span></button><div class="faq-a" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true">Стоимость, длительность и состав конкретных программ необходимо уточнить у организатора. На сайте не указаны неподтверждённые цены.</div></div>
       </div>
     </div>
   </section>
@@ -256,7 +256,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   const menu=document.getElementById('menuToggle'),links=document.getElementById('navLinks');
   menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.textContent=open?'×':'☰'});
   links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.textContent='☰'}));
-  document.querySelectorAll('.faq-q').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.faq-item');const open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open))}));
+  document.querySelectorAll('.faq-q').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.faq-item');const open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));item.querySelector('.faq-a').setAttribute('aria-hidden',String(!open))}));
   const budgetForm=document.getElementById('budgetForm');
   const money=value=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(value))+' ₽';
   const numberFrom=id=>Math.max(0,Number(document.getElementById(id).value)||0);
