@@ -114,7 +114,7 @@ jobs:
                       "",
                       projectMarker,
                       marker
-                    ].join("\\n");
+                    ].join("\n");
                     const title = `[CI] ${fullName} — ${workflowName}`;
 
                     if (existing) {
@@ -154,7 +154,7 @@ jobs:
                 [{data:"Проект / workflow",header:true},{data:"Результат",header:true}],
                 ...report.map(line => [{data:line,header:false},{data:"Проверено",header:false}])
               ])
-              .addRaw("\\nПроверяется последний запуск каждого workflow в main. Расписание: каждый час; также доступен ручной запуск.")
+              .addRaw("\nПроверяется последний запуск каждого workflow в main. Расписание: каждый час; также доступен ручной запуск.")
               .write();
 
             if (failures.length > 0) {
