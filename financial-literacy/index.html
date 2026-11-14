@@ -254,8 +254,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <footer><div class="wrap"><div class="footer-row"><span class="footer-brand">FINANCE / ОБРАЗОВАНИЕ И СИСТЕМА</span><span>© <span id="year"></span> Финансовая грамотность</span><a href="#top">Наверх ↑</a></div><p class="disclaimer">Информация на сайте носит образовательный и ознакомительный характер, не является индивидуальной инвестиционной рекомендацией, предложением финансовых услуг или гарантией доходности. Перед принятием финансовых решений самостоятельно оценивайте риски и при необходимости обращайтесь к профильным специалистам. Условия программ, сведения об организаторе и контактные данные должны быть подтверждены владельцем сайта до коммерческого запуска.</p></div></footer>
 <script>
   const menu=document.getElementById('menuToggle'),links=document.getElementById('navLinks');
-  menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.textContent=open?'×':'☰'});
-  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.textContent='☰'}));
+  function closeMenu(){links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Открыть меню');menu.textContent='☰'}
+  menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');menu.textContent=open?'×':'☰'});
+  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&links.classList.contains('open')){closeMenu();menu.focus()}});
   document.querySelectorAll('.faq-q').forEach(btn=>btn.addEventListener('click',()=>{const item=btn.closest('.faq-item');const open=item.classList.toggle('open');btn.setAttribute('aria-expanded',String(open));item.querySelector('.faq-a').setAttribute('aria-hidden',String(!open))}));
   const budgetForm=document.getElementById('budgetForm');
   const money=value=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(value))+' ₽';
