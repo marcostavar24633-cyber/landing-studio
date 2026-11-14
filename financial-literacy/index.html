@@ -94,9 +94,13 @@
 /* Accessibility: keyboard focus and skip navigation. */
 .skip-link{position:fixed;z-index:9999;top:12px;left:12px;transform:translateY(-160%);padding:12px 16px;background:#f0d9a2;color:#111;border:2px solid #111;border-radius:6px;font-weight:700;}
 .skip-link:focus{transform:translateY(0);outline:3px solid #fff;outline-offset:3px;}
+
+/* Accessibility: visible keyboard focus and reduced-motion preference. */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #f0d9a2;outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
-<body><a class="skip-link" href="#main-content">Перейти к содержимому</a>
+<body><a class="skip-link" href="#top">Перейти к содержимому</a>
 <header class="header">
   <div class="wrap nav">
     <a class="brand" href="#top" aria-label="Финансовая грамотность — на главную">
