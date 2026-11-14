@@ -27,8 +27,9 @@ const articles=[['budget-basics','Личные финансы и бюджет'],
 const topics=[['budget','Личные финансы'],['reserve','Накопления'],['investing','Инвестирование'],['security','Безопасность'],['goals','Цели'],['business','Финансы бизнеса']];
 function read(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)||'null');return v??fallback}catch(e){return fallback}}
 const savedRead=read(readKey,[]),readSet=new Set(Array.isArray(savedRead)?savedRead:[]),quiz=read(quizKey,null),topicResults=read(topicKey,{});
-const validQuiz=quiz&&Number.isInteger(quiz.score)&&quiz.score>=6&&quiz.score<=8&&quiz.total===8;
-const validTopicResult=r=>r&&Number.isInteger(r.score)&&r.score>=0&&r.score<=3&&r.total===3;
+const validDate=x=>typeof x?.at==='string'&&x.at.length<=80&&Number.isFinite(Date.parse(x.at));
+const validQuiz=quiz&&Number.isInteger(quiz.score)&&quiz.score>=6&&quiz.score<=8&&quiz.total===8&&validDate(quiz);
+const validTopicResult=r=>r&&Number.isInteger(r.score)&&r.score>=0&&r.score<=3&&r.total===3&&validDate(r);
 const topicPassed=topics.filter(([id])=>{const r=topicResults&&topicResults[id];return validTopicResult(r)&&r.score>=2});
 const readCount=articles.filter(([id])=>readSet.has(id)).length;
 const completed=readCount+(validQuiz?1:0)+topicPassed.length;
