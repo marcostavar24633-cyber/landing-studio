@@ -58,7 +58,7 @@ const TOPIC_IDS=topics.map(([id])=>id),SCENARIO_IDS=["cashflow","scam","goal","b
 const status=$("backupStatus");
 const isObj=v=>!!v&&typeof v==="object"&&!Array.isArray(v);
 const validDate=v=>v===undefined||(typeof v==="string"&&v.length>0&&v.length<=80&&!Number.isNaN(Date.parse(v)));
-function validAttempt(v,max,total){return isObj(v)&&Object.keys(v).every(k=>["score","total","at"].includes(k))&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&validDate(v.at)}
+function validAttempt(v,max,total){return isObj(v)&&Object.keys(v).every(k=>["score","total","at"].includes(k))&&Number.isInteger(v.score)&&v.score>=0&&v.score<=max&&v.total===total&&typeof v.at==="string"&&validDate(v.at)}
 function validateBackupData(data){
  if(!isObj(data))throw new Error("В файле отсутствует объект с учебными данными.");
  const allowed=new Set(BACKUP_KEYS);
