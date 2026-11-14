@@ -73,7 +73,7 @@ const articles=[["budget-basics","Бюджет: основа личного пл
 const topics=[["budget","Личные финансы"],["reserve","Накопления и резерв"],["investing","Основы инвестирования"],["security","Финансовая безопасность"],["goals","Финансовое планирование"],["business","Финансы предпринимателя"]];
 const scenarios=[["cashflow","Непредвиденный расход"],["scam","Звонок из службы безопасности"],["goal","Накопления при нестабильном доходе"],["business","Денежный поток бизнеса"]];
 const $=id=>document.getElementById(id);
-function readLog(){try{const v=JSON.parse(localStorage.getItem(LOG_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x==="object"&&typeof x.time==="string"&&typeof x.action==="string"&&typeof x.label==="string"&&Array.isArray(x.affected)&&typeof x.status==="string").slice(0,30):[]}catch(e){return[]}}
+function readLog(){try{const v=JSON.parse(localStorage.getItem(LOG_KEY)||"[]"),valid=safeLogEntries(v);return valid?valid.slice(0,30):[]}catch(e){return[]}}
 function logOperation(action,label,affected,status="Выполнено"){
  try{const entries=readLog();entries.unshift({time:new Date().toISOString(),action,label,affected,status});localStorage.setItem(LOG_KEY,JSON.stringify(entries.slice(0,30)));renderLog()}catch(e){$("logStatus").textContent="Не удалось обновить журнал; основное действие не затронуто."}
 }
@@ -165,8 +165,13 @@ async function runDiagnostics(){
  if(!available)return;
  let writeTest="не выполнен";
  const probe="__finance_literacy_diagnostic_probe__";
- try{const previous=localStorage.getItem(probe);localStorage.setItem(probe,"ok");const passed=localStorage.getItem(probe)==="ok";if(previous===null)localStorage.removeItem(probe);else localStorage.setItem(probe,previous);writeTest=passed?"запись и чтение работают":"проверка записи не пройдена";}
- catch(e){try{localStorage.removeItem(probe)}catch(ignore){}writeTest="запись запрещена или хранилище заполнено";}
+ let previousProbe=null,probeSnapshot=false,probePassed=false,probeRestored=true;
+ try{previousProbe=localStorage.getItem(probe);probeSnapshot=true;localStorage.setItem(probe,"ok");probePassed=localStorage.getItem(probe)==="ok";}
+ catch(e){writeTest="запись запрещена или хранилище заполнено";}
+ finally{
+  if(probeSnapshot){try{if(previousProbe===null)localStorage.removeItem(probe);else localStorage.setItem(probe,previousProbe);}catch(e){probeRestored=false;}}
+ }
+ if(probeSnapshot){writeTest=probePassed?"запись и чтение работают":"проверка записи не пройдена";if(!probeRestored)writeTest+="; не удалось восстановить прежнее значение диагностического ключа";}
  summary.textContent=issues===0?"Проверка завершена: ошибок структуры не обнаружено.":"Проверка завершена: обнаружено проблемных записей — "+issues+".";logOperation("Диагностика","Проверено локальное хранилище",["Шесть учебных разделов"],issues===0?"Ошибок не найдено":"Есть проблемные записи: "+issues);
  summary.style.color=issues===0&&writeTest.startsWith("запись и чтение")?"var(--green)":"var(--red)";
  estimate.textContent="Разделов без ошибок: "+valid+"/6 · Проблемных записей: "+issues+" · Примерный размер учебных данных: "+formatBytes(used)+" · Тест записи: "+writeTest+".";
