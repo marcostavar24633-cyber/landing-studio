@@ -14,3 +14,5 @@ if [[ ! -f "$SOURCE" ]]; then
 fi
 
 node scripts/build-app-chunks.cjs
+
+# Build workflow trigger: keep this entrypoint aligned with the branch workflow.
