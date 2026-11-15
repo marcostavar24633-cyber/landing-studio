@@ -96,3 +96,15 @@ test("редактор использует движок, а прежние пр
   assert.match(src, /id="udsGroup"/);
   assert.match(src, /autoColors/, "тёмная схема и золотой акцент по умолчанию не должны считаться выбором пользователя");
 });
+
+test("предпросмотр редактора показывает страницу движка и не попадает в экспорт", () => {
+  const src = read("src/landing-studio-app.html");
+  assert.match(src, /<iframe id="udsPreview"[^>]*sandbox="allow-scripts"/, "изолированный iframe без доступа к странице редактора");
+  assert.match(src, /udsPreview:"uds"/, "по умолчанию показывается уникальная главная");
+  assert.match(src, /udsShowPreview\(uds\)/, "предпросмотр обновляется при каждой перерисовке");
+  assert.match(src, /clone\.querySelector\("#udsPreview"\)\?\.remove\(\);clone\.querySelector\("#udsBadge"\)\?\.remove\(\)/, "«Скачать сайт HTML» не должен уносить предпросмотр");
+  // Слои: предпросмотр под кнопками (20–21) и панелью настроек (30).
+  assert.match(src, /#udsPreview\{[^}]*z-index:15/);
+  const loader = read("index.html");
+  assert.match(loader, /#lsa-launch\{position:fixed;right:18px;bottom:80px;/, "кнопка помощника не перекрывает «Настройка сайта»");
+});
