@@ -49,6 +49,7 @@ jobs:
           execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/site-check.js', 'utf8') });
           execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/seo-check.js', 'utf8') });
           execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/responsive-check.js', 'utf8') });
+          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/forms-check.js', 'utf8') });
           execFileSync('bash', ['scripts/build-cloudflare-pages.sh']);
           if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/_routes.json')) throw new Error('Cloudflare Pages output is incomplete.');
           const html = fs.readFileSync('src/control-center.html', 'utf8');
