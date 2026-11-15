@@ -9,6 +9,11 @@ on:
       - "scripts/build-app-chunks.cjs"
       - "src/landing-studio-app.html"
       - "api/generate-landing.js"
+      - "api/generate-landing-core.js"
+      - "functions/**"
+      - "scripts/build-cloudflare-pages.sh"
+      - "wrangler.jsonc"
+      - "_routes.json"
       - ".github/workflows/landing-studio-source-build.yml"
 
 permissions:
@@ -38,6 +43,10 @@ jobs:
           const fs = require('fs');
           const { execFileSync } = require('child_process');
           execFileSync(process.execPath, ['--check', 'api/generate-landing.js']);
+          execFileSync(process.execPath, ['--check', 'api/generate-landing-core.js']);
+          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/generate-landing.js', 'utf8') });
+          execFileSync('bash', ['scripts/build-cloudflare-pages.sh']);
+          if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/app-chunks/00.txt') || !fs.existsSync('dist/financial-literacy/index.html')) throw new Error('Cloudflare Pages output is incomplete.');
           const html = fs.readFileSync('src/landing-studio-app.html', 'utf8');
           const scripts = [];
           let cursor = 0;
