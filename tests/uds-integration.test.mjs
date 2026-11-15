@@ -76,8 +76,9 @@ test("собранное приложение содержит встроенн�
 });
 
 test("исходник приложения и чанки синхронизированы", () => {
-  const src = read("src/landing-studio-app.html");
+  const src = read("src/landing-studio-app.html").replace(/\r\n/g, "\n");
   const { html } = builtApp();
+  assert.ok(!html.includes("\r\n"), "чанки собираются с переводами строк LF");
   const withoutEngine = html.replace(/<script data-uds-engine>[\s\S]*?<\/script>/, "");
   assert.equal(withoutEngine, src.replace(/<script data-uds-engine src="[^"]*"><\/script>/, ""), "запустите node scripts/build-app-chunks.cjs");
 });

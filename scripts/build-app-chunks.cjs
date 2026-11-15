@@ -13,7 +13,8 @@ const chunkSize = 2000;
 if (!fs.existsSync(sourcePath)) throw new Error("Missing editable source: " + sourcePath);
 if (!fs.existsSync(indexPath)) throw new Error("Missing loader: " + indexPath);
 
-let html = fs.readFileSync(sourcePath, "utf8");
+// LF независимо от ОС: на Windows git отдаёт исходник с CRLF, и чанки иначе отличались бы от сборки в CI.
+let html = fs.readFileSync(sourcePath, "utf8").replace(/\r\n/g, "\n");
 if (!html.trim() || !html.includes("<html")) throw new Error("Source does not look like a complete HTML document.");
 
 // Движок Unique Design Studio встраивается в приложение: загрузчик пишет HTML через document.write,
