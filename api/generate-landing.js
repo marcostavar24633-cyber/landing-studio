@@ -1,5 +1,5 @@
 // Optional Vercel adapter. The same core is also used by Cloudflare Pages Functions.
-const generateLanding = require("./generate-landing-core.js");
+const generateLanding = require("../server/generate-landing-core.js");
 
 module.exports = async function handler(req, res) {
   if (req.method === "GET") {

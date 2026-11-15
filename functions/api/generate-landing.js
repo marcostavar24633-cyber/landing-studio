@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/generate-landing
-import generateLanding from "../../api/generate-landing-core.js";
+import generateLanding from "../../server/generate-landing-core.js";
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
