@@ -1,7 +1,7 @@
 // WEB PROJECT CONTROL CENTER PRO — логика панели.
 // Статусы качества и публикации считаются раздельно (lib/workflow-status.js);
 // аудит сайтов выполняют Cloudflare Pages Functions (/api/site-audit и /api/*-check).
-import { splitStatuses, classifyWorkflow, runState, resolveSiteUrl, overallStatus, QUALITY_LABELS, DEPLOY_LABELS } from "./lib/workflow-status.js";
+import { splitStatuses, expandCombinedRuns, classifyWorkflow, runState, resolveSiteUrl, overallStatus, QUALITY_LABELS, DEPLOY_LABELS } from "./lib/workflow-status.js";
 
 const state = { owner: "", projects: [], items: [], runs: [], checking: false, last: null };
 const $ = id => document.getElementById(id);
@@ -104,7 +104,7 @@ function render() {
   renderCards("allProjects", $("searchProjects").value);
   $("runsTable").innerHTML = state.runs.map(x => {
     const s = runState(x);
-    const label = s === "success" ? "Успешно" : s === "failure" ? "Ошибка" : s === "running" ? "Выполняется" : s === "cancelled" ? "Отменён" : (x.conclusion || "Неизвестно");
+    const label = s === "success" ? "Успешно" : s === "failure" ? "Ошибка" : s === "running" ? "Выполняется" : s === "cancelled" ? "Отменён" : x.conclusion === "skipped" ? "Пропущен" : (x.conclusion || "Неизвестно");
     return "<tr><td>" + esc(x.project) + "</td><td>" + esc(x.name) + "</td><td>" + KIND_LABELS[classifyWorkflow(x)] + "</td><td>" + esc(x.head_branch) + '</td><td><span class="pill ' + STATE_CLASS[s] + '">' + esc(label) + "</span></td><td>" + time(x.updated_at) + '</td><td><a target="_blank" rel="noopener" href="' + esc(x.html_url) + '">Открыть ↗</a></td></tr>';
   }).join("") || '<tr><td colspan="7">Нет запусков или проверка ещё не выполнена.</td></tr>';
   Object.keys(SECTIONS).forEach(sectionTable);
@@ -134,7 +134,9 @@ async function checkProject(project) {
       api("/repos/" + state.owner + "/" + project.repo + "/actions/runs?per_page=50")
     ]);
     item.defaultBranch = project.branch || meta.default_branch || "main";
-    item.statuses = splitStatuses(runs.workflow_runs || [], item.defaultBranch);
+    // Совмещённые workflow («quality & deploy») делятся по заданиям и шагам.
+    const expanded = await expandCombinedRuns(runs.workflow_runs || [], item.defaultBranch, async r => (await api("/repos/" + state.owner + "/" + project.repo + "/actions/runs/" + r.id + "/jobs?per_page=100")).jobs || []);
+    item.statuses = splitStatuses(expanded, item.defaultBranch);
     item.siteUrl = resolveSiteUrl(project, meta, state.owner).url;
   } catch (error) {
     item.error = error.message;

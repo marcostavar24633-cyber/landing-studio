@@ -9,7 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { auditSite, SECTION_LABELS } from "../lib/site-audit.js";
-import { splitStatuses, latestByWorkflow, classifyWorkflow, runState, resolveSiteUrl, overallStatus, QUALITY_LABELS, DEPLOY_LABELS } from "../lib/workflow-status.js";
+import { splitStatuses, latestByWorkflow, classifyWorkflow, isCombinedWorkflow, expandCombinedRuns, runState, resolveSiteUrl, overallStatus, QUALITY_LABELS, DEPLOY_LABELS } from "../lib/workflow-status.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SELF_WORKFLOW = ".github/workflows/project-health-monitor.yml";
@@ -76,7 +76,9 @@ export async function run({ fetchImpl = fetch, env = process.env, registry, log 
       ]);
       const defaultBranch = project.branch || meta.default_branch || "main";
       const runs = (payload.workflow_runs || []).filter(r => !(fullName === `${issueOwner}/${issueRepo}` && r.path === SELF_WORKFLOW));
-      Object.assign(item, { defaultBranch, statuses: splitStatuses(runs, defaultBranch), mainWorkflows: latestByWorkflow(runs.filter(r => r.head_branch === defaultBranch)) });
+      // Совмещённые workflow («quality & deploy») делятся по заданиям и шагам.
+      const expanded = await expandCombinedRuns(runs, defaultBranch, async r => (await gh(`/repos/${fullName}/actions/runs/${r.id}/jobs?per_page=100`)).jobs || []);
+      Object.assign(item, { defaultBranch, expanded, statuses: splitStatuses(expanded, defaultBranch), mainWorkflows: latestByWorkflow(runs.filter(r => r.head_branch === defaultBranch)) });
       const site = resolveSiteUrl(project, meta, owner);
       item.siteUrl = site.url;
       item.siteSource = site.source;
@@ -101,7 +103,9 @@ export async function run({ fetchImpl = fetch, env = process.env, registry, log 
     for (const latest of item.mainWorkflows) {
       const state = runState(latest);
       if (state !== "failure" && state !== "success") continue;
-      const kind = classifyWorkflow(latest);
+      // У совмещённого workflow тип уведомления определяет упавшая часть.
+      const deployPart = item.expanded.find(r => r.combined && r.id === latest.id && r.kind === "deploy");
+      const kind = isCombinedWorkflow(latest) ? (runState(deployPart) === "failure" ? "deploy" : "quality") : classifyWorkflow(latest);
       const workflowName = latest.name || `workflow ${latest.workflow_id || "unknown"}`;
       const marker = `<!-- monitored-workflow:${item.fullName}:${latest.workflow_id || workflowName} -->`;
       try {

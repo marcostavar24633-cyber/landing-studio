@@ -7,7 +7,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { auditSite, analyzeSeo, analyzeForms, analyzeSecurity, analyzeResponsive, isAllowedUrl, parseAllowedUrl, summarize, AuditError } from "../lib/site-audit.js";
-import { classifyWorkflow, splitStatuses, runState, resolveSiteUrl, overallStatus } from "../lib/workflow-status.js";
+import { classifyWorkflow, isCombinedWorkflow, splitRunByJobs, expandCombinedRuns, splitStatuses, runState, resolveSiteUrl, overallStatus } from "../lib/workflow-status.js";
 import { run as runMonitor } from "../scripts/project-health-monitor.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -89,6 +89,40 @@ test("статусы: нет запусков в основной ветке —
   assert.equal(runState({ status: "completed", conclusion: "timed_out" }), "failure");
 });
 
+test("совмещённый workflow «quality & deploy» делится по заданиям и шагам", async () => {
+  const run = { id: 9, workflow_id: 5, name: "HAIR STUDIO — quality & deploy", path: ".github/workflows/site.yml", head_branch: "main", status: "completed", conclusion: "failure", updated_at: "2026-11-15T10:00:00Z" };
+  assert.equal(isCombinedWorkflow(run), true);
+  assert.equal(isCombinedWorkflow({ name: "pages-build-deployment" }), false);
+  const state = jobs => Object.fromEntries(splitRunByJobs(run, jobs).map(r => [r.kind, runState(r)]));
+  // Отдельные задания: проверка упала, публикация пропущена.
+  assert.deepEqual(state([{ name: "quality", status: "completed", conclusion: "failure" }, { name: "deploy", status: "completed", conclusion: "skipped" }]), { quality: "failure", deploy: "neutral" });
+  // Одно задание, деление по шагам: проверки прошли, публикация упала.
+  assert.deepEqual(state([{ name: "build", status: "completed", conclusion: "failure", steps: [
+    { name: "Checkout", status: "completed", conclusion: "success" },
+    { name: "Run quality checks", status: "completed", conclusion: "success" },
+    { name: "Setup Pages", status: "completed", conclusion: "success" },
+    { name: "Deploy to GitHub Pages", status: "completed", conclusion: "failure" }
+  ] }]), { quality: "success", deploy: "failure" });
+  // Проверка упала на шаге, публикация не дошла: «Setup Pages» не считается публикацией.
+  assert.deepEqual(state([{ name: "build", status: "completed", conclusion: "failure", steps: [
+    { name: "Validate HTML", status: "completed", conclusion: "failure" },
+    { name: "Setup Pages", status: "completed", conclusion: "success" },
+    { name: "Deploy to GitHub Pages", status: "completed", conclusion: "skipped" }
+  ] }]), { quality: "failure", deploy: "neutral" });
+  // Разделить не удалось — обе части наследуют итог запуска.
+  assert.deepEqual(state([]), { quality: "failure", deploy: "failure" });
+
+  const older = { ...run, id: 8, conclusion: "success", updated_at: "2026-11-14T10:00:00Z" };
+  const other = { id: 7, workflow_id: 6, name: "pages-build-deployment", head_branch: "main", status: "completed", conclusion: "success", updated_at: "2026-11-15T09:00:00Z" };
+  const requested = [];
+  const expanded = await expandCombinedRuns([run, older, other], "main", async r => { requested.push(r.id); return [{ name: "quality", status: "completed", conclusion: "failure" }, { name: "deploy", status: "completed", conclusion: "skipped" }]; });
+  assert.deepEqual(requested, [9], "задания запрашиваются только у последнего запуска");
+  const s = splitStatuses(expanded, "main");
+  assert.equal(s.quality.state, "failure");
+  assert.equal(s.deploy.state, "success", "пропущенная публикация не перекрывает успешную pages-build-deployment");
+  assert.equal(overallStatus({ deployState: "neutral", qualityState: "success", site: { status: "online" } }).label, "Требует внимания");
+});
+
 test("адрес сайта: реестр → homepage → GitHub Pages", () => {
   assert.equal(resolveSiteUrl({ repo: "raki", url: "https://a.github.io/raki/" }, { homepage: "https://b.vercel.app" }, "A").url, "https://a.github.io/raki/");
   assert.equal(resolveSiteUrl({ repo: "ls" }, { homepage: "https://b.vercel.app", has_pages: true }, "A").url, "https://b.vercel.app");
@@ -128,7 +162,7 @@ test("формы: поля, согласие, отсутствие связи", 
   assert.equal(good.forms[0].fields.length, 2);
   assert.deepEqual(good.issues, []);
   assert.equal(summarize(good.checks).status, "ok");
-  assert.equal(summarize(analyzeForms(BAD_HTML, new URL("https://x.github.io/")).checks).status, "fail");
+  assert.equal(summarize(analyzeForms(BAD_HTML, new URL("https://x.github.io/")).checks).status, "warn", "нет связи в HTML — предупреждение: форма может создаваться скриптом");
   const insecure = analyzeForms('<form action="http://x.example/send" method="post"><input name="phone" required><button type="submit">ok</button></form>', new URL("https://x.github.io/"));
   assert.equal(insecure.checks.find(c => c.label === "Адрес отправки").status, "fail");
 });
@@ -179,7 +213,8 @@ test("монитор: раздельные Issues, критичность тол
     ["https://api.github.com/repos/o/beta", { default_branch: "main", homepage: "https://beta.vercel.app", has_pages: false }],
     [/\/repos\/o\/beta\/actions\/runs/, { workflow_runs: [run(3, 3, "Deploy", "failure")] }],
     ["https://api.github.com/repos/o/gamma", { default_branch: "main", homepage: "", has_pages: true }],
-    [/\/repos\/o\/gamma\/actions\/runs/, { workflow_runs: [run(4, 4, "pages-build-deployment", "success")] }],
+    [/\/repos\/o\/gamma\/actions\/runs\/5\/jobs/, { jobs: [{ name: "quality", status: "completed", conclusion: "success" }, { name: "deploy", status: "completed", conclusion: "failure" }] }],
+    [/\/repos\/o\/gamma\/actions\/runs/, { workflow_runs: [run(4, 4, "pages-build-deployment", "success"), run(5, 5, "Site — quality & deploy", "failure")] }],
     ["https://api.github.com/repos/o/delta", () => response("{}", { status: 404 })],
     ["https://o.github.io/alpha/", html(GOOD_HTML, { "strict-transport-security": "max-age=1", "x-content-type-options": "nosniff", "referrer-policy": "same-origin" })],
     ["https://o.github.io/alpha/style.css", () => response("img{max-width:100%}@media (max-width:600px){a{b:c}}")],
@@ -197,11 +232,11 @@ test("монитор: раздельные Issues, критичность тол
   const alpha = report.projects[0], beta = report.projects[1], gamma = report.projects[2], delta = report.projects[3];
   assert.deepEqual([alpha.quality.state, alpha.deploy.state, alpha.site.status, alpha.overall.label], ["failure", "success", "online", "Требует внимания"]);
   assert.deepEqual([beta.deploy.state, beta.quality.state, beta.overall.label], ["failure", "none", "Критично"]);
-  assert.deepEqual([gamma.deploy.state, gamma.site.status, gamma.overall.label], ["success", "http_error", "Критично"]);
+  assert.deepEqual([gamma.deploy.state, gamma.quality.state, gamma.site.status, gamma.overall.label], ["failure", "success", "http_error", "Критично"], "совмещённый workflow: упала только публикация");
   assert.ok(delta.error);
-  assert.equal(report.critical.length, 3, "публикация beta, сайт gamma, ошибка API delta");
+  assert.equal(report.critical.length, 4, "публикация beta, публикация и сайт gamma, ошибка API delta");
   assert.equal(report.warnings.length, 1, "качество alpha — только предупреждение");
-  assert.deepEqual(report.totals, { projects: 4, deployed: 2, deployFailures: 1, qualityFailures: 1, sitesKnown: 3, sitesOnline: 2 });
+  assert.deepEqual(report.totals, { projects: 4, deployed: 1, deployFailures: 2, qualityFailures: 1, sitesKnown: 3, sitesOnline: 2 });
 
   const actions = report.issueActions.map(a => a.action + ": " + a.title).sort();
   assert.deepEqual(actions, [
@@ -209,10 +244,11 @@ test("монитор: раздельные Issues, критичность тол
     "close: [Сайт] o/alpha — недоступен",
     "create: [Качество] o/alpha — Quality",
     "create: [Публикация] o/beta — Deploy",
+    "create: [Публикация] o/gamma — Site — quality & deploy",
     "create: [Сайт] o/gamma — недоступен"
   ]);
   const writes = fetchImpl.calls.filter(c => c.method !== "GET" && c.url.includes("api.github.com"));
-  assert.equal(writes.filter(c => c.method === "POST" && c.url.endsWith("/issues")).length, 3);
+  assert.equal(writes.filter(c => c.method === "POST" && c.url.endsWith("/issues")).length, 4);
   assert.equal(writes.filter(c => c.method === "PATCH" && c.body.state === "closed").length, 2);
   assert.ok(writes.every(c => c.url.includes("/repos/o/landing-studio/")), "запись только в репозиторий монитора");
   assert.match(markdown, /\| ALPHA \| 🔴 \[Есть замечания\]/);
