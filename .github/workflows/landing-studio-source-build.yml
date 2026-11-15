@@ -17,7 +17,7 @@ on:
       - "tests/**"
       - "scripts/project-health-monitor.mjs"
       - "api/generate-landing.js"
-      - "api/generate-landing-core.js"
+      - "server/generate-landing-core.js"
       - "functions/**"
       - "scripts/build-cloudflare-pages.sh"
       - "wrangler.jsonc"
@@ -51,7 +51,7 @@ jobs:
           const fs = require('fs');
           const { execFileSync } = require('child_process');
           execFileSync(process.execPath, ['--check', 'api/generate-landing.js']);
-          execFileSync(process.execPath, ['--check', 'api/generate-landing-core.js']);
+          execFileSync(process.execPath, ['--check', 'server/generate-landing-core.js']);
           for (const name of fs.readdirSync('functions/api')) {
             execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/' + name, 'utf8') });
           }

@@ -97,6 +97,28 @@ test("редактор использует движок, а прежние пр
   assert.match(src, /autoColors/, "тёмная схема и золотой акцент по умолчанию не должны считаться выбором пользователя");
 });
 
+test("фирменные профили брендов доступны в движке и в редакторе", () => {
+  const UDS = loadEngine();
+  const ids = Object.keys(UDS.BRANDS);
+  assert.ok(ids.length >= 8);
+  for (const id of ids) {
+    const r = UDS.generate({ id: "brand-" + id, brand: UDS.BRANDS[id].name, niche: "услуги", brandProfile: id, cta: "Связаться", contacts: { email: "a@example.com" } });
+    assert.equal(r.concept.visualSystem.palette.bg, UDS.BRANDS[id].bg, id);
+    assert.match(r.html, /fonts\.googleapis\.com/, id + ": гарнитуры бренда подключаются");
+  }
+  const src = read("src/landing-studio-app.html");
+  assert.match(src, /<select id="eUdsBrand">/);
+  assert.match(src, /brandProfile:brand/);
+  // Правило для узких экранов «#editor .editor-group input{display:block!important}» сильнее простого [hidden].
+  assert.match(src, /#editor \.editor-group input\[hidden\]\{display:none!important\}/, "служебное поле выбора файла не должно быть видно");
+});
+
+test("общий код AI-генерации лежит вне api/, чтобы Vercel не делал из него отдельный адрес", () => {
+  assert.throws(() => read("api/generate-landing-core.js"));
+  assert.match(read("api/generate-landing.js"), /require\("\.\.\/server\/generate-landing-core\.js"\)/);
+  assert.match(read("functions/api/generate-landing.js"), /from "\.\.\/\.\.\/server\/generate-landing-core\.js"/);
+});
+
 test("предпросмотр редактора показывает страницу движка и не попадает в экспорт", () => {
   const src = read("src/landing-studio-app.html");
   assert.match(src, /<iframe id="udsPreview"[^>]*sandbox="allow-scripts"/, "изолированный iframe без доступа к странице редактора");

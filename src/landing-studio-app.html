@@ -126,6 +126,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     #udsBadge span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     #udsBadge button{flex:none;border:0;border-radius:999px;padding:7px 12px;background:#fff;color:#111;font:600 12px system-ui,sans-serif;cursor:pointer}
     #udsPreview[hidden],#udsBadge[hidden]{display:none!important}
+    /* Атрибут hidden должен скрывать элемент всегда: стили загрузчика для input иначе показывают служебное поле выбора файла. */
+    [hidden],#editor .editor-group [hidden],#editor .editor-group input[hidden]{display:none!important}
     /* На узких экранах внизу по бокам стоят кнопки редактора и помощников — плашка поднимается над ними. */
     @media(max-width:900px){#udsBadge{bottom:calc(136px + env(safe-area-inset-bottom,0px))}}
     @media print{#udsPreview,#udsBadge{display:none!important}}
@@ -232,8 +234,10 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       <div class="uds-arch" id="udsArch"></div>
       <p class="editor-hint" id="udsWhy"></p>
       <ul class="uds-checks" id="udsChecks"></ul>
+      <label for="eUdsBrand">Фирменный стиль</label><select id="eUdsBrand"><option value="">Нет — подобрать по нише</option></select>
+      <p class="editor-hint">Цвета, шрифты и скругления одного из ваших действующих сайтов. Композицию по-прежнему выбирает движок. Перекрывает схему и акцент из раздела «Основное».</p>
       <label for="eUdsPreview">Предпросмотр на странице</label><select id="eUdsPreview"><option value="uds">Уникальная главная — как получит клиент</option><option value="editor">Стандартный шаблон редактора</option></select>
-      <label for="eUdsFonts">Шрифты уникальной страницы</label><select id="eUdsFonts"><option value="system">Системные — без внешних запросов</option><option value="web">Google Fonts с кириллицей</option></select>
+      <label for="eUdsFonts">Шрифты уникальной страницы</label><select id="eUdsFonts"><option value="auto">Автоматически: системные, с фирменным стилем — Google Fonts</option><option value="web">Google Fonts с кириллицей</option><option value="none">Только системные — без внешних запросов</option></select>
       <div class="project-tools">
         <button type="button" class="primary wide" id="udsDownload">Скачать уникальную главную HTML</button>
         <button type="button" class="wide" id="udsOpen">Открыть в новой вкладке</button>
@@ -255,7 +259,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       advantagesTitle:"Сервис, которому можно доверять", advantagesIntro:"Расскажите о сильных сторонах вашего предложения без неподтверждённых обещаний.",
       processTitle:"Понятный путь к результату", reviewsTitle:"Мнение клиентов", galleryTitle:"Примеры работ", pricesTitle:"Стоимость услуг", priceLabel:"Стоимость — по запросу",
       faqTitle:"Частые вопросы", contactTitle:"Обсудим вашу задачу?", contactText:"Оставьте сообщение — мы свяжемся с вами удобным способом.",
-      phone:"", email:"", messenger:"", heroImage:"", udsFonts:"system", udsPreview:"uds",
+      phone:"", email:"", messenger:"", heroImage:"", udsFonts:"auto", udsPreview:"uds", udsBrand:"",
       services:[["Консультация","Обсудим задачу, цели и подходящий формат работы."],["Основная услуга","Добавьте описание вашей ключевой услуги и её результата."],["Дополнительные услуги","Укажите дополнительные направления, если они есть."]]
     };
     let data = structuredClone(defaults);
@@ -265,7 +269,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
     const makeId = () => "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",eArchitecture:"designArchitecture",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger",eUdsFonts:"udsFonts",eUdsPreview:"udsPreview"};
+    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",eArchitecture:"designArchitecture",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger",eUdsFonts:"udsFonts",eUdsPreview:"udsPreview",eUdsBrand:"udsBrand"};
     const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     function inferArchitecture(niche){
       const n=String(niche||"").toLowerCase();
@@ -285,13 +289,19 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     function udsInput(d, id){
       // Значения по умолчанию (тёмная схема и золотистый акцент) не считаются выбором пользователя:
       // иначе каждый проект получал бы «тёмный фон + золото», которое спецификация запрещает по умолчанию.
-      const autoColors=(d.palette||defaults.palette)===defaults.palette&&String(d.accent||defaults.accent).toLowerCase()===defaults.accent;
-      return {...d, id:id||"draft",
+      // С фирменным стилем цвета задаёт бренд, а схема и акцент из «Основного» не применяются.
+      const brand=UDS&&UDS.BRANDS&&UDS.BRANDS[d.udsBrand]?d.udsBrand:"";
+      const autoColors=!!brand||(d.palette||defaults.palette)===defaults.palette&&String(d.accent||defaults.accent).toLowerCase()===defaults.accent;
+      const input={...d, id:id||"draft",
         designArchitecture:LEGACY_ARCH.includes(d.designArchitecture)?d.designArchitecture:"",
-        palette:autoColors?"":d.palette, accent:autoColors?"":d.accent,
-        contacts:{phone:d.phone||"",email:d.email||""}, ctaUrl:/^https:\/\//i.test(d.messenger||"")?d.messenger:"",
-        fonts:d.udsFonts==="web"?"web":"system"};
+        palette:autoColors?"":d.palette, accent:autoColors?"":d.accent, brandProfile:brand,
+        contacts:{phone:d.phone||"",email:d.email||""}, ctaUrl:/^https:\/\//i.test(d.messenger||"")?d.messenger:""};
+      // Шрифты: «auto» (и старое «system») — решает движок: системные, а с фирменным стилем — Google Fonts.
+      delete input.fonts;
+      if(d.udsFonts==="web")input.fonts="web";else if(d.udsFonts==="none")input.fonts="system";
+      return input;
     }
+    if(UDS&&UDS.BRANDS)$("eUdsBrand").insertAdjacentHTML("beforeend",Object.entries(UDS.BRANDS).map(([k,b])=>`<option value="${esc(k)}">${esc(b.name)}</option>`).join(""));
     /** Реестр отпечатков проектов, идущих в списке до stopId (весь список, если stopId не найден). */
     function udsRegistry(stopId){
       let reg=[];
@@ -364,7 +374,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       document.querySelector('meta[name="theme-color"]').content=data.palette==="Светлая"?"#f5f3ee":"#111318";
       if(data.palette==="Светлая"){document.documentElement.style.setProperty("--accentText","#fff")}else{document.documentElement.style.setProperty("--accentText","#151515")}
     }
-    function fillEditor(){Object.entries(ids).forEach(([id,key])=>$(id).value=data[key]??"");data.services.forEach((s,i)=>{$("eService"+(i+1)).value=s[0];$("eService"+(i+1)+"Text").value=s[1]});refreshProjectSelect()}
+    function fillEditor(){Object.entries(ids).forEach(([id,key])=>$(id).value=data[key]??"");if(!$("eUdsFonts").value)$("eUdsFonts").value="auto";if(!$("eUdsPreview").value)$("eUdsPreview").value="uds";if($("eUdsBrand").selectedIndex<0)$("eUdsBrand").value="";data.services.forEach((s,i)=>{$("eService"+(i+1)).value=s[0];$("eService"+(i+1)+"Text").value=s[1]});refreshProjectSelect()}
     function readEditor(){Object.entries(ids).forEach(([id,key])=>data[key]=$(id).value);data.services=[1,2,3].map(i=>[$("eService"+i).value,$("eService"+i+"Text").value])}
     function persistProjects(){
       try{localStorage.setItem(STORAGE_KEY,JSON.stringify({activeProjectId,projects}));$("projectStatus").textContent=`Сохранено проектов: ${projects.length}. Данные остаются в этом браузере.`}

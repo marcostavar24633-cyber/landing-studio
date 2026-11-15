@@ -1,4 +1,5 @@
-// Shared Landing Studio AI generation logic for Vercel and Cloudflare Pages.
+// Shared Landing Studio AI generation logic for Vercel (api/) and Cloudflare Pages (functions/).
+// Lives outside api/: Vercel turns every file in api/ into its own endpoint.
 // Keep provider credentials in server-side environment variables only.
 const schema = {
   type: "object",
