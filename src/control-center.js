@@ -12,11 +12,46 @@ const KIND_LABELS = { deploy: "Публикация", quality: "Качество
 const STATE_CLASS = { success: "good", failure: "bad", running: "warn", cancelled: "warn", neutral: "", none: "" };
 const CHECK_CLASS = { ok: "good", warn: "warn", fail: "bad" };
 
+// GitHub даёт 60 запросов в час на IP без авторизации, поэтому панель экономит их:
+// метаданные репозиториев кэшируются на сутки, последняя проверка хранится в браузере
+// и показывается сразу, а при исчерпании лимита статусы CI берутся из неё.
+const SNAPSHOT_KEY = "wpc_snapshot", META_KEY = "wpc_meta";
+const SNAPSHOT_FRESH_MS = 10 * 60 * 1000, META_TTL_MS = 24 * 60 * 60 * 1000;
+const rate = { remaining: null, limit: null, reset: null };
+const clock = ms => new Date(ms).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+const readStore = key => { try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; } };
+const writeStore = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* хранилище недоступно или переполнено */ } };
+
 async function api(path) {
   const r = await fetch("https://api.github.com" + path, { headers: { Accept: "application/vnd.github+json" } });
-  if (r.status === 403 || r.status === 429) throw new Error("Лимит GitHub API исчерпан (60 запросов в час без авторизации). Повтори позже.");
+  const remaining = r.headers.get("x-ratelimit-remaining");
+  if (remaining !== null) Object.assign(rate, { remaining: Number(remaining), limit: Number(r.headers.get("x-ratelimit-limit")) || 60, reset: Number(r.headers.get("x-ratelimit-reset")) * 1000 || null });
+  if (r.status === 429 || (r.status === 403 && rate.remaining === 0)) {
+    const error = new Error("Лимит GitHub API исчерпан" + (rate.reset ? " до " + clock(rate.reset) : "") + " (60 запросов в час без авторизации).");
+    error.rateLimited = true;
+    throw error;
+  }
   if (!r.ok) throw new Error("GitHub API " + r.status);
   return r.json();
+}
+
+/** Только поля запуска, нужные панели: так снимок проверки помещается в localStorage. */
+const slimRun = r => ({ id: r.id, workflow_id: r.workflow_id, name: r.name, path: r.path, head_branch: r.head_branch, status: r.status, conclusion: r.conclusion, updated_at: r.updated_at, html_url: r.html_url });
+
+/** Ветка по умолчанию, homepage и GitHub Pages меняются редко — один запрос в сутки на проект. */
+const metaCache = readStore(META_KEY) || {}; // общий для параллельных запросов, иначе они затирают друг друга
+async function repoMeta(project) {
+  const cache = metaCache, cached = cache[project.repo];
+  if (cached && Date.now() - cached.at < META_TTL_MS) return cached;
+  try {
+    const meta = await api("/repos/" + state.owner + "/" + project.repo);
+    cache[project.repo] = { at: Date.now(), default_branch: meta.default_branch, homepage: meta.homepage, has_pages: meta.has_pages };
+    writeStore(META_KEY, cache);
+    return cache[project.repo];
+  } catch (error) {
+    if (cached) return cached;
+    throw error;
+  }
 }
 
 async function postJson(path, body) {
@@ -60,7 +95,7 @@ function card(item) {
   const audit = sections ? Object.entries(SECTIONS).map(([key, label]) => '<span class="pill ' + CHECK_CLASS[sections[key].status] + '"><small>' + label + "</small>" + sections[key].ok + "/" + (sections[key].ok + sections[key].warn + sections[key].fail) + "</span>").join(" ") : "";
   return '<article class="project"><div class="phead"><div><div class="pname">' + esc(p.name) + '</div><div class="slug">' + esc(state.owner + "/" + p.repo) + '</div></div><div class="pills">' +
     (item.error ? '<span class="pill warn">Нет данных</span>' : groupPill(item.statuses.quality, QUALITY_LABELS, "Качество") + groupPill(item.statuses.deploy, DEPLOY_LABELS, "Публикация")) +
-    '</div></div><div class="pmeta"><span>Ветка: ' + esc(item.defaultBranch || p.branch || "main") + "</span><span>Последний запуск: " + time(r?.updated_at) + '</span><span class="pill ' + site.cls + '">' + esc(site.text) + "</span></div>" +
+    '</div></div><div class="pmeta"><span>Ветка: ' + esc(item.defaultBranch || p.branch || "main") + "</span><span>Последний запуск: " + time(r?.updated_at) + "</span>" + (item.staleAt ? "<span>Статусы CI от " + time(item.staleAt) + "</span>" : "") + '<span class="pill ' + site.cls + '">' + esc(site.text) + "</span></div>" +
     (audit ? '<div class="pmeta">' + audit + "</div>" : "") +
     '<div class="pmeta"><span class="pill ' + item.overall.level + '">' + esc(item.overall.label) + "</span><span>" + esc(item.overall.reason) + '</span></div><div class="pmeta">' +
     (item.siteUrl ? '<a class="plink" href="' + esc(item.siteUrl) + '" target="_blank" rel="noopener">Открыть сайт ↗</a>' : "<span>Адрес сайта не найден: укажи url в projects.json или homepage в репозитории</span>") +
@@ -126,21 +161,27 @@ async function loadRegistry() {
   state.projects = registry.projects;
 }
 
-async function checkProject(project) {
+async function checkProject(project, previous) {
   const item = { project };
   try {
     const [meta, runs] = await Promise.all([
-      api("/repos/" + state.owner + "/" + project.repo),
+      repoMeta(project),
       api("/repos/" + state.owner + "/" + project.repo + "/actions/runs?per_page=50")
     ]);
     item.defaultBranch = project.branch || meta.default_branch || "main";
     // Совмещённые workflow («quality & deploy») делятся по заданиям и шагам.
-    const expanded = await expandCombinedRuns(runs.workflow_runs || [], item.defaultBranch, async r => (await api("/repos/" + state.owner + "/" + project.repo + "/actions/runs/" + r.id + "/jobs?per_page=100")).jobs || []);
+    const expanded = await expandCombinedRuns((runs.workflow_runs || []).map(slimRun), item.defaultBranch, async r => (await api("/repos/" + state.owner + "/" + project.repo + "/actions/runs/" + r.id + "/jobs?per_page=100")).jobs || []);
     item.statuses = splitStatuses(expanded, item.defaultBranch);
     item.siteUrl = resolveSiteUrl(project, meta, state.owner).url;
+    item.checkedAt = new Date().toISOString();
   } catch (error) {
-    item.error = error.message;
-    item.siteUrl = project.url || "";
+    if (error.rateLimited && previous?.statuses) {
+      // Лимит GitHub исчерпан: статусы CI берём из прошлой проверки, сайт проверяем заново.
+      Object.assign(item, { defaultBranch: previous.defaultBranch, statuses: previous.statuses, siteUrl: previous.siteUrl, staleAt: previous.staleAt || previous.checkedAt });
+    } else {
+      item.error = error.message;
+      item.siteUrl = project.url || previous?.siteUrl || "";
+    }
   }
   if (item.siteUrl) {
     try {
@@ -163,16 +204,13 @@ async function refresh() {
   $("globalStatus").innerHTML = '<i class="dot"></i>Получение данных GitHub и проверка сайтов';
   try {
     await loadRegistry();
-    state.items = await Promise.all(state.projects.map(checkProject));
-    state.runs = state.items.flatMap(x => (x.statuses?.workflows || []).map(r => ({ ...r, project: x.project.name })));
+    const previous = new Map(state.items.map(x => [x.project.repo, x]));
+    state.items = await Promise.all(state.projects.map(project => checkProject(project, previous.get(project.repo))));
     state.last = new Date();
-    const ok = state.items.filter(x => !x.error).length;
-    const critical = state.items.filter(x => x.overall.level === "bad").length;
-    const apiError = state.items.find(x => x.error)?.error;
-    $("globalStatus").innerHTML = '<i class="dot ' + (critical ? "bad" : ok === state.projects.length ? "good" : "") + '"></i>Проверено ' + ok + "/" + state.projects.length + " репозиториев • " + time(state.last.toISOString()) + (apiError ? " • " + esc(apiError) : "");
-    render();
+    writeStore(SNAPSHOT_KEY, { at: state.last.toISOString(), items: state.items });
+    showItems();
     saveHistory({
-      at: state.last.toISOString(), total: ok,
+      at: state.last.toISOString(), total: state.items.filter(x => !x.error).length,
       good: state.items.filter(x => x.statuses?.deploy.state === "success").length,
       bad: state.items.filter(x => x.statuses?.deploy.state === "failure").length,
       quality: state.items.filter(x => x.statuses?.quality.state === "failure").length,
@@ -185,6 +223,42 @@ async function refresh() {
     $("refresh").disabled = false;
     $("refresh").textContent = "↻ Проверить все";
   }
+}
+
+/** Отрисовка текущих данных и строки состояния (после проверки или из сохранённого снимка). */
+function showItems(fromSnapshot = false) {
+  state.runs = state.items.flatMap(x => (x.statuses?.workflows || []).map(r => ({ ...r, project: x.project.name })));
+  const ok = state.items.filter(x => !x.error).length;
+  const critical = state.items.filter(x => x.overall.level === "bad").length;
+  const apiError = state.items.find(x => x.error)?.error;
+  const stale = state.items.find(x => x.staleAt);
+  const notes = [
+    (fromSnapshot ? "Сохранённая проверка • " : "Проверено " + ok + "/" + state.projects.length + " репозиториев • ") + time(state.last.toISOString()),
+    stale ? "лимит GitHub исчерпан" + (rate.reset ? " до " + clock(rate.reset) : "") + ": статусы CI от " + time(stale.staleAt) + ", сайты проверены заново" : "",
+    apiError ? esc(apiError) : "",
+    !fromSnapshot && rate.remaining !== null ? "GitHub API: осталось " + rate.remaining + " из " + rate.limit : ""
+  ].filter(Boolean);
+  $("globalStatus").innerHTML = '<i class="dot ' + (critical ? "bad" : stale || apiError ? "" : "good") + '"></i>' + notes.join(" • ");
+  render();
+}
+
+/** Показать последнюю проверку из браузера; вернуть true, если она свежая и повтор не нужен. */
+function restoreSnapshot() {
+  const snapshot = readStore(SNAPSHOT_KEY);
+  if (!snapshot?.items?.length) return false;
+  const byRepo = new Map(snapshot.items.map(x => [x.project?.repo, x]));
+  if (!state.projects.every(p => byRepo.get(p.repo)?.overall)) return false;
+  state.items = state.projects.map(project => ({ ...byRepo.get(project.repo), project }));
+  state.last = new Date(snapshot.at);
+  showItems(true);
+  return Date.now() - state.last.getTime() < SNAPSHOT_FRESH_MS;
+}
+
+async function start() {
+  loadHistory();
+  try { await loadRegistry(); } catch (error) { $("globalStatus").innerHTML = '<i class="dot bad"></i>' + esc(error.message); return; }
+  // Свежая сохранённая проверка показывается без запросов к GitHub; «Проверить все» обновит её.
+  if (!restoreSnapshot()) refresh();
 }
 
 // ---------- История ----------
@@ -281,5 +355,4 @@ document.addEventListener("click", e => {
 });
 $("searchProjects").addEventListener("input", () => renderCards("allProjects", $("searchProjects").value));
 $("searchOverview").addEventListener("input", () => renderCards("overviewProjects", $("searchOverview").value));
-loadHistory();
-refresh();
+start();
