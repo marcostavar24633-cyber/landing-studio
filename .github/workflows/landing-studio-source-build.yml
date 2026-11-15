@@ -66,6 +66,10 @@ jobs:
       - name: Test Unique Design Studio integration
         run: node --test tests/uds-integration.test.mjs
 
+      # Серверное ядро AI-генерации: вход автопилота, CORS, адаптер Vercel (без запросов к OpenAI).
+      - name: Test AI generation core
+        run: node --test tests/ai-core.test.mjs
+
       - name: Commit generated source or chunks
         if: success()
         run: |
