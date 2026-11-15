@@ -79,7 +79,8 @@ function siteInfo(item) {
   const s = item.site;
   if (!s || s.status === "check_failed") return { cls: "warn", text: "Не проверен" };
   if (s.status === "online") return { cls: "good", text: "Доступен · HTTP " + s.httpStatus };
-  if (s.status === "not_allowed") return { cls: "warn", text: "Домен вне списка проверки" };
+  if (s.status === "not_allowed") return { cls: "warn", text: "Домен вне списка проверки", title: s.error };
+  if (s.status === "error") return { cls: "warn", text: "Не удалось проверить", title: s.error };
   if (s.status === "http_error") return { cls: "bad", text: "Ошибка HTTP " + s.httpStatus };
   return { cls: "bad", text: "Недоступен" };
 }
@@ -108,7 +109,7 @@ function summaryRow(x) {
   if (x.error) return "<tr><td>" + esc(x.project.name) + '</td><td colspan="7" class="sub">' + esc(x.error) + '</td><td><span class="pill warn">Нет данных</span></td></tr>';
   const site = siteInfo(x), s = x.audit?.sections;
   return "<tr><td>" + esc(x.project.name) + "</td><td>" + groupPill(x.statuses.quality, QUALITY_LABELS, "") + "</td><td>" + groupPill(x.statuses.deploy, DEPLOY_LABELS, "") +
-    '</td><td><span class="pill ' + site.cls + '">' + esc(site.text) + "</span></td><td>" + sectionCell(s?.seo) + "</td><td>" + sectionCell(s?.responsive) + "</td><td>" + sectionCell(s?.forms) + "</td><td>" + sectionCell(s?.security) +
+    '</td><td><span class="pill ' + site.cls + '" title="' + esc(site.title || "") + '">' + esc(site.text) + "</span></td><td>" + sectionCell(s?.seo) + "</td><td>" + sectionCell(s?.responsive) + "</td><td>" + sectionCell(s?.forms) + "</td><td>" + sectionCell(s?.security) +
     '</td><td><span class="pill ' + x.overall.level + '">' + esc(x.overall.label) + '</span><span class="reason">' + esc(x.overall.reason) + "</span></td></tr>";
 }
 

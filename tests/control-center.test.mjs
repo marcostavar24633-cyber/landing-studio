@@ -53,7 +53,9 @@ test("классификация workflow: качество отделено о�
   assert.equal(classifyWorkflow({ name: "Deploy to Cloudflare Pages" }), "deploy");
   assert.equal(classifyWorkflow({ name: "Quality checks before deploy" }), "quality");
   assert.equal(classifyWorkflow({ name: "Lighthouse", path: ".github/workflows/lighthouse.yml" }), "quality");
-  assert.equal(classifyWorkflow({ name: "Project health monitor" }), "quality");
+  assert.equal(classifyWorkflow({ name: "Project health monitor", path: ".github/workflows/project-health-monitor.yml" }), "service", "монитор других проектов — не качество репозитория");
+  assert.equal(classifyWorkflow({ name: "PENKA Lighthouse audit" }), "quality");
+  assert.equal(classifyWorkflow({ name: "GitHub Pages" }), "deploy");
   assert.equal(classifyWorkflow({ name: "Deploy latest", path: ".github/workflows/deploy-latest.yml" }), "deploy", "latest — не test");
   assert.equal(classifyWorkflow({ name: "Publish site", path: ".github/workflows/static.yml" }), "deploy");
   assert.equal(classifyWorkflow({ name: "CI", path: ".github/workflows/ci.yml" }), "quality");
@@ -78,6 +80,8 @@ test("раздельные статусы: упавшее качество не 
   assert.equal(overallStatus({ deployState: "success", qualityState: "none", site: { status: "online" } }).label, "Рабочий статус");
   assert.equal(overallStatus({ deployState: "success", qualityState: "none", site: { status: "check_failed" } }).label, "Неполные данные");
   assert.equal(overallStatus({ deployState: "success", qualityState: "none", site: null }).label, "Неполные данные");
+  assert.equal(overallStatus({ deployState: "none", qualityState: "none", site: { status: "online" } }).label, "Рабочий статус", "публикация вне GitHub Actions");
+  assert.equal(overallStatus({ deployState: "none", qualityState: "none", site: null }).label, "Неполные данные");
 });
 
 test("статусы: нет запусков в основной ветке — берётся другая ветка; отмена не ошибка", () => {
@@ -131,7 +135,7 @@ test("адрес сайта: реестр → homepage → GitHub Pages", () => 
 });
 
 test("допустимые адреса проверки", () => {
-  for (const ok of ["https://a.pages.dev", "https://u.github.io/x/", "https://x.vercel.app", "https://x.netlify.app"]) assert.equal(isAllowedUrl(new URL(ok)), true, ok);
+  for (const ok of ["https://слопайбукет.рф/", "https://a.pages.dev", "https://u.github.io/x/", "https://x.vercel.app", "https://x.netlify.app"]) assert.equal(isAllowedUrl(new URL(ok)), true, ok);
   for (const bad of ["http://u.github.io", "https://example.com", "https://evilgithub.io", "https://github.io.evil.com", "https://127.0.0.1", "https://localhost"]) assert.equal(isAllowedUrl(new URL(bad)), false, bad);
   assert.throws(() => parseAllowedUrl("not a url"), AuditError);
   assert.throws(() => parseAllowedUrl("https://example.com"), /Поддерживаются только/);
@@ -184,7 +188,8 @@ test("полный аудит сайта: онлайн, HTTP-ошибка, не�
     ["https://u.github.io/robots.txt", () => response("User-agent: *")],
     ["https://u.github.io/good/sitemap.xml", () => response("<urlset/>")],
     ["https://u.github.io/missing/", () => response("nope", { status: 404, headers: { "content-type": "text/html" }, url: "https://u.github.io/missing/" })],
-    ["https://u.github.io/down/", () => new TypeError("fetch failed")]
+    ["https://u.github.io/down/", () => new TypeError("fetch failed")],
+    ["https://u.github.io/moved/", () => response("<html></html>", { headers: { "content-type": "text/html" }, url: "https://other.example/" })]
   ]);
   const good = await auditSite("https://u.github.io/good/", { fetchImpl });
   assert.equal(good.availability.status, "online");
@@ -195,6 +200,9 @@ test("полный аудит сайта: онлайн, HTTP-ошибка, не�
   assert.equal(missing.sections, null);
   assert.equal((await auditSite("https://u.github.io/down/", { fetchImpl })).availability.status, "unreachable");
   assert.equal((await auditSite("https://example.com/", { fetchImpl })).availability.status, "not_allowed");
+  const redirected = await auditSite("https://u.github.io/moved/", { fetchImpl });
+  assert.equal(redirected.availability.status, "not_allowed");
+  assert.match(redirected.availability.error, /перенаправляет на домен other\.example/);
   assert.equal(fetchImpl.calls.some(c => c.url.includes("example.com")), false, "запрещённый домен не запрашивается");
 });
 
