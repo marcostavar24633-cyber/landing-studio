@@ -6,6 +6,8 @@ export async function onRequestPost(context){
   const host=url.hostname.toLowerCase();
   if(url.protocol!=="https:"||!(host.endsWith(".pages.dev")||host.endsWith(".github.io")))return new Response(JSON.stringify({error:"Поддерживаются только HTTPS-сайты pages.dev и github.io."}),{status:400,headers});
   const response=await fetch(url.toString(),{redirect:"follow",signal:AbortSignal.timeout(10000)});
+  const finalUrl=new URL(response.url),finalHost=finalUrl.hostname.toLowerCase();
+  if(finalUrl.protocol!=="https:"||!(finalHost.endsWith(".pages.dev")||finalHost.endsWith(".github.io")))return new Response(JSON.stringify({error:"Сайт перенаправил запрос за пределы разрешённых доменов."}),{status:422,headers});
   const h=response.headers,html=(await response.text()).slice(0,1500000);
   const headerChecks=[
    ["Strict-Transport-Security","HSTS",true],
@@ -28,6 +30,6 @@ export async function onRequestPost(context){
    {label:"Смешанный HTTP-контент",status:mixed.length?"warn":"ok",value:mixed.length?"Найдено HTTP-ссылок: "+mixed.length:"Прямые HTTP src/href не обнаружены"},
    {label:"Публичные секреты в HTML",status:findings.length?"fail":"ok",value:findings.length?"Найдены строки, похожие на секреты — значения скрыты":"Известные шаблоны ключей не обнаружены"}
   ];
-  return new Response(JSON.stringify({url:response.url,httpStatus:response.status,checks,headers:headerChecks,mixedContentCount:mixed.length,mixedContentExamples:mixed.slice(0,5).map(x=>x.slice(0,180)),secretFindings:findings,checkedAt:new Date().toISOString(),scope:"Проверены HTTP-ответ и HTML главной страницы. Не проверены TLS-цепочка, исходный GitHub-репозиторий, npm-зависимости, workflow permissions и скрытые API-ответы. Совпадение шаблона секрета требует ручной проверки; значения не раскрываются."}),{status:200,headers});
+  return new Response(JSON.stringify({url:finalUrl.toString(),httpStatus:response.status,checks,headers:headerChecks,mixedContentCount:mixed.length,mixedContentExamples:mixed.slice(0,5).map(x=>x.slice(0,180)),secretFindings:findings,checkedAt:new Date().toISOString(),scope:"Проверены HTTP-ответ и HTML главной страницы. Не проверены TLS-цепочка, исходный GitHub-репозиторий, npm-зависимости, workflow permissions и скрытые API-ответы. Совпадение шаблона секрета требует ручной проверки; значения не раскрываются."}),{status:200,headers});
  }catch(error){return new Response(JSON.stringify({error:error?.name==="TimeoutError"?"Превышено время ожидания сайта.":"Не удалось выполнить проверку безопасности."}),{status:502,headers})}
 }
