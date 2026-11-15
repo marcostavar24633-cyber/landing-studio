@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111318">
+  <meta name="description" content="Качественные услуги, индивидуальный подход и внимание к деталям.">
+  <title>Мой бизнес — Помогаем воплощать ваши идеи</title>
+  <style>
+    :root{--bg:#111318;--panel:#191c23;--panel2:#20242d;--text:#f4f1eb;--muted:#a9a8a4;--line:rgba(255,255,255,.12);--accent:#c6a879;--accentText:#151515;--serif:Georgia,'Times New Roman',serif;--sans:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}
+    .shell{width:min(1160px,calc(100% - 40px));margin:auto}.topbar{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{font-size:14px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}.nav{display:flex;gap:24px;color:var(--muted);font-size:13px}.nav a:hover{color:var(--accent)}.top-cta,.button{display:inline-flex;align-items:center;justify-content:center;padding:13px 20px;background:var(--accent);color:var(--accentText);border:0;border-radius:2px;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:.2s}.top-cta:hover,.button:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .hero{min-height:650px;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center;padding:85px 0}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(48px,6vw,82px);line-height:1.03;letter-spacing:-.035em;margin:22px 0}.hero p{max-width:520px;color:var(--muted);font-size:17px;margin:0 0 32px}.hero-art{min-height:440px;position:relative;overflow:hidden;background:linear-gradient(145deg,#34302a,#17191f 65%);border:1px solid var(--line)}.hero-art:before{content:"";position:absolute;width:68%;height:78%;left:16%;top:11%;border:1px solid rgba(198,168,121,.65);transform:rotate(8deg)}.hero-art:after{content:"";position:absolute;width:54%;height:65%;left:23%;top:17%;background:radial-gradient(ellipse at 50% 35%,rgba(198,168,121,.5),transparent 62%),linear-gradient(135deg,rgba(255,255,255,.09),transparent);border:1px solid rgba(255,255,255,.18);transform:rotate(-7deg)}.art-caption{position:absolute;bottom:22px;left:24px;z-index:1;color:#e9dfcf;font-family:var(--serif);font-size:23px}
+    section.content-section{padding:88px 0;border-top:1px solid var(--line)}.section-head{display:grid;grid-template-columns:.65fr 1.35fr;gap:40px;margin-bottom:38px}.section-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(36px,4vw,54px);line-height:1.1;margin:10px 0}.section-head p{color:var(--muted);max-width:620px;margin:20px 0 0}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:var(--panel);border:1px solid var(--line);padding:28px;min-height:190px}.card .num{color:var(--accent);font-size:11px;letter-spacing:.16em}.card h3{font-family:var(--serif);font-size:25px;font-weight:400;margin:22px 0 8px}.card p{color:var(--muted);font-size:14px;margin:0}.split{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}.statement{font-family:var(--serif);font-size:clamp(30px,4vw,48px);line-height:1.18}.muted{color:var(--muted)}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.step{padding:22px 18px;border-top:1px solid var(--accent)}.step b{color:var(--accent);font-size:12px}.step h3{font-family:var(--serif);font-size:21px;font-weight:400}.step p{color:var(--muted);font-size:13px}.quote{padding:36px;background:var(--panel);border:1px solid var(--line);font-family:var(--serif);font-size:27px;line-height:1.35}.quote small{display:block;font:12px var(--sans);color:var(--muted);margin-top:18px}.gallery{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:12px}.gallery-item{min-height:210px;background:linear-gradient(145deg,#39332a,#1b1d22);border:1px solid var(--line);display:flex;align-items:end;padding:18px;color:#e9dfcf;font-family:var(--serif);font-size:20px}.gallery-item:nth-child(2){background:linear-gradient(145deg,#343b39,#1b1d22)}.gallery-item:nth-child(3){background:linear-gradient(145deg,#3d3336,#1b1d22)}
+    .price-card{background:var(--panel);border:1px solid var(--line);padding:28px}.price-card strong{font-family:var(--serif);font-size:30px;font-weight:400;display:block;margin:12px 0}.faq-list{max-width:850px}.faq-item{border-bottom:1px solid var(--line)}.faq-q{width:100%;background:none;color:var(--text);border:0;text-align:left;padding:20px 0;display:flex;justify-content:space-between;cursor:pointer;font-size:16px}.faq-a{display:none;color:var(--muted);padding:0 35px 20px 0;font-size:14px}.faq-item.open .faq-a{display:block}.contact{background:var(--panel);padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:40px}.contact h2{font-family:var(--serif);font-size:48px;font-weight:400;line-height:1.1;margin:10px 0}.contact-form{display:grid;gap:12px}.field{width:100%;padding:14px;background:#111318;color:var(--text);border:1px solid var(--line);outline:none}.field:focus{border-color:var(--accent)}.contact-note{font-size:12px;color:var(--muted)}footer{padding:32px 0;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px}
+    #editorToggle{position:fixed;right:18px;bottom:18px;z-index:20;background:var(--accent);color:var(--accentText);border:0;border-radius:999px;padding:13px 18px;font-weight:700;box-shadow:0 8px 30px #0008;cursor:pointer}#editor{position:fixed;inset:0 0 0 auto;width:min(430px,100%);background:#f6f5f2;color:#191919;z-index:30;box-shadow:-20px 0 60px #0007;transform:translateX(110%);transition:transform .25s;overflow:auto;padding:22px}#editor.open{transform:translateX(0)}.editor-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-22px;background:#f6f5f2;padding:10px 0 16px;z-index:2;border-bottom:1px solid #ddd}.editor-head h2{margin:0;font-size:20px}.close{border:0;background:#e7e5df;padding:9px 12px;cursor:pointer}.editor-group{padding:18px 0;border-bottom:1px solid #ddd}.editor-group h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#716e67;margin:0 0 12px}.editor label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}.editor input,.editor textarea,.editor select{width:100%;padding:10px;border:1px solid #ccc;background:white;color:#191919;border-radius:4px}.editor textarea{min-height:76px;resize:vertical}.editor-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:18px 0}.editor-actions button{padding:12px;border:0;background:#20242d;color:white;cursor:pointer;font-weight:700}.editor-actions .secondary{background:#ddd;color:#191919}.editor-hint{font-size:11px;color:#666;line-height:1.5}
+    body.light{--bg:#f5f3ee;--panel:#fff;--panel2:#ebe8e0;--text:#24231f;--muted:#6e6b64;--line:rgba(30,30,30,.14);--accent:#94744c;--accentText:#fff}.light .hero-art{background:linear-gradient(145deg,#d9cdb9,#f0ede7)}.light .hero-art:after{background:radial-gradient(ellipse at 50% 35%,rgba(148,116,76,.3),transparent 62%),linear-gradient(135deg,rgba(255,255,255,.5),transparent)}.light .gallery-item{color:#fff}.light .field{background:#fff;color:#24231f;border-color:#ddd}
+    @media(max-width:800px){.shell{width:min(100% - 30px,600px)}.topbar{height:68px}.nav{display:none}.top-cta{padding:10px 12px;font-size:10px}.hero{grid-template-columns:1fr;gap:30px;padding:62px 0}.hero-art{min-height:300px}.section-head,.split,.contact{grid-template-columns:1fr;gap:18px}.cards{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:1fr 1fr}.gallery-item:first-child{grid-column:span 2}.contact{padding:26px}.contact h2{font-size:38px}section.content-section{padding:62px 0}footer{flex-direction:column}.quote{font-size:22px}}
+    @media(max-width:420px){.steps,.gallery{grid-template-columns:1fr}.gallery-item:first-child{grid-column:auto}.hero h1{font-size:46px}}
+    .project-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+    .project-tools button,.project-tools select{width:100%;padding:11px;border:1px solid #ccc;background:#fff;color:#191919;border-radius:4px;cursor:pointer}
+    .project-tools button.primary{background:#20242d;color:#fff;border-color:#20242d}
+    .project-tools .wide{grid-column:1/-1}
+    .project-status{font-size:11px;color:#555;margin:8px 0 0}
+    .file-input{font-size:12px!important;padding:8px!important}
+    .hero-art.has-image:before,.hero-art.has-image:after{display:none}
+    .hero-art.has-image{background-position:center;background-size:cover;background-repeat:no-repeat}
+    @media print{#editorToggle,#editor{display:none!important}}
+
+/* AI Landing Studio */
+.ai-launch{position:fixed;left:18px;bottom:18px;z-index:21;border:1px solid rgba(218,183,111,.55);border-radius:999px;padding:13px 19px;background:linear-gradient(110deg,#e3c47e,#a77a36);color:#17120a;font-weight:800;box-shadow:0 10px 34px #0009;cursor:pointer;letter-spacing:.01em}
+.ai-launch:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.ai-overlay{display:none;position:fixed;inset:0;z-index:60;background:rgba(4,4,4,.78);backdrop-filter:blur(12px);padding:20px;overflow:auto;align-items:center;justify-content:center}
+.ai-overlay.open{display:flex}
+.ai-dialog{width:min(760px,100%);max-height:min(92vh,900px);overflow:auto;background:linear-gradient(150deg,#211e18,#11110f 65%,#201a10);border:1px solid rgba(213,174,97,.35);border-radius:26px;padding:clamp(20px,4vw,36px);box-shadow:0 28px 90px #000b;color:#f3ead9}
+.ai-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px}.ai-kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4b36f;font-weight:800}.ai-title{font:400 clamp(28px,5vw,42px)/1.1 Georgia,serif;margin:8px 0}.ai-sub{color:#b9ad98;margin:0;max-width:590px}.ai-close{background:#30291d;color:#f1dfbd;border:1px solid #65502e;border-radius:50%;width:40px;height:40px;flex:0 0 40px;font-size:20px;cursor:pointer}
+.ai-form{display:grid;gap:12px;margin:24px 0 18px}.ai-form label{font-size:13px;color:#e8d9bd;font-weight:700}.ai-form input{width:100%;padding:17px 18px;border:1px solid rgba(212,177,105,.45);border-radius:14px;background:#0d0d0c;color:#fff;font-size:16px;outline:none}.ai-form input:focus{border-color:#e3c47e;box-shadow:0 0 0 3px #d6b36a22}.ai-primary{border:0;border-radius:999px;padding:15px 22px;background:linear-gradient(110deg,#e3c47e,#a77a36);color:#17120a;font-weight:800;cursor:pointer}.ai-primary:disabled{opacity:.55;cursor:wait}.ai-note{font-size:12px;color:#a99e8c;line-height:1.55}.ai-progress{display:none;margin:22px 0;padding:18px;border:1px solid #5d4a2c;border-radius:16px;background:#17150f}.ai-progress.show{display:block}.ai-progress-title{font-weight:700;margin-bottom:12px}.ai-steps{display:grid;gap:9px}.ai-step{display:flex;gap:10px;align-items:center;color:#9c927f;font-size:13px}.ai-step:before{content:'○';color:#8c7a56;font-size:17px}.ai-step.active{color:#f2d99f}.ai-step.active:before{content:'◌';color:#e4c47c}.ai-step.done{color:#c9d9bd}.ai-step.done:before{content:'✓';color:#8fc58a}.ai-error{display:none;margin-top:16px;padding:13px 15px;border:1px solid #8a4b3f;border-radius:12px;background:#321d19;color:#ffd5c9;font-size:13px}.ai-error.show{display:block}.ai-result{display:none;margin-top:20px;border-top:1px solid #55452b;padding-top:20px}.ai-result.show{display:block}.ai-result h3{font:400 25px Georgia,serif;margin:0 0 8px;color:#f1d89f}.ai-result p,.ai-result li{font-size:13px;color:#c7bba5}.ai-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.ai-result-card{padding:14px;border:1px solid #4c402a;border-radius:14px;background:#191711;min-width:0}.ai-result-card b{display:block;color:#e5c985;font-size:12px;margin-bottom:5px}.ai-result-card p{margin:0;overflow-wrap:anywhere}.ai-result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.ai-secondary{border:1px solid #80653a;background:#272116;color:#ecd9b4;border-radius:999px;padding:13px 18px;font-weight:700;cursor:pointer}
+@media(max-width:600px){.ai-launch{left:12px;bottom:12px;padding:12px 14px;font-size:12px}.ai-overlay{padding:10px}.ai-dialog{border-radius:20px;padding:20px 16px}.ai-result-grid{grid-template-columns:1fr}.ai-head{margin-bottom:12px}}
+
+
+/* AI-selected visual systems */
+body.style-minimal .hero h1,body.style-minimal .section-head h2,body.style-minimal .contact h2{font-family:var(--sans);font-weight:750;letter-spacing:-.055em}
+body.style-minimal .card,body.style-minimal .price-card,body.style-minimal .contact{border-radius:18px}
+body.style-vibrant .hero-art{background:radial-gradient(circle at 72% 25%,color-mix(in srgb,var(--accent) 75%,#fff),transparent 28%),linear-gradient(135deg,color-mix(in srgb,var(--accent) 45%,#222),#17191f 72%)}
+body.style-vibrant .button,body.style-vibrant .top-cta{border-radius:999px}
+body.style-business .topbar{border-bottom:2px solid var(--accent)}
+body.style-business .card,body.style-business .price-card{border-top:3px solid var(--accent)}
+body.style-premium .hero h1,body.style-premium .section-head h2,body.style-premium .contact h2{font-family:var(--serif);font-weight:400}
+
+  </style>
+</head>
+<body>
+  <header class="shell topbar">
+    <a class="brand" href="#top" id="brandText">МОЙ БИЗНЕС</a>
+    <nav class="nav" id="mainNav"><a href="#about">О компании</a><a href="#services">Услуги</a><a href="#advantages">Преимущества</a><a href="#contacts">Контакты</a></nav>
+    <a class="top-cta" href="#contacts" id="topCta">Оставить заявку</a>
+  </header>
+  <main>
+    <div class="shell hero" id="top">
+      <div><div class="eyebrow" id="heroEyebrow">УСЛУГИ · ИНДИВИДУАЛЬНЫЙ ПОДХОД</div><h1 id="heroTitle">Помогаем воплощать ваши идеи</h1><p id="heroDescription">Качественные услуги, индивидуальный подход и внимание к деталям.</p><a class="button" href="#contacts" id="heroCta">Оставить заявку</a></div>
+      <div class="hero-art" role="img" aria-label="Декоративное абстрактное изображение"><div class="art-caption" id="artCaption">Идеи становятся реальностью</div></div>
+    </div>
+    <section class="content-section" id="about"><div class="shell split"><div><div class="eyebrow">01 / О КОМПАНИИ</div><div class="statement" id="aboutTitle">Внимание к тому, что действительно важно.</div></div><p class="muted" id="aboutText">Мы помогаем решать задачи бизнеса и частных клиентов. Расскажите о своей компании, опыте и подходе — этот текст легко изменить в панели настроек.</p></div></section>
+    <section class="content-section" id="services"><div class="shell"><div class="section-head"><div class="eyebrow">02 / УСЛУГИ</div><div><h2 id="servicesTitle">Что мы предлагаем</h2><p id="servicesIntro">Опишите здесь основные направления работы. Названия и описания карточек редактируются в настройках.</p></div></div><div class="cards" id="serviceCards"></div></div></section>
+    <section class="content-section" id="advantages"><div class="shell"><div class="section-head"><div class="eyebrow">03 / ПРЕИМУЩЕСТВА</div><div><h2 id="advantagesTitle">Сервис, которому можно доверять</h2><p id="advantagesIntro">Расскажите о сильных сторонах вашего предложения без неподтверждённых обещаний.</p></div></div><div class="cards" id="advantageCards"></div></div></section>
+    <section class="content-section" id="process"><div class="shell"><div class="section-head"><div class="eyebrow">04 / ЭТАПЫ РАБОТЫ</div><div><h2 id="processTitle">Понятный путь к результату</h2><p id="processIntro">Покажите клиенту, как проходит сотрудничество.</p></div></div><div class="steps" id="steps"></div></div></section>
+    <section class="content-section" id="reviews"><div class="shell"><div class="section-head"><div class="eyebrow">05 / ОТЗЫВЫ</div><div><h2 id="reviewsTitle">Мнение клиентов</h2><p id="reviewsIntro">Добавьте реальные отзывы с разрешения авторов. Не публикуйте вымышленные рекомендации.</p></div></div><div class="quote" id="reviewQuote">Здесь будет размещён отзыв вашего клиента.<small id="reviewAuthor">Имя автора — только с его согласия</small></div></div></section>
+    <section class="content-section" id="gallery"><div class="shell"><div class="section-head"><div class="eyebrow">06 / ГАЛЕРЕЯ</div><div><h2 id="galleryTitle">Примеры работ</h2><p id="galleryIntro">Замените демонстрационные блоки своими фотографиями и проектами.</p></div></div><div class="gallery" id="galleryItems"><div class="gallery-item">Проект 01</div><div class="gallery-item">Проект 02</div><div class="gallery-item">Проект 03</div></div></div></section>
+    <section class="content-section" id="prices"><div class="shell"><div class="section-head"><div class="eyebrow">07 / ЦЕНЫ</div><div><h2 id="pricesTitle">Стоимость услуг</h2><p id="pricesIntro">Укажите актуальные цены и условия. Пока стоимость не задана, не показываем вымышленные суммы.</p></div></div><div class="price-card"><div class="eyebrow">ИНДИВИДУАЛЬНЫЙ РАСЧЁТ</div><strong id="priceLabel">Стоимость — по запросу</strong><p class="muted" id="priceText">Оставьте заявку, чтобы обсудить задачу и получить информацию о стоимости.</p></div></div></section>
+    <section class="content-section" id="faq"><div class="shell"><div class="section-head"><div class="eyebrow">08 / FAQ</div><div><h2 id="faqTitle">Частые вопросы</h2><p id="faqIntro">Ответьте на вопросы, которые чаще всего возникают у ваших клиентов.</p></div></div><div class="faq-list" id="faqList"></div></div></section>
+    <section class="content-section" id="contacts"><div class="shell"><div class="contact"><div><div class="eyebrow">09 / КОНТАКТЫ</div><h2 id="contactTitle">Обсудим вашу задачу?</h2><p class="muted" id="contactText">Оставьте сообщение — мы свяжемся с вами удобным способом.</p><p class="muted" id="contactDetails">Добавьте телефон, почту или ссылку на мессенджер в настройках.</p></div><form class="contact-form" id="leadForm"><input class="field" id="leadName" placeholder="Ваше имя" required><input class="field" id="leadContact" placeholder="Телефон или e-mail" required><textarea class="field" id="leadMessage" placeholder="Коротко о вашей задаче" rows="4"></textarea><button class="button" type="submit" id="formCta">Оставить заявку</button><div class="contact-note" id="formNote">Демонстрационная форма: для приёма заявок подключите выбранный способ отправки в настройках.</div></form></div></div></section>
+  </main>
+  <footer class="shell"><span id="footerBrand">© Мой бизнес</span><span>Сайт создан на основе Landing Studio</span></footer>
+
+  <button class="ai-launch" id="aiLaunch" type="button">✦ Создать сайт с AI</button>
+  <section class="ai-overlay" id="aiOverlay" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+    <div class="ai-dialog">
+      <div class="ai-head"><div><div class="ai-kicker">Landing Studio · AI-агент</div><h2 class="ai-title" id="aiTitle">Опишите нишу — остальное сделает AI</h2><p class="ai-sub">Агент самостоятельно подготовит маркетинговую стратегию, определит аудиторию, выберет стиль и соберёт основу лендинга.</p></div><button class="ai-close" id="aiClose" type="button" aria-label="Закрыть">×</button></div>
+      <form class="ai-form" id="aiForm"><label for="aiNiche">Чем занимается бизнес?</label><input id="aiNiche" name="niche" maxlength="180" required placeholder="Например: студия красоты, доставка еды, ремонт квартир" autocomplete="off"><button class="ai-primary" id="aiSubmit" type="submit">✦ Создать лендинг</button><p class="ai-note">Достаточно указать нишу. Если не хватает вводных, агент использует разумные гипотезы и отметит их — он не будет придумывать цены, отзывы, адреса или подтверждённые факты.</p></form>
+      <div class="ai-progress" id="aiProgress" aria-live="polite"><div class="ai-progress-title" id="aiProgressTitle">Агент готовится к работе…</div><div class="ai-steps"><div class="ai-step" data-ai-step="0">Анализ ниши и рынка</div><div class="ai-step" data-ai-step="1">Определение целевой аудитории и оффера</div><div class="ai-step" data-ai-step="2">Подготовка структуры и текстов</div><div class="ai-step" data-ai-step="3">Выбор визуального направления</div><div class="ai-step" data-ai-step="4">Сборка и проверка лендинга</div></div></div>
+      <div class="ai-error" id="aiError" role="alert"></div>
+      <div class="ai-result" id="aiResult"><h3 id="aiResultTitle">Стратегия готова</h3><p id="aiResultSummary"></p><div class="ai-result-grid"><div class="ai-result-card"><b>Целевая аудитория</b><p id="aiAudience"></p></div><div class="ai-result-card"><b>Главный оффер</b><p id="aiOffer"></p></div><div class="ai-result-card"><b>Визуальное направление</b><p id="aiVisual"></p></div><div class="ai-result-card"><b>Что нужно подтвердить</b><p id="aiAssumptions"></p></div></div><div class="ai-result-card" id="aiResearchCard" style="margin-top:12px"><b>Рыночные наблюдения и источники</b><p id="aiMarketResearch"></p><div id="aiSources" style="display:grid;gap:6px;margin-top:8px"></div></div><div class="ai-result-actions"><button class="ai-primary" id="aiApply" type="button">Применить и открыть сайт</button><button class="ai-secondary" id="aiRetry" type="button">Создать другой вариант</button></div></div>
+    </div>
+  </section>
+
+  <button id="editorToggle" type="button">✎ Настроить сайт</button>
+  <aside id="editor" aria-label="Панель редактирования">
+    <div class="editor-head"><h2>Настройки сайта</h2><button class="close" id="closeEditor">Закрыть ✕</button></div>
+    <p class="editor-hint">Изменения сразу отображаются на странице. Проекты хранятся в этом браузере на вашем устройстве.</p>
+    <div class="editor-group"><h3>Мои проекты</h3>
+      <label for="projectSelect">Выбрать проект</label>
+      <select id="projectSelect"></select>
+      <div class="project-tools">
+        <button type="button" class="primary" id="newProject">＋ Новый</button>
+        <button type="button" id="duplicateProject">Копировать</button>
+        <button type="button" id="deleteProject">Удалить</button>
+        <button type="button" id="exportProject">Экспорт JSON</button>
+        <button type="button" class="wide" id="importProject">Импорт проекта JSON</button>
+        <input id="importProjectFile" type="file" accept="application/json,.json" hidden>
+      </div>
+      <p class="project-status" id="projectStatus">Проекты сохраняются локально в этом браузере. Для переноса используйте экспорт JSON.</p>
+    </div>
+    <div class="editor-group"><h3>Основное</h3>
+      <label for="eBrand">Название бренда</label><input id="eBrand">
+      <label for="eNiche">Направление / подпись</label><input id="eNiche">
+      <label for="eTitle">Главный заголовок</label><textarea id="eTitle"></textarea>
+      <label for="eDescription">Описание на первом экране</label><textarea id="eDescription"></textarea>
+      <label for="eCta">Текст кнопки</label><input id="eCta">
+      <label for="eStyle">Стиль</label><select id="eStyle"><option>Премиальный</option><option>Минимализм</option><option>Яркий</option><option>Деловой</option></select>
+      <label for="ePalette">Цветовая схема</label><select id="ePalette"><option>Тёмная</option><option>Светлая</option></select>
+      <label for="eAccent">Цвет акцента</label><input id="eAccent" type="color">
+      <label for="eHeroImage">Фотография первого экрана</label><input id="eHeroImage" class="file-input" type="file" accept="image/*">
+      <button type="button" class="secondary" id="removeHeroImage" style="width:100%;padding:10px;border:0;cursor:pointer;margin-top:8px">Убрать фотографию</button>
+      <p class="editor-hint">Выбирайте изображение до 2 МБ. Оно сохранится внутри проекта на этом устройстве и попадёт в скачанный HTML.</p>
+    </div>
+    <div class="editor-group"><h3>Тексты разделов</h3>
+      <label for="eAboutTitle">О компании — заголовок</label><input id="eAboutTitle">
+      <label for="eAboutText">О компании — текст</label><textarea id="eAboutText"></textarea>
+      <label for="eServicesTitle">Услуги — заголовок</label><input id="eServicesTitle">
+      <label for="eServicesIntro">Услуги — описание</label><textarea id="eServicesIntro"></textarea>
+      <label for="eAdvantagesTitle">Преимущества — заголовок</label><input id="eAdvantagesTitle">
+      <label for="eAdvantagesIntro">Преимущества — описание</label><textarea id="eAdvantagesIntro"></textarea>
+      <label for="eProcessTitle">Этапы — заголовок</label><input id="eProcessTitle">
+      <label for="eReviewsTitle">Отзывы — заголовок</label><input id="eReviewsTitle">
+      <label for="eGalleryTitle">Галерея — заголовок</label><input id="eGalleryTitle">
+      <label for="ePricesTitle">Цены — заголовок</label><input id="ePricesTitle">
+      <label for="ePriceLabel">Отображение стоимости</label><input id="ePriceLabel">
+      <label for="eFaqTitle">FAQ — заголовок</label><input id="eFaqTitle">
+      <label for="eContactTitle">Контакты — заголовок</label><input id="eContactTitle">
+      <label for="eContactText">Контакты — текст</label><textarea id="eContactText"></textarea>
+    </div>
+    <div class="editor-group"><h3>Карточки услуг</h3>
+      <label for="eService1">Услуга 1 — название</label><input id="eService1"><label for="eService1Text">Описание</label><textarea id="eService1Text"></textarea>
+      <label for="eService2">Услуга 2 — название</label><input id="eService2"><label for="eService2Text">Описание</label><textarea id="eService2Text"></textarea>
+      <label for="eService3">Услуга 3 — название</label><input id="eService3"><label for="eService3Text">Описание</label><textarea id="eService3Text"></textarea>
+    </div>
+    <div class="editor-group"><h3>Контакты и заявки</h3>
+      <label for="ePhone">Телефон (если хотите показывать)</label><input id="ePhone" placeholder="+7 ...">
+      <label for="eEmail">E-mail (если хотите показывать)</label><input id="eEmail" type="email" placeholder="mail@example.ru">
+      <label for="eMessenger">Ссылка на мессенджер</label><input id="eMessenger" placeholder="https://...">
+      <p class="editor-hint">Форма не отправляет данные на сервер. Кнопка может открыть мессенджер с текстом заявки, если вы укажете ссылку. Не вводите реальные данные покупателей в демоверсию.</p>
+    </div>
+    <div class="editor-actions"><button id="saveSettings">Сохранить настройки</button><button class="secondary" id="downloadSite">Скачать сайт HTML</button><button class="secondary" id="resetSettings">Сбросить изменения</button><button class="secondary" id="printSite">Печать / PDF</button></div>
+    <p class="editor-hint">Подсказка: для нового заказчика сначала скачайте копию сайта, затем меняйте тексты и оформление. Исходный проект оставьте как мастер-шаблон.</p>
+  </aside>
+  <script>
+  (() => {
+    const defaults = {
+      brand:"Мой бизнес", niche:"УСЛУГИ · ИНДИВИДУАЛЬНЫЙ ПОДХОД",
+      title:"Помогаем воплощать ваши идеи",
+      description:"Качественные услуги, индивидуальный подход и внимание к деталям.",
+      cta:"Оставить заявку", style:"Премиальный", palette:"Тёмная", accent:"#c6a879",
+      aboutTitle:"Внимание к тому, что действительно важно.",
+      aboutText:"Мы помогаем решать задачи бизнеса и частных клиентов. Расскажите о своей компании, опыте и подходе — этот текст легко изменить в панели настроек.",
+      servicesTitle:"Что мы предлагаем", servicesIntro:"Опишите здесь основные направления работы. Названия и описания карточек редактируются в настройках.",
+      advantagesTitle:"Сервис, которому можно доверять", advantagesIntro:"Расскажите о сильных сторонах вашего предложения без неподтверждённых обещаний.",
+      processTitle:"Понятный путь к результату", reviewsTitle:"Мнение клиентов", galleryTitle:"Примеры работ", pricesTitle:"Стоимость услуг", priceLabel:"Стоимость — по запросу",
+      faqTitle:"Частые вопросы", contactTitle:"Обсудим вашу задачу?", contactText:"Оставьте сообщение — мы свяжемся с вами удобным способом.",
+      phone:"", email:"", messenger:"", heroImage:"",
+      services:[["Консультация","Обсудим задачу, цели и подходящий формат работы."],["Основная услуга","Добавьте описание вашей ключевой услуги и её результата."],["Дополнительные услуги","Укажите дополнительные направления, если они есть."]]
+    };
+    let data = structuredClone(defaults);
+    let projects = [];
+    let activeProjectId = "";
+    const STORAGE_KEY = "landingStudioProjects_v2";
+    const $ = id => document.getElementById(id);
+    const clone = value => JSON.parse(JSON.stringify(value));
+    const makeId = () => "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger"};
+    const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    function render(){
+      document.body.classList.toggle("light",data.palette==="Светлая");
+      document.body.classList.remove("style-premium","style-minimal","style-vibrant","style-business");
+      const styleMap={"Премиальный":"style-premium","Минимализм":"style-minimal","Яркий":"style-vibrant","Деловой":"style-business"};
+      document.body.classList.add(styleMap[data.style]||"style-premium");
+      document.documentElement.style.setProperty("--accent",data.accent||defaults.accent);
+      $("brandText").textContent=(data.brand||"Мой бизнес").toUpperCase();
+      $("footerBrand").textContent="© "+(data.brand||"Мой бизнес");
+      $("heroEyebrow").textContent=data.niche;
+      $("heroTitle").textContent=data.title; $("heroDescription").textContent=data.description;
+      $("heroCta").textContent=data.cta; $("topCta").textContent=data.cta; $("formCta").textContent=data.cta;
+      $("artCaption").textContent=data.style==="Премиальный"?"Идеи становятся реальностью":"Создаём решения для ваших задач";
+      const heroArt=$("top").querySelector(".hero-art");
+      heroArt.classList.toggle("has-image",!!data.heroImage);
+      heroArt.style.backgroundImage=data.heroImage?`url("${data.heroImage}")`:"";
+      ["aboutTitle","aboutText","servicesTitle","servicesIntro","advantagesTitle","advantagesIntro","processTitle","reviewsTitle","galleryTitle","pricesTitle","priceLabel","faqTitle","contactTitle","contactText"].forEach(k=>{if($(k))$(k).textContent=data[k]||""});
+      $("contactDetails").textContent=[data.phone,data.email].filter(Boolean).join(" · ") || "Добавьте телефон, почту или ссылку на мессенджер в настройках.";
+      $("serviceCards").innerHTML=data.services.map((s,i)=>`<article class="card"><span class="num">0${i+1} / УСЛУГА</span><h3>${esc(s[0])}</h3><p>${esc(s[1])}</p></article>`).join("");
+      const advantages=data.advantages||[["Индивидуальный подход","Решение формируется с учётом вашей задачи."],["Внимание к деталям","Продуманная коммуникация на каждом этапе."],["Понятный процесс","Заранее согласуем объём и порядок работы."]];
+      $("advantageCards").innerHTML=advantages.map((x,i)=>`<article class="card"><span class="num">0${i+1}</span><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></article>`).join("");
+      const process=data.process||[["Знакомство","Обсуждаем задачу и ожидания."],["План","Согласуем объём и условия."],["Работа","Выполняем согласованные задачи."],["Результат","Передаём результат и обсуждаем следующие шаги."]];
+      $("steps").innerHTML=process.map((x,i)=>`<article class="step"><b>0${i+1}</b><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></article>`).join("");
+      const faqs=data.faqs||[["С чего начать?","Оставьте заявку и кратко опишите свою задачу."],["Как рассчитывается стоимость?","Стоимость зависит от задачи и согласованного объёма работ."],["Можно ли обсудить индивидуальные условия?","Да, детали можно обсудить до начала сотрудничества."]];
+      $("faqList").innerHTML=faqs.map((x,i)=>`<div class="faq-item"><button class="faq-q" type="button"><span>${esc(x[0])}</span><span>＋</span></button><div class="faq-a">${esc(x[1])}</div></div>`).join("");
+      $("faqList").querySelectorAll(".faq-q").forEach(b=>b.addEventListener("click",()=>b.parentElement.classList.toggle("open")));
+      $("mainNav").innerHTML=[["О компании","about"],["Услуги","services"],["Преимущества","advantages"],["Контакты","contacts"]].map(x=>`<a href="#${x[1]}">${x[0]}</a>`).join("");
+      document.title=(data.brand||"Мой бизнес")+" — "+data.title;
+      document.querySelector('meta[name="description"]').content=data.description;
+      document.querySelector('meta[name="theme-color"]').content=data.palette==="Светлая"?"#f5f3ee":"#111318";
+      if(data.palette==="Светлая"){document.documentElement.style.setProperty("--accentText","#fff")}else{document.documentElement.style.setProperty("--accentText","#151515")}
+    }
+    function fillEditor(){Object.entries(ids).forEach(([id,key])=>$(id).value=data[key]??"");data.services.forEach((s,i)=>{$("eService"+(i+1)).value=s[0];$("eService"+(i+1)+"Text").value=s[1]});refreshProjectSelect()}
+    function readEditor(){Object.entries(ids).forEach(([id,key])=>data[key]=$(id).value);data.services=[1,2,3].map(i=>[$("eService"+i).value,$("eService"+i+"Text").value])}
+    function persistProjects(){
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify({activeProjectId,projects}));$("projectStatus").textContent=`Сохранено проектов: ${projects.length}. Данные остаются в этом браузере.`}
+      catch(e){$("projectStatus").textContent="Не удалось сохранить: возможно, закончилось место в памяти браузера. Уменьшите размер фотографий или экспортируйте проект."}
+    }
+    function syncActiveProject(){
+      const current=projects.find(p=>p.id===activeProjectId);
+      if(current){current.name=data.brand||current.name||"Без названия";current.data=clone(data)}
+    }
+    function save(){syncActiveProject();persistProjects();render()}
+    function load(){
+      try{
+        const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
+        if(saved&&Array.isArray(saved.projects)&&saved.projects.length){
+          projects=saved.projects.map(p=>({id:p.id||makeId(),name:p.name||p.data?.brand||"Мой проект",data:{...clone(defaults),...(p.data||{}),services:p.data?.services||clone(defaults.services)}}));
+          activeProjectId=projects.some(p=>p.id===saved.activeProjectId)?saved.activeProjectId:projects[0].id;
+          data=clone(projects.find(p=>p.id===activeProjectId).data);
+          return;
+        }
+        const legacy=JSON.parse(localStorage.getItem("landingStudioSettings")||"null");
+        if(legacy)data={...clone(defaults),...legacy,services:legacy.services||clone(defaults.services)};
+      }catch(e){}
+      activeProjectId=makeId();
+      projects=[{id:activeProjectId,name:data.brand||"Мой бизнес",data:clone(data)}];
+      persistProjects();
+    }
+    function refreshProjectSelect(){
+      const select=$("projectSelect");
+      select.innerHTML=projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name||"Без названия")}</option>`).join("");
+      select.value=activeProjectId;
+    }
+    function createProject(name,source=defaults){
+      const id=makeId(),fresh=clone(source);
+      fresh.brand=name||"Новый проект";
+      projects.push({id,name:fresh.brand,data:fresh});
+      activeProjectId=id;data=fresh;fillEditor();render();refreshProjectSelect();persistProjects();
+    }
+    function downloadJson(){
+      syncActiveProject();
+      const payload={format:"LandingStudioProject",version:1,project:{name:data.brand||"Проект",data}};
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(data.brand||"landing-project").toLowerCase().replace(/[^a-zа-я0-9]+/gi,"-")+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    }
+    $("editorToggle").addEventListener("click",()=>{$("editor").classList.add("open");fillEditor()});
+    $("closeEditor").addEventListener("click",()=>$("editor").classList.remove("open"));
+    $("saveSettings").addEventListener("click",()=>{readEditor();save();refreshProjectSelect();$("editor").classList.remove("open");alert("Проект сохранён на этом устройстве.")});
+    $("projectSelect").addEventListener("change",()=>{readEditor();syncActiveProject();activeProjectId=$("projectSelect").value;data=clone(projects.find(p=>p.id===activeProjectId).data);fillEditor();render();persistProjects()});
+    $("newProject").addEventListener("click",()=>{readEditor();syncActiveProject();const name=prompt("Название нового проекта:","Новый сайт");if(name&&name.trim())createProject(name.trim())});
+    $("duplicateProject").addEventListener("click",()=>{readEditor();syncActiveProject();const name=prompt("Название копии проекта:",(data.brand||"Проект")+" — копия");if(name&&name.trim())createProject(name.trim(),data)});
+    $("deleteProject").addEventListener("click",()=>{if(projects.length<2){alert("Нельзя удалить последний проект. Создайте ещё один проект.");return}if(!confirm("Удалить выбранный проект? Это действие нельзя отменить."))return;projects=projects.filter(p=>p.id!==activeProjectId);activeProjectId=projects[0].id;data=clone(projects[0].data);fillEditor();render();persistProjects()});
+    $("exportProject").addEventListener("click",()=>{readEditor();save();downloadJson()});
+    $("importProject").addEventListener("click",()=>$("importProjectFile").click());
+    $("importProjectFile").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());const imported=obj.project?.data||obj.data;if(!imported)throw new Error("Неверный формат файла");const safe={...clone(defaults),...imported,services:imported.services||clone(defaults.services)};createProject(obj.project?.name||safe.brand||file.name.replace(/\.json$/i,""),safe);alert("Проект импортирован.")}catch(err){alert("Не удалось импортировать файл. Проверьте, что это JSON-экспорт Landing Studio.")}e.target.value=""});
+    $("eHeroImage").addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){alert("Выберите файл изображения.");return}if(file.size>2*1024*1024){alert("Изображение должно быть не больше 2 МБ.");e.target.value="";return}const reader=new FileReader();reader.onload=()=>{data.heroImage=reader.result;render();save()};reader.readAsDataURL(file)});
+    $("removeHeroImage").addEventListener("click",()=>{data.heroImage="";$("eHeroImage").value="";render();save()});
+    $("resetSettings").addEventListener("click",()=>{if(confirm("Вернуть исходные настройки текущего проекта?")){data=clone(defaults);syncActiveProject();fillEditor();render();persistProjects()}});
+    $("printSite").addEventListener("click",()=>window.print());
+    $("downloadSite").addEventListener("click",()=>{readEditor();render();const clone=document.documentElement.cloneNode(true);clone.querySelector("#editor")?.remove();clone.querySelector("#editorToggle")?.remove();clone.querySelector("#aiLaunch")?.remove();clone.querySelector("#aiOverlay")?.remove();clone.querySelectorAll("script").forEach(s=>s.remove());const script=document.createElement("script");script.textContent=`document.querySelectorAll(".faq-q").forEach(b=>b.addEventListener("click",()=>b.parentElement.classList.toggle("open")));document.getElementById("leadForm")?.addEventListener("submit",e=>{e.preventDefault();alert("Это демонстрационная форма. Перед публикацией подключите обработку заявок.");});`;clone.querySelector("body").appendChild(script);const blob=new Blob(["<!doctype html>\n"+clone.outerHTML],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(data.brand||"landing").toLowerCase().replace(/[^a-zа-я0-9]+/gi,"-")+".html";a.click();URL.revokeObjectURL(a.href);});
+    $("leadForm").addEventListener("submit",e=>{e.preventDefault();const n=$("leadName").value.trim(),c=$("leadContact").value.trim(),m=$("leadMessage").value.trim();const msg=`Заявка с сайта ${data.brand}\nИмя: ${n}\nКонтакт: ${c}\nЗадача: ${m}`;if(data.messenger){window.open(data.messenger+(data.messenger.includes("?")?"&":"?")+"text="+encodeURIComponent(msg),"_blank")}else if(data.email){window.location.href="mailto:"+encodeURIComponent(data.email)+"?subject="+encodeURIComponent("Заявка с сайта")+"&body="+encodeURIComponent(msg)}else{alert("Это демонстрационная форма. Чтобы получать заявки, добавьте ссылку на мессенджер или e-mail в настройках.")}});
+
+    // AI Landing Studio: a single niche input drives the complete first draft.
+    let aiDraft = null;
+    const aiOverlay=$("aiOverlay"), aiSteps=[...document.querySelectorAll("[data-ai-step]")];
+    function aiOpen(){aiOverlay.classList.add("open");$("aiNiche").focus()}
+    function aiClose(){aiOverlay.classList.remove("open")}
+    function aiProgress(index,title){$("aiProgress").classList.add("show");$("aiProgressTitle").textContent=title||"AI-агент выполняет задачу…";aiSteps.forEach((el,i)=>{el.classList.toggle("done",i<index);el.classList.toggle("active",i===index)})}
+    function aiFail(message){$("aiError").textContent=message;$("aiError").classList.add("show");$("aiSubmit").disabled=false;$("aiSubmit").textContent="✦ Повторить";$("aiProgress").classList.remove("show")}
+    function safeText(value,fallback=""){return typeof value==="string"&&value.trim()?value.trim():fallback}
+    function applyAIDraft(d){
+      const next={...clone(defaults),...d};
+      next.services=Array.isArray(d.services)&&d.services.length?d.services.slice(0,3).map(x=>[safeText(x[0],"Услуга"),safeText(x[1])]):clone(defaults.services);
+      next.advantages=Array.isArray(d.advantages)?d.advantages.slice(0,4):undefined;
+      next.process=Array.isArray(d.process)?d.process.slice(0,4):undefined;
+      next.faqs=Array.isArray(d.faqs)?d.faqs.slice(0,5):undefined;
+      next.brand=safeText(d.brand,"Новый проект");next.niche=safeText(d.niche,$("aiNiche").value.trim().toUpperCase());
+      next.title=safeText(d.title,"Решение для вашей задачи");next.description=safeText(d.description,"Расскажите о своей задаче — обсудим подходящий формат.");
+      next.cta=safeText(d.cta,"Обсудить задачу");next.aboutTitle=safeText(d.aboutTitle,"Подход, который учитывает ваши задачи");next.aboutText=safeText(d.aboutText,"Опишите компанию, опыт и особенности работы перед публикацией.");
+      next.servicesTitle=safeText(d.servicesTitle,"Услуги");next.servicesIntro=safeText(d.servicesIntro,"Выберите подходящее направление и обсудите детали.");
+      next.advantagesTitle=safeText(d.advantagesTitle,"Почему выбирают нас");next.advantagesIntro=safeText(d.advantagesIntro,"Преимущества, которые важно подтвердить фактами бизнеса.");
+      next.processTitle=safeText(d.processTitle,"Как мы работаем");next.reviewsTitle="Отзывы клиентов";next.galleryTitle="Примеры работ";next.pricesTitle="Стоимость";next.priceLabel="Стоимость — по запросу";next.faqTitle="Частые вопросы";next.contactTitle=safeText(d.contactTitle,"Обсудим вашу задачу?");next.contactText=safeText(d.contactText,"Оставьте сообщение, чтобы обсудить подходящий вариант.");
+      next.style=safeText(d.style,"Премиальный");next.palette=d.palette==="Светлая"?"Светлая":"Тёмная";next.accent=/^#[0-9a-f]{6}$/i.test(d.accent||"")?d.accent:defaults.accent;
+      return next;
+    }
+    $("aiLaunch").addEventListener("click",aiOpen);$("aiClose").addEventListener("click",aiClose);
+    aiOverlay.addEventListener("click",e=>{if(e.target===aiOverlay)aiClose()});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")aiClose()});
+    $("aiRetry").addEventListener("click",()=>{$("aiResult").classList.remove("show");$("aiError").classList.remove("show");$("aiNiche").focus()});
+    $("aiApply").addEventListener("click",()=>{if(!aiDraft)return;readEditor();syncActiveProject();const projectData=applyAIDraft(aiDraft);createProject(projectData.brand,projectData);aiClose();window.scrollTo({top:0,behavior:"smooth"});});
+    $("aiForm").addEventListener("submit",async e=>{
+      e.preventDefault();const niche=$("aiNiche").value.trim();if(!niche)return;
+      $("aiError").classList.remove("show");$("aiResult").classList.remove("show");$("aiSubmit").disabled=true;$("aiSubmit").textContent="Агент работает…";
+      aiProgress(0,"Изучаем нишу и проектируем лендинг…");
+      let step=0;const progressTimer=setInterval(()=>{step=Math.min(step+1,3);aiProgress(step,["Анализируем нишу и рынок…","Определяем аудиторию и предложение…","Готовим структуру и тексты…","Подбираем визуальное направление…"][step])},4200);
+      try{
+        const response=await fetch("/api/generate-landing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({niche})});
+        const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
+        if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
+        aiDraft=payload.landing;aiProgress(4,"Черновик готов. Проверяем данные и собираем страницу…");
+        const d=aiDraft;$("aiResultTitle").textContent=safeText(d.brand,"Ваш лендинг")+" — готово";
+        $("aiResultSummary").textContent=safeText(d.strategySummary,"Подготовлена первая версия стратегии и структуры сайта.");
+        $("aiAudience").textContent=safeText(d.targetAudience,"Сегмент аудитории определён как рабочая гипотеза.");
+        $("aiOffer").textContent=safeText(d.mainOffer,"Предложение сформировано на основе ниши.");
+        $("aiVisual").textContent=safeText(d.visualDirection,"Стиль подобран под аудиторию и тип предложения.");
+        $("aiAssumptions").textContent=Array.isArray(d.assumptions)&&d.assumptions.length?d.assumptions.join("; "):"Проверьте фактические данные, цены, контакты и условия перед публикацией.";
+        $("aiMarketResearch").textContent=safeText(d.marketResearch,"Рыночные наблюдения не предоставлены.");
+        $("aiSources").replaceChildren();(Array.isArray(d.researchSources)?d.researchSources:[]).slice(0,5).forEach(source=>{if(!source||typeof source.url!=="string"||!/^https:\/\//i.test(source.url))return;const a=document.createElement("a");a.href=source.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=safeText(source.title,source.url);a.style.cssText="color:#dfbf75;font-size:12px;text-decoration:underline;overflow-wrap:anywhere";$("aiSources").appendChild(a)});
+        $("aiResult").classList.add("show");$("aiSubmit").disabled=false;$("aiSubmit").textContent="Создать ещё вариант";
+      }catch(err){
+        const msg=err instanceof TypeError?"Не удалось связаться с AI-сервисом. Для работы агента нужно развернуть backend /api/generate-landing и добавить OPENAI_API_KEY в настройки хостинга.":err.message;
+        aiFail(msg);
+      }finally{clearInterval(progressTimer)}
+    });
+
+    load();fillEditor();render();refreshProjectSelect();
+  })();
+  </script>
+</body>
+</html>
