@@ -7,6 +7,8 @@ on:
     paths:
       - "scripts/extract-or-build-app.sh"
       - "scripts/build-app-chunks.cjs"
+      - "scripts/sync-uds-engine.mjs"
+      - "vendor/**"
       - "src/landing-studio-app.html"
       - "src/control-center.html"
       - "src/control-center.js"
@@ -59,6 +61,10 @@ jobs:
       # Сборка панели, общая логика статусов, аудит сайтов и монитор проектов.
       - name: Test Control Center, site audit library and project monitor
         run: node --test tests/control-center.test.mjs
+
+      # Движок Unique Design Studio: бандл, встраивание в app-chunks, загрузчик и редактор.
+      - name: Test Unique Design Studio integration
+        run: node --test tests/uds-integration.test.mjs
 
       - name: Commit generated source or chunks
         if: success()
