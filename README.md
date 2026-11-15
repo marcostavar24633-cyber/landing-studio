@@ -56,3 +56,32 @@ https://marcostavar24633-cyber.github.io/landing-studio/
 - публикует сводку каждого запуска в GitHub Actions Summary.
 
 Для работы нужны включённые GitHub Actions и разрешение workflow на создание и закрытие Issues (`Settings → Actions → General → Workflow permissions`). Мониторинг читает статусы публичных репозиториев; секреты и персональные токены в код не добавляются. Это не гарантирует мгновенные push-уведомления: уведомления о новых Issues настраиваются в настройках GitHub пользователя.
+
+
+## Deploy without Vercel: Cloudflare Pages
+
+The project can be hosted on Cloudflare Pages. The repository includes a Pages Functions adapter for `/api/generate-landing`; the AI key stays on the server and is never embedded in the browser.
+
+### Cloudflare Pages project settings
+
+Connect this GitHub repository to Cloudflare Pages and configure:
+
+- **Production branch:** `main` after the feature PR has been merged.
+- **Build command:** `bash scripts/build-cloudflare-pages.sh`
+- **Build output directory:** `dist`
+- **Root directory:** repository root.
+
+The build script copies only the public site, app chunks, assets and financial-literacy pages into `dist`. The `functions/` directory remains at repository root so Cloudflare Pages can compile its Functions.
+
+### AI key
+
+After the first deployment, open **Workers & Pages → your Pages project → Settings → Variables and Secrets**. Add `OPENAI_API_KEY` as a secret for both Production and Preview environments. Optionally add `OPENAI_MODEL` as a regular variable if you need to override the default model.
+
+Never put the API key in `wrangler.jsonc`, HTML, JavaScript sent to the browser, or GitHub commits.
+
+### Test
+
+- Open `https://YOUR-PROJECT.pages.dev/api/generate-landing` — the GET response should report `status: ok` and whether the secret is configured.
+- Submit a test niche in the Landing Studio AI form. The request is handled by the Cloudflare Pages Function at `/api/generate-landing`.
+
+The Vercel adapter remains only for compatibility; Cloudflare Pages does not depend on Vercel.
