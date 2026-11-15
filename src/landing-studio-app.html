@@ -114,7 +114,15 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
+    .uds-arch{font-weight:700;font-size:15px;margin:4px 0 6px}
+    .uds-checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:13px}
+    .uds-checks li{display:flex;gap:8px;align-items:baseline}
+    .uds-checks b{flex:none;font-size:11px;padding:1px 6px;border-radius:99px;background:#e6f2ea;color:#1f6b3f}
+    .uds-checks li.warn b{background:#fbeedd;color:#8a4b12}
+    .uds-checks li.error b{background:#fbe3e1;color:#9b2a1f}
   </style>
+  <!-- Движок Unique Design Studio: при сборке в app-chunks встраивается в страницу (scripts/build-app-chunks.cjs). -->
+  <script data-uds-engine src="../vendor/uds-engine.js"></script>
 </head>
 <body>
   <header class="shell topbar">
@@ -208,6 +216,17 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       <label for="eMessenger">Ссылка на мессенджер</label><input id="eMessenger" placeholder="https://...">
       <p class="editor-hint">Форма не отправляет данные на сервер. Кнопка может открыть мессенджер с текстом заявки, если вы укажете ссылку. Не вводите реальные данные покупателей в демоверсию.</p>
     </div>
+    <div class="editor-group" id="udsGroup" hidden><h3>Уникальная главная страница</h3>
+      <p class="editor-hint">Движок Unique Design Studio проектирует отдельную композицию первого экрана, палитру и типографику под нишу и сверяет её с вашими предыдущими проектами, чтобы сайты не повторялись.</p>
+      <div class="uds-arch" id="udsArch"></div>
+      <p class="editor-hint" id="udsWhy"></p>
+      <ul class="uds-checks" id="udsChecks"></ul>
+      <label for="eUdsFonts">Шрифты уникальной страницы</label><select id="eUdsFonts"><option value="system">Системные — без внешних запросов</option><option value="web">Google Fonts с кириллицей</option></select>
+      <div class="project-tools">
+        <button type="button" class="primary wide" id="udsDownload">Скачать уникальную главную HTML</button>
+        <button type="button" class="wide" id="udsOpen">Открыть в новой вкладке</button>
+      </div>
+    </div>
     <div class="editor-actions"><button id="saveSettings">Сохранить настройки</button><button class="secondary" id="downloadSite">Скачать сайт HTML</button><button class="secondary" id="resetSettings">Сбросить изменения</button><button class="secondary" id="printSite">Печать / PDF</button></div>
     <p class="editor-hint">Подсказка: для нового заказчика сначала скачайте копию сайта, затем меняйте тексты и оформление. Исходный проект оставьте как мастер-шаблон.</p>
   </aside>
@@ -224,7 +243,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       advantagesTitle:"Сервис, которому можно доверять", advantagesIntro:"Расскажите о сильных сторонах вашего предложения без неподтверждённых обещаний.",
       processTitle:"Понятный путь к результату", reviewsTitle:"Мнение клиентов", galleryTitle:"Примеры работ", pricesTitle:"Стоимость услуг", priceLabel:"Стоимость — по запросу",
       faqTitle:"Частые вопросы", contactTitle:"Обсудим вашу задачу?", contactText:"Оставьте сообщение — мы свяжемся с вами удобным способом.",
-      phone:"", email:"", messenger:"", heroImage:"",
+      phone:"", email:"", messenger:"", heroImage:"", udsFonts:"system",
       services:[["Консультация","Обсудим задачу, цели и подходящий формат работы."],["Основная услуга","Добавьте описание вашей ключевой услуги и её результата."],["Дополнительные услуги","Укажите дополнительные направления, если они есть."]]
     };
     let data = structuredClone(defaults);
@@ -234,7 +253,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
     const makeId = () => "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",eArchitecture:"designArchitecture",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger"};
+    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",eArchitecture:"designArchitecture",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger",eUdsFonts:"udsFonts"};
     const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     function inferArchitecture(niche){
       const n=String(niche||"").toLowerCase();
@@ -245,12 +264,64 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       if(/дом[\s-]*ульяновск|строитель|ремонт|отделк|услуг|юрист|консалт|автосервис|мастер/.test(n))return "service";
       return "modular";
     }
+
+    // ---------- Unique Design Studio ----------
+    // Движок (window.UDS) выбирает одну из 10 архитектур по нише и контенту, сверяет её с проектами,
+    // созданными раньше текущего, и умеет собрать самостоятельную главную. Без движка работает inferArchitecture.
+    const UDS = window.UDS && typeof window.UDS.generate === "function" ? window.UDS : null;
+    const LEGACY_ARCH = ["catalog","editorial","immersive","service","modular"];
+    function udsInput(d, id){
+      // Значения по умолчанию (тёмная схема и золотистый акцент) не считаются выбором пользователя:
+      // иначе каждый проект получал бы «тёмный фон + золото», которое спецификация запрещает по умолчанию.
+      const autoColors=(d.palette||defaults.palette)===defaults.palette&&String(d.accent||defaults.accent).toLowerCase()===defaults.accent;
+      return {...d, id:id||"draft",
+        designArchitecture:LEGACY_ARCH.includes(d.designArchitecture)?d.designArchitecture:"",
+        palette:autoColors?"":d.palette, accent:autoColors?"":d.accent,
+        contacts:{phone:d.phone||"",email:d.email||""}, ctaUrl:/^https:\/\//i.test(d.messenger||"")?d.messenger:"",
+        fonts:d.udsFonts==="web"?"web":"system"};
+    }
+    /** Реестр отпечатков проектов, идущих в списке до stopId (весь список, если stopId не найден). */
+    function udsRegistry(stopId){
+      let reg=[];
+      if(!UDS)return reg;
+      for(const p of projects){
+        if(p.id===stopId)break;
+        const input=udsInput(p.id===activeProjectId?data:p.data,p.id);
+        try{reg=UDS.upsertRegistry(reg,UDS.registryEntry(input,UDS.buildConcept(input,{registry:reg})))}catch(e){}
+      }
+      return reg;
+    }
+    function udsGenerate(d=data,id=activeProjectId){
+      if(!UDS)return null;
+      try{return UDS.generate(udsInput(d,id),{registry:udsRegistry(id)})}catch(e){console.warn("UDS:",e);return null}
+    }
+    function udsLegacyArchitecture(result){
+      const id=result&&result.concept.designDNA.primaryArchetype;
+      const legacy=id&&UDS.ARCHETYPES[id]&&UDS.ARCHETYPES[id].legacy;
+      return LEGACY_ARCH.includes(legacy)?legacy:null;
+    }
+    function udsPanel(result){
+      const group=$("udsGroup");
+      group.hidden=!result;
+      if(!result)return;
+      const dna=result.concept.designDNA, u=result.concept.uniquenessCheck, a=UDS.ARCHETYPES[dna.primaryArchetype];
+      $("udsArch").textContent=`${a.name} — ${result.concept.homepage.heroComposition}`;
+      const near=u.comparedWith&&u.comparedWith.length?` Сходство с предыдущими проектами: ${u.comparedWith.map(c=>`«${c.brand}» ${Math.round(c.similarity*100)}%`).join(", ")}.`:"";
+      $("udsWhy").textContent=dna.selectionRationale+near;
+      const items=[...result.audit.errors.map(x=>["error","Ошибка",x.message||x.label||x.id]),...result.audit.warnings.map(x=>["warn","Проверить",x.message||x.label||x.id]),
+        ...u.differentiationActions.map(x=>["ok","Уникальность",x])];
+      if(!items.length)items.push(["ok","OK","Проверка перед выдачей пройдена, совпадений с соседними проектами нет"]);
+      $("udsChecks").innerHTML=items.map(([cls,label,text])=>`<li class="${cls}"><b>${esc(label)}</b><span>${esc(text)}</span></li>`).join("");
+    }
+    function udsFileName(){return (data.brand||"landing").toLowerCase().replace(/[^a-zа-яё0-9]+/gi,"-").replace(/^-|-$/g,"")+"-unique.html"}
     function render(){
       document.body.classList.toggle("light",data.palette==="Светлая");
       document.body.classList.remove("style-premium","style-minimal","style-vibrant","style-business");
       document.body.classList.remove("architecture-catalog","architecture-editorial","architecture-immersive","architecture-service","architecture-modular");
       const architectureMap={catalog:"architecture-catalog",editorial:"architecture-editorial",immersive:"architecture-immersive",service:"architecture-service",modular:"architecture-modular"};
-      const architecture=!data.designArchitecture||data.designArchitecture==="auto"?inferArchitecture(data.niche):data.designArchitecture;
+      const uds=udsGenerate();
+      udsPanel(uds);
+      const architecture=!data.designArchitecture||data.designArchitecture==="auto"?(udsLegacyArchitecture(uds)||inferArchitecture(data.niche)):data.designArchitecture;
       document.body.classList.add(architectureMap[architecture]||"architecture-service");
       const styleMap={"Премиальный":"style-premium","Минимализм":"style-minimal","Яркий":"style-vibrant","Деловой":"style-business"};
       document.body.classList.add(styleMap[data.style]||"style-premium");
@@ -338,6 +409,11 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     $("removeHeroImage").addEventListener("click",()=>{data.heroImage="";$("eHeroImage").value="";render();save()});
     $("resetSettings").addEventListener("click",()=>{if(confirm("Вернуть исходные настройки текущего проекта?")){data=clone(defaults);syncActiveProject();fillEditor();render();persistProjects()}});
     $("printSite").addEventListener("click",()=>window.print());
+    // Уникальная главная: собирается движком UDS из текущих данных проекта.
+    function udsHtmlUrl(){readEditor();const r=udsGenerate();udsPanel(r);return r?URL.createObjectURL(new Blob([r.html],{type:"text/html;charset=utf-8"})):""}
+    $("udsDownload").addEventListener("click",()=>{const url=udsHtmlUrl();if(!url)return;const a=document.createElement("a");a.href=url;a.download=udsFileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)});
+    $("udsOpen").addEventListener("click",()=>{const url=udsHtmlUrl();if(!url)return;window.open(url,"_blank","noopener");setTimeout(()=>URL.revokeObjectURL(url),60000)});
+    $("editor").addEventListener("change",e=>{if(!UDS||e.target.closest("#udsGroup .project-tools")||e.target.id==="projectSelect"||e.target.type==="file")return;readEditor();udsPanel(udsGenerate())});
     $("downloadSite").addEventListener("click",()=>{readEditor();render();const clone=document.documentElement.cloneNode(true);clone.querySelector("#editor")?.remove();clone.querySelector("#editorToggle")?.remove();clone.querySelector("#aiLaunch")?.remove();clone.querySelector("#aiOverlay")?.remove();clone.querySelectorAll("script").forEach(s=>s.remove());const script=document.createElement("script");script.textContent=`document.querySelectorAll(".faq-q").forEach(b=>b.addEventListener("click",()=>b.parentElement.classList.toggle("open")));document.getElementById("leadForm")?.addEventListener("submit",e=>{e.preventDefault();alert("Это демонстрационная форма. Перед публикацией подключите обработку заявок.");});`;clone.querySelector("body").appendChild(script);const blob=new Blob(["<!doctype html>\n"+clone.outerHTML],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(data.brand||"landing").toLowerCase().replace(/[^a-zа-я0-9]+/gi,"-")+".html";a.click();URL.revokeObjectURL(a.href);});
     $("leadForm").addEventListener("submit",e=>{e.preventDefault();const n=$("leadName").value.trim(),c=$("leadContact").value.trim(),m=$("leadMessage").value.trim();const msg=`Заявка с сайта ${data.brand}\nИмя: ${n}\nКонтакт: ${c}\nЗадача: ${m}`;if(data.messenger){window.open(data.messenger+(data.messenger.includes("?")?"&":"?")+"text="+encodeURIComponent(msg),"_blank")}else if(data.email){window.location.href="mailto:"+encodeURIComponent(data.email)+"?subject="+encodeURIComponent("Заявка с сайта")+"&body="+encodeURIComponent(msg)}else{alert("Это демонстрационная форма. Чтобы получать заявки, добавьте ссылку на мессенджер или e-mail в настройках.")}});
 
@@ -351,7 +427,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     function safeText(value,fallback=""){return typeof value==="string"&&value.trim()?value.trim():fallback}
     function applyAIDraft(d){
       const next={...clone(defaults),...d};
-      next.designArchitecture=["catalog","editorial","immersive","service","modular"].includes(d.designArchitecture)?d.designArchitecture:inferArchitecture(d.niche||$("aiNiche").value);
+      // С движком UDS архитектура остаётся «авто»: точный вариант внутри семейства подбирается с учётом других проектов.
+      next.designArchitecture=LEGACY_ARCH.includes(d.designArchitecture)?d.designArchitecture:(UDS?"auto":inferArchitecture(d.niche||$("aiNiche").value));
       next.services=Array.isArray(d.services)&&d.services.length?d.services.slice(0,3).map(x=>[safeText(x[0],"Услуга"),safeText(x[1])]):clone(defaults.services);
       next.advantages=Array.isArray(d.advantages)?d.advantages.slice(0,4):undefined;
       next.process=Array.isArray(d.process)?d.process.slice(0,4):undefined;
@@ -385,6 +462,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         $("aiAudience").textContent=safeText(d.targetAudience,"Сегмент аудитории определён как рабочая гипотеза.");
         $("aiOffer").textContent=safeText(d.mainOffer,"Предложение сформировано на основе ниши.");
         $("aiVisual").textContent=safeText(d.visualDirection,"Стиль подобран под аудиторию и тип предложения.");
+        const udsDraft=UDS?udsGenerate(applyAIDraft(d),"__draft__"):null;
+        if(udsDraft){const a=UDS.ARCHETYPES[udsDraft.concept.designDNA.primaryArchetype];$("aiVisual").textContent+=` Архитектура главной (Unique Design Studio): ${a.name} — ${udsDraft.concept.homepage.heroComposition}.`}
         $("aiAssumptions").textContent=Array.isArray(d.assumptions)&&d.assumptions.length?d.assumptions.join("; "):"Проверьте фактические данные, цены, контакты и условия перед публикацией.";
         $("aiMarketResearch").textContent=safeText(d.marketResearch,"Рыночные наблюдения не предоставлены.");
         $("aiSources").replaceChildren();(Array.isArray(d.researchSources)?d.researchSources:[]).slice(0,5).forEach(source=>{if(!source||typeof source.url!=="string"||!/^https:\/\//i.test(source.url))return;const a=document.createElement("a");a.href=source.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=safeText(source.title,source.url);a.style.cssText="color:#dfbf75;font-size:12px;text-decoration:underline;overflow-wrap:anywhere";$("aiSources").appendChild(a)});
