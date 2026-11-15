@@ -237,10 +237,11 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     function inferArchitecture(niche){
       const n=String(niche||"").toLowerCase();
-      if(/телескоп|оптик|электрон|техник|магазин|каталог|оборудован|товар/.test(n))return "catalog";
-      if(/фотограф|фото|портфолио|салон|парикмах|hair|beauty|цвет|букет|кофе|кофейн|кафе|ресторан|кондитер/.test(n))return "editorial";
-      if(/раки|морепродукт|еда|доставк|продукт/.test(n))return "immersive";
-      if(/строитель|ремонт|отделк|услуг|юрист|консалт|автосервис|мастер/.test(n))return "service";
+      if(/doma[\s-]*tech|телескоп|оптик|электрон|техник|магазин|каталог|оборудован|товар/.test(n))return "catalog";
+      if(/photograf|фотограф|фото|портфолио/.test(n))return "immersive";
+      if(/penka|hair|beauty|салон|парикмах|кофе|кофейн|кафе|ресторан|кондитер|slopay|букет|цвет/.test(n))return "editorial";
+      if(/raki|раки|морепродукт|еда|доставк|продукт/.test(n))return "immersive";
+      if(/дом[\s-]*ульяновск|строитель|ремонт|отделк|услуг|юрист|консалт|автосервис|мастер/.test(n))return "service";
       return "modular";
     }
     function render(){
