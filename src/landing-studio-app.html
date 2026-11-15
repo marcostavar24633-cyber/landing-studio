@@ -174,6 +174,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       <label for="eDescription">Описание на первом экране</label><textarea id="eDescription"></textarea>
       <label for="eCta">Текст кнопки</label><input id="eCta">
       <label for="eStyle">Стиль</label><select id="eStyle"><option>Премиальный</option><option>Минимализм</option><option>Яркий</option><option>Деловой</option></select>
+      <label for="eArchitecture">Архитектура главной страницы</label><select id="eArchitecture"><option value="auto">Автоматически по нише</option><option value="catalog">Каталог / магазин</option><option value="editorial">Редакционная / журнальная</option><option value="immersive">Полноэкранная / иммерсивная</option><option value="service">Услуги / сервис</option><option value="modular">Модульная / асимметричная</option></select>
       <label for="ePalette">Цветовая схема</label><select id="ePalette"><option>Тёмная</option><option>Светлая</option></select>
       <label for="eAccent">Цвет акцента</label><input id="eAccent" type="color">
       <label for="eHeroImage">Фотография первого экрана</label><input id="eHeroImage" class="file-input" type="file" accept="image/*">
@@ -216,7 +217,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       brand:"Мой бизнес", niche:"УСЛУГИ · ИНДИВИДУАЛЬНЫЙ ПОДХОД",
       title:"Помогаем воплощать ваши идеи",
       description:"Качественные услуги, индивидуальный подход и внимание к деталям.",
-      cta:"Оставить заявку", style:"Премиальный", palette:"Тёмная", accent:"#c6a879", designArchitecture:"service",
+      cta:"Оставить заявку", style:"Премиальный", palette:"Тёмная", accent:"#c6a879", designArchitecture:"auto",
       aboutTitle:"Внимание к тому, что действительно важно.",
       aboutText:"Мы помогаем решать задачи бизнеса и частных клиентов. Расскажите о своей компании, опыте и подходе — этот текст легко изменить в панели настроек.",
       servicesTitle:"Что мы предлагаем", servicesIntro:"Опишите здесь основные направления работы. Названия и описания карточек редактируются в настройках.",
@@ -233,7 +234,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
     const makeId = () => "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
-    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger"};
+    const ids = {eBrand:"brand",eNiche:"niche",eTitle:"title",eDescription:"description",eCta:"cta",eStyle:"style",eArchitecture:"designArchitecture",ePalette:"palette",eAccent:"accent",eAboutTitle:"aboutTitle",eAboutText:"aboutText",eServicesTitle:"servicesTitle",eServicesIntro:"servicesIntro",eAdvantagesTitle:"advantagesTitle",eAdvantagesIntro:"advantagesIntro",eProcessTitle:"processTitle",eReviewsTitle:"reviewsTitle",eGalleryTitle:"galleryTitle",ePricesTitle:"pricesTitle",ePriceLabel:"priceLabel",eFaqTitle:"faqTitle",eContactTitle:"contactTitle",eContactText:"contactText",ePhone:"phone",eEmail:"email",eMessenger:"messenger"};
     const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     function inferArchitecture(niche){
       const n=String(niche||"").toLowerCase();
@@ -249,7 +250,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       document.body.classList.remove("style-premium","style-minimal","style-vibrant","style-business");
       document.body.classList.remove("architecture-catalog","architecture-editorial","architecture-immersive","architecture-service","architecture-modular");
       const architectureMap={catalog:"architecture-catalog",editorial:"architecture-editorial",immersive:"architecture-immersive",service:"architecture-service",modular:"architecture-modular"};
-      const architecture=data.designArchitecture||inferArchitecture(data.niche);
+      const architecture=!data.designArchitecture||data.designArchitecture==="auto"?inferArchitecture(data.niche):data.designArchitecture;
       document.body.classList.add(architectureMap[architecture]||"architecture-service");
       const styleMap={"Премиальный":"style-premium","Минимализм":"style-minimal","Яркий":"style-vibrant","Деловой":"style-business"};
       document.body.classList.add(styleMap[data.style]||"style-premium");
@@ -294,7 +295,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       try{
         const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
         if(saved&&Array.isArray(saved.projects)&&saved.projects.length){
-          projects=saved.projects.map(p=>({id:p.id||makeId(),name:p.name||p.data?.brand||"Мой проект",data:{...clone(defaults),...(p.data||{}),services:p.data?.services||clone(defaults.services)}}));
+          projects=saved.projects.map(p=>({id:p.id||makeId(),name:p.name||p.data?.brand||"Мой проект",data:{...clone(defaults),...(p.data||{}),designArchitecture:p.data?.designArchitecture||"auto",services:p.data?.services||clone(defaults.services)}}));
           activeProjectId=projects.some(p=>p.id===saved.activeProjectId)?saved.activeProjectId:projects[0].id;
           data=clone(projects.find(p=>p.id===activeProjectId).data);
           return;
@@ -332,7 +333,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     $("deleteProject").addEventListener("click",()=>{if(projects.length<2){alert("Нельзя удалить последний проект. Создайте ещё один проект.");return}if(!confirm("Удалить выбранный проект? Это действие нельзя отменить."))return;projects=projects.filter(p=>p.id!==activeProjectId);activeProjectId=projects[0].id;data=clone(projects[0].data);fillEditor();render();persistProjects()});
     $("exportProject").addEventListener("click",()=>{readEditor();save();downloadJson()});
     $("importProject").addEventListener("click",()=>$("importProjectFile").click());
-    $("importProjectFile").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());const imported=obj.project?.data||obj.data;if(!imported)throw new Error("Неверный формат файла");const safe={...clone(defaults),...imported,services:imported.services||clone(defaults.services)};createProject(obj.project?.name||safe.brand||file.name.replace(/\.json$/i,""),safe);alert("Проект импортирован.")}catch(err){alert("Не удалось импортировать файл. Проверьте, что это JSON-экспорт Landing Studio.")}e.target.value=""});
+    $("importProjectFile").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());const imported=obj.project?.data||obj.data;if(!imported)throw new Error("Неверный формат файла");const safe={...clone(defaults),...imported,designArchitecture:imported.designArchitecture||"auto",services:imported.services||clone(defaults.services)};createProject(obj.project?.name||safe.brand||file.name.replace(/\.json$/i,""),safe);alert("Проект импортирован.")}catch(err){alert("Не удалось импортировать файл. Проверьте, что это JSON-экспорт Landing Studio.")}e.target.value=""});
     $("eHeroImage").addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){alert("Выберите файл изображения.");return}if(file.size>2*1024*1024){alert("Изображение должно быть не больше 2 МБ.");e.target.value="";return}const reader=new FileReader();reader.onload=()=>{data.heroImage=reader.result;render();save()};reader.readAsDataURL(file)});
     $("removeHeroImage").addEventListener("click",()=>{data.heroImage="";$("eHeroImage").value="";render();save()});
     $("resetSettings").addEventListener("click",()=>{if(confirm("Вернуть исходные настройки текущего проекта?")){data=clone(defaults);syncActiveProject();fillEditor();render();persistProjects()}});
