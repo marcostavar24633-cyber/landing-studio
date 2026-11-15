@@ -1,0 +1,51 @@
+name: Landing Studio app source and chunk build
+
+on:
+  push:
+    branches:
+      - feature/unique-design-architecture
+    paths:
+      - "scripts/extract-or-build-app.sh"
+      - "scripts/build-app-chunks.cjs"
+      - "src/landing-studio-app.html"
+
+permissions:
+  contents: write
+
+jobs:
+  app-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/unique-design-architecture
+
+      - name: Extract source or rebuild browser chunks
+        run: |
+          chmod +x scripts/extract-or-build-app.sh
+          bash scripts/extract-or-build-app.sh
+
+      - name: Validate JavaScript syntax in extracted HTML scripts
+        if: hashFiles('src/landing-studio-app.html') != ''
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('src/landing-studio-app.html', 'utf8');
+          const scripts = [...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(m => m[1]).filter(s => s.trim());
+          for (const [i, source] of scripts.entries()) {
+            try { new Function(source); }
+            catch (error) { console.error('Inline script ' + (i + 1) + ':', error.message); process.exitCode = 1; }
+          }
+          console.log('Checked ' + scripts.length + ' inline script(s).');
+          NODE
+
+      - name: Commit generated source or chunks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src app-chunks index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Prepare editable Landing Studio app source and chunk build"
+            git push origin feature/unique-design-architecture
+          fi
