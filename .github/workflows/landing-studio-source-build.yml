@@ -8,6 +8,8 @@ on:
       - "scripts/extract-or-build-app.sh"
       - "scripts/build-app-chunks.cjs"
       - "src/landing-studio-app.html"
+      - "api/generate-landing.js"
+      - ".github/workflows/landing-studio-source-build.yml"
 
 permissions:
   contents: write
@@ -31,6 +33,8 @@ jobs:
         run: |
           node - <<'NODE'
           const fs = require('fs');
+          const { execFileSync } = require('child_process');
+          execFileSync(process.execPath, ['--check', 'api/generate-landing.js']);
           const html = fs.readFileSync('src/landing-studio-app.html', 'utf8');
           const scripts = [];
           let cursor = 0;
