@@ -1,0 +1,78 @@
+name: Landing Studio app source and chunk build
+
+on:
+  push:
+    branches:
+      - feature/unique-design-architecture
+    paths:
+      - "scripts/extract-or-build-app.sh"
+      - "scripts/build-app-chunks.cjs"
+      - "scripts/sync-uds-engine.mjs"
+      - "vendor/**"
+      - "src/landing-studio-app.html"
+      - "src/control-center.html"
+      - "src/control-center.js"
+      - "lib/**"
+      - "projects.json"
+      - "tests/**"
+      - "scripts/project-health-monitor.mjs"
+      - "api/generate-landing.js"
+      - "api/generate-landing-core.js"
+      - "functions/**"
+      - "scripts/build-cloudflare-pages.sh"
+      - "wrangler.jsonc"
+      - "_routes.json"
+      - ".github/workflows/landing-studio-source-build.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: landing-studio-source-build
+  cancel-in-progress: false
+
+jobs:
+  app-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/unique-design-architecture
+
+      - name: Extract source or rebuild browser chunks
+        run: |
+          bash scripts/extract-or-build-app.sh
+
+      - name: Validate JavaScript syntax in extracted HTML scripts
+        if: hashFiles('src/landing-studio-app.html') != ''
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const { execFileSync } = require('child_process');
+          execFileSync(process.execPath, ['--check', 'api/generate-landing.js']);
+          execFileSync(process.execPath, ['--check', 'api/generate-landing-core.js']);
+          for (const name of fs.readdirSync('functions/api')) {
+            execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/' + name, 'utf8') });
+          }
+          console.log('Checked API adapters and Cloudflare Pages Functions.');
+          NODE
+
+      # Сборка панели, общая логика статусов, аудит сайтов и монитор проектов.
+      - name: Test Control Center, site audit library and project monitor
+        run: node --test tests/control-center.test.mjs
+
+      # Движок Unique Design Studio: бандл, встраивание в app-chunks, загрузчик и редактор.
+      - name: Test Unique Design Studio integration
+        run: node --test tests/uds-integration.test.mjs
+
+      - name: Commit generated source or chunks
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src app-chunks index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Prepare editable Landing Studio app source and chunk build"
+            git push origin feature/unique-design-architecture
+          fi
