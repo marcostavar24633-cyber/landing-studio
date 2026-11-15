@@ -9,6 +9,11 @@ on:
       - "scripts/build-app-chunks.cjs"
       - "src/landing-studio-app.html"
       - "src/control-center.html"
+      - "src/control-center.js"
+      - "lib/**"
+      - "projects.json"
+      - "tests/**"
+      - "scripts/project-health-monitor.mjs"
       - "api/generate-landing.js"
       - "api/generate-landing-core.js"
       - "functions/**"
@@ -45,22 +50,15 @@ jobs:
           const { execFileSync } = require('child_process');
           execFileSync(process.execPath, ['--check', 'api/generate-landing.js']);
           execFileSync(process.execPath, ['--check', 'api/generate-landing-core.js']);
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/generate-landing.js', 'utf8') });
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/site-check.js', 'utf8') });
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/seo-check.js', 'utf8') });
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/responsive-check.js', 'utf8') });
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/forms-check.js', 'utf8') });
-          execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/security-check.js', 'utf8') });
-          execFileSync('bash', ['scripts/build-cloudflare-pages.sh']);
-          if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/_routes.json')) throw new Error('Cloudflare Pages output is incomplete.');
-          const html = fs.readFileSync('src/control-center.html', 'utf8');
-          const scriptStart = html.indexOf('<script>');
-          const scriptEnd = html.indexOf('</script>', scriptStart);
-          if (scriptStart < 0 || scriptEnd < 0) throw new Error('Control Center script was not found.');
-          try { new Function(html.slice(scriptStart + 8, scriptEnd)); }
-          catch (error) { console.error('Control Center JavaScript:', error.message); process.exitCode = 1; }
-          console.log('Checked Control Center HTML and inline JavaScript.');
+          for (const name of fs.readdirSync('functions/api')) {
+            execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/' + name, 'utf8') });
+          }
+          console.log('Checked API adapters and Cloudflare Pages Functions.');
           NODE
+
+      # Сборка панели, общая логика статусов, аудит сайтов и монитор проектов.
+      - name: Test Control Center, site audit library and project monitor
+        run: node --test tests/control-center.test.mjs
 
       - name: Commit generated source or chunks
         if: success()

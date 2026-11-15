@@ -1,0 +1,14 @@
+{
+  "owner": "marcostavar24633-cyber",
+  "projects": [
+    { "repo": "hair", "name": "HAIR" },
+    { "repo": "slopay-buket", "name": "Slopay Buket" },
+    { "repo": "raki", "name": "RAKI", "url": "https://marcostavar24633-cyber.github.io/raki/" },
+    { "repo": "landing-studio", "name": "Landing Studio" },
+    { "repo": "Penka", "name": "PENKA" },
+    { "repo": "Photograf", "name": "PHOTOGRAF" },
+    { "repo": "doma-tech", "name": "DOMA TECH" },
+    { "repo": "remont", "name": "REMONT" },
+    { "repo": "rovno-otdelka", "name": "ROVNO OTDELKA" }
+  ]
+}

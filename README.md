@@ -46,70 +46,64 @@ https://marcostavar24633-cyber.github.io/landing-studio/
 
 Кнопка «Создать проект в редакторе» формирует черновую структуру проекта из выбранной ниши и передаёт JSON в поле импорта. Если браузер или обработчик импорта блокирует программную передачу файла, используйте штатный импорт JSON вручную. Всегда проверяйте и редактируйте гипотезы, тексты, стоимость, характеристики, сроки, контакты и условия до публикации. Помощник не подключён к нейросети и не выполняет исследование рынка.
 
-## Мониторинг проектов
-
-В репозитории добавлен GitHub Actions workflow `.github/workflows/project-health-monitor.yml`:
-- запускается автоматически каждый час и вручную из вкладки Actions;
-- проверяет последний запуск каждого отдельного workflow в ветке `main` проектов `hair`, `slopay-buket`, `raki`, `landing-studio`, `Penka`, `Photograf`, `doma-tech`, `remont` и `rovno-otdelka`;
-- при обнаружении ошибки создаёт или обновляет отдельный Issue для соответствующего workflow в репозитории Landing Studio;
-- после успешного запуска того же workflow автоматически закрывает соответствующее уведомление;
-- публикует сводку каждого запуска в GitHub Actions Summary.
-
-Для работы нужны включённые GitHub Actions и разрешение workflow на создание и закрытие Issues (`Settings → Actions → General → Workflow permissions`). Мониторинг читает статусы публичных репозиториев; секреты и персональные токены в код не добавляются. Это не гарантирует мгновенные push-уведомления: уведомления о новых Issues настраиваются в настройках GitHub пользователя.
-
-
-## Deploy without Vercel: Cloudflare Pages
-
-The project can be hosted on Cloudflare Pages. The repository includes a Pages Functions adapter for `/api/generate-landing`; the AI key stays on the server and is never embedded in the browser.
-
-### Cloudflare Pages project settings
-
-Connect this GitHub repository to Cloudflare Pages and configure:
-
-- **Production branch:** `main` after the feature PR has been merged.
-- **Build command:** `bash scripts/build-cloudflare-pages.sh`
-- **Build output directory:** `dist`
-- **Root directory:** repository root.
-
-The build script copies only the public site, app chunks, assets and financial-literacy pages into `dist`. The `functions/` directory remains at repository root so Cloudflare Pages can compile its Functions.
-
-### AI key
-
-After the first deployment, open **Workers & Pages → your Pages project → Settings → Variables and Secrets**. Add `OPENAI_API_KEY` as a secret for both Production and Preview environments. Optionally add `OPENAI_MODEL` as a regular variable if you need to override the default model.
-
-Never put the API key in `wrangler.jsonc`, HTML, JavaScript sent to the browser, or GitHub commits.
-
-### Test
-
-- Open `https://YOUR-PROJECT.pages.dev/api/generate-landing` — the GET response should report `status: ok` and whether the secret is configured.
-- Submit a test niche in the Landing Studio AI form. The request is handled by the Cloudflare Pages Function at `/api/generate-landing`.
-
-The Vercel adapter remains only for compatibility; Cloudflare Pages does not depend on Vercel.
-
-
 ## WEB PROJECT CONTROL CENTER PRO
 
-The Cloudflare Pages homepage is now the multi-site operations dashboard. It monitors these public GitHub repositories:
+Центральная панель управления всеми сайтами: `src/control-center.html` + `src/control-center.js`. Собирается в `dist/` командой `bash scripts/build-cloudflare-pages.sh` и публикуется на Cloudflare Pages вместе с функциями `functions/api/*`.
 
-- `hair` — HAIR
-- `slopay-buket` — Slopay Buket
-- `raki` — RAKI
-- `landing-studio` — Landing Studio
-- `Penka` — PENKA
-- `Photograf` — PHOTOGRAF
-- `doma-tech` — DOMA TECH
-- `remont` — REMONT
-- `rovno-otdelka` — ROVNO OTDELKA
+### Реестр проектов
 
-The dashboard currently reads public repository metadata and recent GitHub Actions runs directly from the GitHub REST API. It includes an overview, project registry, deployment/workflow table, and clearly marked planned modules for SEO, responsive/browser QA, forms, security, and local check history.
+Единый список проектов — `projects.json`. Его читают и панель, и часовой монитор. Чтобы добавить сайт, достаточно одной строки:
 
-Important: a green GitHub Actions result is a CI workflow result, not proof that the public website, its forms, SEO, mobile layout, or security have passed. Those modules are labelled as not yet automatically tested until real checks are implemented. The local history is stored in the current browser only.
+```json
+{ "repo": "new-site", "name": "NEW SITE", "url": "https://new-site.pages.dev" }
+```
 
-### Cloudflare Pages
+`url` и `branch` необязательны. Если `url` не указан, адрес берётся из поля **Website** (homepage) репозитория, а если его нет и включён GitHub Pages — `https://<owner>.github.io/<repo>/`. Проект без адреса показывается как «URL не найден», и проверки сайта для него не выполняются.
 
-- Build command: `bash scripts/build-cloudflare-pages.sh`
-- Build output directory: `dist`
-- Root directory: repository root (blank path)
-- Production branch: `feature/unique-design-architecture` during initial rollout
+### Раздельные статусы: качество и публикация
 
-The build script publishes `src/control-center.html` as the dashboard homepage. Existing landing-builder source remains in the repository but is no longer the primary Cloudflare Pages homepage.
+Каждый workflow GitHub Actions относится к одному из типов (`lib/workflow-status.js`):
+
+| Тип | Признаки в названии или пути | Что означает ошибка |
+|---|---|---|
+| Публикация | deploy, publish, release, pages | Сайт мог не обновиться — **критично** |
+| Качество | quality, test, lint, audit, check, validate, monitor, health, lighthouse, ci, qa | Есть замечания — **требует внимания**, публикацию не блокирует |
+| Служебный | всё остальное | В сводный статус не входит |
+
+Качество имеет приоритет при совпадении обоих признаков («Quality checks before deploy» — это качество). Статус берётся по последним запускам основной ветки; если по типу их нет — по последним запускам других веток. Отменённый запуск не считается ошибкой.
+
+Итог по проекту: **Критично** — ошибка публикации, сайт недоступен или найден риск безопасности; **Требует внимания** — не пройдена проверка качества или аудит нашёл проблему; **Неполные данные** — нет адреса сайта или запусков публикации; **Рабочий статус** — публикация успешна и сайт отвечает.
+
+### Проверки сайтов
+
+Общее ядро — `lib/site-audit.js`. Проверяется главная страница опубликованного сайта:
+
+- **Доступность** — HTTP-статус и время ответа.
+- **SEO** — title, description, H1, canonical, viewport, robots, Open Graph, lang, robots.txt, sitemap.xml.
+- **Адаптивность** — viewport, медиазапросы, правило для изображений, фиксированные ширины от 1000px, alt.
+- **Формы** — наличие способа связи, адрес отправки, обязательные поля, кнопка, согласие, ссылки tel/mailto/мессенджеров.
+- **Безопасность** — HTTPS, заголовки безопасности, HTTP-ресурсы на HTTPS-странице, `target=_blank` без `noopener`, строки, похожие на ключи (значения не показываются).
+
+Это статический анализ HTML и CSS: он не заменяет Lighthouse, не открывает страницу в браузере и не отправляет заявки. На GitHub Pages нельзя задать свои HTTP-заголовки, поэтому замечание о заголовках там ожидаемо.
+
+Функции панели: `POST /api/site-audit` (все проверки одного сайта для сводной таблицы), `/api/site-check`, `/api/seo-check`, `/api/responsive-check`, `/api/forms-check`, `/api/security-check`. Они принимают только HTTPS-адреса на `pages.dev`, `github.io`, `vercel.app` и `netlify.app`; свой домен добавляется в `ALLOWED_HOST_SUFFIXES` в `lib/site-audit.js`.
+
+### Часовой монитор
+
+Workflow `.github/workflows/project-health-monitor.yml` запускает `scripts/project-health-monitor.mjs`:
+
+- каждый час и вручную из вкладки Actions (расписание работает из ветки по умолчанию);
+- для каждого проекта из `projects.json` считает качество, публикацию, доступность сайта и четыре аудита;
+- публикует сводную таблицу в GitHub Actions Summary и JSON-отчёт `monitor-report` в артефактах запуска;
+- создаёт Issues с префиксами `[Публикация]`, `[Качество]`, `[CI]` и `[Сайт]` и закрывает их после исправления;
+- завершается ошибкой только при критичных сигналах: ошибка публикации, недоступный сайт, риск безопасности, недоступный репозиторий. Замечания качества и аудита — предупреждения.
+
+Для работы нужны включённые GitHub Actions и разрешение workflow на создание и закрытие Issues (`Settings → Actions → General → Workflow permissions`). Монитор читает публичные репозитории штатным `GITHUB_TOKEN`; секреты и персональные токены в код не добавляются.
+
+### Тесты
+
+```bash
+node --test tests/control-center.test.mjs
+```
+
+Проверяются классификация workflow, итоговые статусы, все проверки сайта, монитор (на поддельной сети, без реальных запросов) и полнота сборки панели.
