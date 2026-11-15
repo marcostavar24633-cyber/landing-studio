@@ -29,7 +29,6 @@ jobs:
 
       - name: Extract source or rebuild browser chunks
         run: |
-          chmod +x scripts/extract-or-build-app.sh
           bash scripts/extract-or-build-app.sh
 
       - name: Validate JavaScript syntax in extracted HTML scripts
@@ -67,6 +66,5 @@ jobs:
           git add src app-chunks index.html
           if ! git diff --cached --quiet; then
             git commit -m "Prepare editable Landing Studio app source and chunk build"
-            git pull --rebase origin feature/unique-design-architecture
             git push origin feature/unique-design-architecture
           fi
