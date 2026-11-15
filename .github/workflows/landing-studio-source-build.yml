@@ -32,7 +32,18 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const html = fs.readFileSync('src/landing-studio-app.html', 'utf8');
-          const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).filter(s => s.trim());
+          const scripts = [];
+          let cursor = 0;
+          while (true) {
+            const start = html.indexOf('<script', cursor);
+            if (start < 0) break;
+            const openEnd = html.indexOf('>', start);
+            const close = html.indexOf('</script>', openEnd + 1);
+            if (openEnd < 0 || close < 0) break;
+            const source = html.slice(openEnd + 1, close);
+            if (source.trim()) scripts.push(source);
+            cursor = close + 9;
+          }
           for (const [i, source] of scripts.entries()) {
             try { new Function(source); }
             catch (error) { console.error('Inline script ' + (i + 1) + ':', error.message); process.exitCode = 1; }
@@ -41,6 +52,7 @@ jobs:
           NODE
 
       - name: Commit generated source or chunks
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
