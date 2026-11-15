@@ -17,3 +17,5 @@ node scripts/build-app-chunks.cjs
 
 # Build workflow trigger: extract source before editing the compressed browser app.
 # Rebuild chunks after src/landing-studio-app.html changes.
+
+# Trigger updated workflow validation.
