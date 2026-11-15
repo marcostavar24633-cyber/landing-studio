@@ -85,3 +85,31 @@ Never put the API key in `wrangler.jsonc`, HTML, JavaScript sent to the browser,
 - Submit a test niche in the Landing Studio AI form. The request is handled by the Cloudflare Pages Function at `/api/generate-landing`.
 
 The Vercel adapter remains only for compatibility; Cloudflare Pages does not depend on Vercel.
+
+
+## WEB PROJECT CONTROL CENTER PRO
+
+The Cloudflare Pages homepage is now the multi-site operations dashboard. It monitors these public GitHub repositories:
+
+- `hair` — HAIR
+- `slopay-buket` — Slopay Buket
+- `raki` — RAKI
+- `landing-studio` — Landing Studio
+- `Penka` — PENKA
+- `Photograf` — PHOTOGRAF
+- `doma-tech` — DOMA TECH
+- `remont` — REMONT
+- `rovno-otdelka` — ROVNO OTDELKA
+
+The dashboard currently reads public repository metadata and recent GitHub Actions runs directly from the GitHub REST API. It includes an overview, project registry, deployment/workflow table, and clearly marked planned modules for SEO, responsive/browser QA, forms, security, and local check history.
+
+Important: a green GitHub Actions result is a CI workflow result, not proof that the public website, its forms, SEO, mobile layout, or security have passed. Those modules are labelled as not yet automatically tested until real checks are implemented. The local history is stored in the current browser only.
+
+### Cloudflare Pages
+
+- Build command: `bash scripts/build-cloudflare-pages.sh`
+- Build output directory: `dist`
+- Root directory: repository root (blank path)
+- Production branch: `feature/unique-design-architecture` during initial rollout
+
+The build script publishes `src/control-center.html` as the dashboard homepage. Existing landing-builder source remains in the repository but is no longer the primary Cloudflare Pages homepage.
