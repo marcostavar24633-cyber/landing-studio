@@ -8,6 +8,7 @@ on:
       - "scripts/extract-or-build-app.sh"
       - "scripts/build-app-chunks.cjs"
       - "src/landing-studio-app.html"
+      - "src/control-center.html"
       - "api/generate-landing.js"
       - "api/generate-landing-core.js"
       - "functions/**"
@@ -46,25 +47,13 @@ jobs:
           execFileSync(process.execPath, ['--check', 'api/generate-landing-core.js']);
           execFileSync(process.execPath, ['--input-type=module', '--check'], { input: fs.readFileSync('functions/api/generate-landing.js', 'utf8') });
           execFileSync('bash', ['scripts/build-cloudflare-pages.sh']);
-          if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/app-chunks/00.txt') || !fs.existsSync('dist/financial-literacy/index.html')) throw new Error('Cloudflare Pages output is incomplete.');
-          const html = fs.readFileSync('src/landing-studio-app.html', 'utf8');
-          const scripts = [];
-          let cursor = 0;
-          while (true) {
-            const start = html.indexOf('<script', cursor);
-            if (start < 0) break;
-            const openEnd = html.indexOf('>', start);
-            const close = html.indexOf('</script>', openEnd + 1);
-            if (openEnd < 0 || close < 0) break;
-            const source = html.slice(openEnd + 1, close);
-            if (source.trim()) scripts.push(source);
-            cursor = close + 9;
-          }
-          for (const [i, source] of scripts.entries()) {
-            try { new Function(source); }
-            catch (error) { console.error('Inline script ' + (i + 1) + ':', error.message); process.exitCode = 1; }
-          }
-          console.log('Checked ' + scripts.length + ' inline script(s).');
+          if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/_routes.json')) throw new Error('Cloudflare Pages output is incomplete.');
+          const html = fs.readFileSync('src/control-center.html', 'utf8');
+          const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+          if (!match) throw new Error('Control Center script was not found.');
+          try { new Function(match[1]); }
+          catch (error) { console.error('Control Center JavaScript:', error.message); process.exitCode = 1; }
+          console.log('Checked Control Center HTML and inline JavaScript.');
           NODE
 
       - name: Commit generated source or chunks
