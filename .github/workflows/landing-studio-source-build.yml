@@ -49,9 +49,10 @@ jobs:
           execFileSync('bash', ['scripts/build-cloudflare-pages.sh']);
           if (!fs.existsSync('dist/index.html') || !fs.existsSync('dist/_routes.json')) throw new Error('Cloudflare Pages output is incomplete.');
           const html = fs.readFileSync('src/control-center.html', 'utf8');
-          const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
-          if (!match) throw new Error('Control Center script was not found.');
-          try { new Function(match[1]); }
+          const scriptStart = html.indexOf('<script>');
+          const scriptEnd = html.indexOf('</script>', scriptStart);
+          if (scriptStart < 0 || scriptEnd < 0) throw new Error('Control Center script was not found.');
+          try { new Function(html.slice(scriptStart + 8, scriptEnd)); }
           catch (error) { console.error('Control Center JavaScript:', error.message); process.exitCode = 1; }
           console.log('Checked Control Center HTML and inline JavaScript.');
           NODE
