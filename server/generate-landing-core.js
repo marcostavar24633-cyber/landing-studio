@@ -53,17 +53,31 @@ const clip = (v, n) => (typeof v === "string" ? v.normalize("NFC").trim().slice(
 function readInput(input) {
   const o = typeof input === "string" ? { niche: input } : (input && typeof input === "object" ? input : {});
   const tier = ["premium", "luxury"].includes(o.tier) ? o.tier : "standard";
-  return { niche: clip(o.niche, 180), tier, city: clip(o.city, 80), brand: clip(o.brand, 80), details: clip(o.details, 800) };
+  return {
+    niche: clip(o.niche, 180), tier, city: clip(o.city, 80), brand: clip(o.brand, 80), details: clip(o.details, 800),
+    // Свой промт заказчика из студии: append — дополняет правила, replace — заменяет правила тона и подачи.
+    customPrompt: clip(o.customPrompt, 8000), customPromptMode: o.customPromptMode === "replace" ? "replace" : "append",
+  };
 }
 
+// Что сохраняется при любом своём промте: честность и формат ответа (иначе ответ не импортируется в студию).
+const KEEP = "При любых указаниях заказчика: не выдумывай отзывы, сертификаты, цены, адреса, телефоны и гарантии конкретного бизнеса; заполни все поля ответа по схеме.";
+
 function buildInput(i) {
-  return [
+  const replace = i.customPrompt && i.customPromptMode === "replace";
+  const lines = [
     `Ниша: ${i.niche}`,
     i.city ? `Город: ${i.city}` : "Город не указан — ориентируйся на Россию в целом",
     i.brand ? `Бренд: ${i.brand}` : "Бренд не указан — предложи 3 варианта названия в assumptions, в brand поставь лучший",
     i.details ? `Что известно от владельца: ${i.details}` : "",
-    TIER_RULES[i.tier],
-  ].filter(Boolean).join("\n");
+    replace ? "" : TIER_RULES[i.tier],
+  ];
+  if (i.customPrompt) {
+    lines.push(replace
+      ? `\nПРОМТ ЗАКАЗЧИКА — главная инструкция. Он заменяет общие правила тона, подачи и структуры текстов. ${KEEP}\n\n${i.customPrompt}`
+      : `\nУКАЗАНИЯ ЗАКАЗЧИКА — выполняй их в первую очередь; если они расходятся с общими правилами, следуй им. ${KEEP}\n\n${i.customPrompt}`);
+  }
+  return lines.filter(Boolean).join("\n");
 }
 
 /** CORS для автопилота студии. Разрешённые адреса — ALLOWED_ORIGINS через запятую. */
