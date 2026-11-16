@@ -8,7 +8,7 @@ const core = require("../server/generate-landing-core.js");
 const vercel = require("../api/generate-landing.js");
 
 test("вход: строка старого редактора и объект автопилота", () => {
-  assert.deepEqual(core.readInput("кофейня"), { niche: "кофейня", tier: "standard", city: "", brand: "", details: "", customPrompt: "", customPromptMode: "append" });
+  assert.deepEqual(core.readInput("кофейня"), { niche: "кофейня", tier: "standard", city: "", brand: "", details: "", customPrompt: "", customPromptMode: "append", studioPrompt: "" });
   const i = core.readInput({ niche: "ювелир", tier: "luxury", city: "Москва", brand: "Аурум", details: "x".repeat(2000) });
   assert.equal(i.tier, "luxury");
   assert.equal(i.details.length, 800);
@@ -61,4 +61,13 @@ test("свой промт заказчика уходит в генерацию:
   assert.match(rep, /не выдумывай отзывы/);
   assert.equal(core.readInput({ niche: "x", customPrompt: "я".repeat(9000) }).customPrompt.length, 8000);
   assert.doesNotMatch(core.buildInput(core.readInput({ niche: "кофейня" })), /ЗАКАЗЧИКА/);
+});
+
+test("подробный промт студии уходит в генерацию целиком, сервер добавляет обязательные правила", () => {
+  const studio = "Ты — команда из четырёх специалистов…\n# 6. Дизайн-концепция\n…\n# 12. Указания заказчика\nПиши для 35+.";
+  const text = core.buildInput(core.readInput({ niche: "ювелир", tier: "luxury", studioPrompt: studio }));
+  assert.ok(text.startsWith(studio), "промт студии — основа входа");
+  assert.match(text, /Веб-поиск обязателен/);
+  assert.match(text, /не выдумывай отзывы/);
+  assert.equal(core.readInput({ niche: "x", studioPrompt: "я".repeat(30000) }).studioPrompt.length, 24000);
 });

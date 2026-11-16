@@ -57,6 +57,8 @@ function readInput(input) {
     niche: clip(o.niche, 180), tier, city: clip(o.city, 80), brand: clip(o.brand, 80), details: clip(o.details, 800),
     // Свой промт заказчика из студии: append — дополняет правила, replace — заменяет правила тона и подачи.
     customPrompt: clip(o.customPrompt, 8000), customPromptMode: o.customPromptMode === "replace" ? "replace" : "append",
+    // Полный промт студии (концепция, секции, тон класса, свой промт заказчика) — главный вход генерации.
+    studioPrompt: clip(o.studioPrompt, 24000),
   };
 }
 
@@ -64,6 +66,9 @@ function readInput(input) {
 const KEEP = "При любых указаниях заказчика: не выдумывай отзывы, сертификаты, цены, адреса, телефоны и гарантии конкретного бизнеса; заполни все поля ответа по схеме.";
 
 function buildInput(i) {
+  // Студия прислала подробный промт: он уже содержит нишу, класс, дизайн-концепцию, требования к блокам и свой промт
+  // заказчика. Используем его целиком; схема ответа и запрет на выдуманные факты задаются сервером в любом случае.
+  if (i.studioPrompt) return `${i.studioPrompt}\n\n---\nВеб-поиск обязателен: проверь рынок, конкурентов и отзывы, источники — в researchSources. ${KEEP}`;
   const replace = i.customPrompt && i.customPromptMode === "replace";
   const lines = [
     `Ниша: ${i.niche}`,
