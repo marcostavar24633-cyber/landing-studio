@@ -109,10 +109,10 @@ async function generateWithWorkersAI(i, env) {
       "Не выдумывай источники, отзывы, сертификаты, цены, адреса, телефоны, гарантии, цифры и факты о конкретном бизнесе.",
       "Если рыночные сведения неизвестны, явно укажи это в assumptions, а researchSources оставь пустым массивом.",
       "Верни только один корректный JSON-объект по JSON Schema. Без Markdown и пояснений.",
-      "ИНСТРУКЦИИ:\\n" + instructions,
-      "ВХОДНЫЕ ДАННЫЕ:\\n" + buildInput(i),
-      "JSON SCHEMA:\\n" + JSON.stringify(schema)
-    ].join("\\n\\n");
+      "ИНСТРУКЦИИ:\n" + instructions,
+      "ВХОДНЫЕ ДАННЫЕ:\n" + buildInput(i),
+      "JSON SCHEMA:\n" + JSON.stringify(schema)
+    ].join("\n\n");
     const result = await env.AI.run(env.WORKERS_AI_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
       messages: [
         { role: "system", content: "Ты эксперт по UX, маркетингу и структуре коммерческих сайтов. Возвращай только валидный JSON." },
@@ -139,7 +139,8 @@ async function generateWithWorkersAI(i, env) {
 async function generateLanding(input, env = {}) {
   const i = readInput(input);
   if (!i.niche) return { status: 400, body: { error: "Укажите нишу бизнеса." } };
-  if (env.AI?.run) return generateWithWorkersAI(i, env);\n  if (!env.OPENAI_API_KEY) return { status: 503, body: { error: "Workers AI не подключён. Добавьте binding AI в Cloudflare Pages." } };
+  if (env.AI?.run) return generateWithWorkersAI(i, env);
+  if (!env.OPENAI_API_KEY) return { status: 503, body: { error: "Workers AI не подключён. Добавьте binding AI в Cloudflare Pages." } };
   try {
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
