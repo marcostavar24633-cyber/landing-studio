@@ -138,3 +138,6 @@ module.exports = generateLanding;
 module.exports.corsHeaders = corsHeaders;
 module.exports.readInput = readInput;
 module.exports.buildInput = buildInput;
+// Для локального моста (tools/local-ai-bridge.cjs): та же схема ответа и те же правила, что у облачного сервера.
+module.exports.schema = schema;
+module.exports.instructions = instructions;

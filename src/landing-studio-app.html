@@ -232,7 +232,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         <p>Впишите нишу. Конструктор подберёт структуру, напишет черновые тексты и соберёт главную с собственным дизайном. Дальше всё правится в редакторе.</p>
         <form id="shForm"><input id="shNiche" maxlength="180" required placeholder="Например: кофейня, юрист, ювелирная мастерская" autocomplete="off" aria-label="Ниша"><select id="shTier" aria-label="Класс"><option value="standard">Стандарт</option><option value="premium">Премиум</option><option value="luxury">Люкс</option></select><button type="submit" class="sh-btn sh-go">Собрать сайт</button></form>
         <div class="sh-chips" id="shChips"></div>
-        <label class="sh-ai"><input type="checkbox" id="shUseAi"> Писать тексты через AI с поиском в интернете (дольше, нужен подключённый AI-сервер)</label>
+        <label class="sh-ai"><input type="checkbox" id="shUseAi"> Писать тексты через AI с поиском в интернете (1–3 минуты; нужен запущенный на компьютере AI-мост или ключ на сервере)</label>
         <p id="shStatus" role="status"></p>
       </div>
       <ol class="sh-steps"><li><b>01</b><span><strong>Ниша.</strong> Структура, тексты и дизайн собираются сами.</span></li><li><b>02</b><span><strong>Правка.</strong> Тексты, цвета, фото и блоки меняются в редакторе.</span></li><li><b>03</b><span><strong>Готовый файл.</strong> Сайт скачивается одним HTML.</span></li></ol>
@@ -538,6 +538,12 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     let aiDraft = null;
     let aiDraftReq = null; // настройки, с которыми получен черновик: их и сохраняем в проекте
     const aiOverlay=$("aiOverlay"), aiSteps=[...document.querySelectorAll("[data-ai-step]")];
+    // Локальный мост (tools/local-ai-bridge.cjs) пишет тексты через аккаунт Claude владельца — ключ API не нужен.
+    const AI_BRIDGE="http://127.0.0.1:8787";
+    async function aiEndpoint(){
+      try{const c=new AbortController(),t=setTimeout(()=>c.abort(),900);const r=await fetch(AI_BRIDGE+"/health",{signal:c.signal});clearTimeout(t);if(r.ok&&(await r.json()).bridge==="landing-studio-local")return AI_BRIDGE+"/api/generate-landing"}catch(e){}
+      return "/api/generate-landing";
+    }
     function aiOpen(){aiOverlay.classList.add("open");$("aiNiche").focus()}
     function aiClose(){aiOverlay.classList.remove("open")}
     function aiProgress(index,title){$("aiProgress").classList.add("show");$("aiProgressTitle").textContent=title||"AI-агент выполняет задачу…";aiSteps.forEach((el,i)=>{el.classList.toggle("done",i<index);el.classList.toggle("active",i===index)})}
@@ -578,7 +584,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         const req={niche,tier:$("aiTier").value,city:$("aiCity").value.trim(),customPrompt:$("aiPrompt").value.trim().slice(0,8000),customPromptMode:$("aiPromptMode").value};
         try{localStorage.setItem("lsCustomPrompt",req.customPrompt);localStorage.setItem("lsCustomPromptMode",req.customPromptMode)}catch(e){}
         if(UDS&&typeof UDS.autopilot==="function"){try{req.studioPrompt=UDS.autopilot(req,{registry:udsRegistry(activeProjectId)}).prompt}catch(e){console.warn("UDS:",e)}}
-        const response=await fetch("/api/generate-landing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
+        const endpoint=await aiEndpoint();if(endpoint.startsWith(AI_BRIDGE))aiProgress(0,"Локальный мост: Claude изучает нишу в интернете — обычно 1–3 минуты…");
+        const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
         const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
         if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
         aiDraft=payload.landing;aiDraftReq=req;aiProgress(4,"Черновик готов. Проверяем данные и собираем страницу…");
@@ -594,7 +601,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         $("aiSources").replaceChildren();(Array.isArray(d.researchSources)?d.researchSources:[]).slice(0,5).forEach(source=>{if(!source||typeof source.url!=="string"||!/^https:\/\//i.test(source.url))return;const a=document.createElement("a");a.href=source.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=safeText(source.title,source.url);a.style.cssText="color:#dfbf75;font-size:12px;text-decoration:underline;overflow-wrap:anywhere";$("aiSources").appendChild(a)});
         $("aiResult").classList.add("show");$("aiSubmit").disabled=false;$("aiSubmit").textContent="Создать ещё вариант";
       }catch(err){
-        const msg=err instanceof TypeError?"Не удалось связаться с AI-сервисом. Для работы агента нужно развернуть backend /api/generate-landing и добавить OPENAI_API_KEY в настройки хостинга.":err.message;
+        const msg=err instanceof TypeError?"Не удалось связаться с AI-сервисом. Запустите на компьютере локальный мост (файл «Запустить AI-мост.cmd» в папке проекта) или добавьте OPENAI_API_KEY в настройки хостинга.":err.message;
         aiFail(msg);
       }finally{clearInterval(progressTimer)}
     });
