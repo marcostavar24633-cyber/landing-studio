@@ -157,3 +157,10 @@ test("повторная генерация той же ниши даёт тот
   const reg = UDS.upsertRegistry([], UDS.registryEntry(one.project, UDS.buildConcept(one.project, { registry: [] })));
   assert.notEqual(UDS.autopilot({ niche: "кофейня", tier: "premium" }, { registry: reg }).prompt, one.prompt);
 });
+
+test("в проект сохраняются настройки, с которыми получен черновик, а не текущие поля формы", () => {
+  const src = read("src/landing-studio-app.html");
+  assert.match(src, /aiDraft=payload\.landing;aiDraftReq=req;/);
+  assert.match(src, /const sent=aiDraftReq\|\|/);
+  assert.match(src, /next\.tier=\["premium","luxury"\]\.includes\(sent\.tier\)/);
+});

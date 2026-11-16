@@ -452,6 +452,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
 
     // AI Landing Studio: a single niche input drives the complete first draft.
     let aiDraft = null;
+    let aiDraftReq = null; // настройки, с которыми получен черновик: их и сохраняем в проекте
     const aiOverlay=$("aiOverlay"), aiSteps=[...document.querySelectorAll("[data-ai-step]")];
     function aiOpen(){aiOverlay.classList.add("open");$("aiNiche").focus()}
     function aiClose(){aiOverlay.classList.remove("open")}
@@ -474,7 +475,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       next.processTitle=safeText(d.processTitle,"Как мы работаем");next.reviewsTitle="Отзывы клиентов";next.galleryTitle="Примеры работ";next.pricesTitle="Стоимость";next.priceLabel="Стоимость — по запросу";next.faqTitle="Частые вопросы";next.contactTitle=safeText(d.contactTitle,"Обсудим вашу задачу?");next.contactText=safeText(d.contactText,"Оставьте сообщение, чтобы обсудить подходящий вариант.");
       next.style=safeText(d.style,"Премиальный");next.palette=d.palette==="Светлая"?"Светлая":"Тёмная";next.accent=/^#[0-9a-f]{6}$/i.test(d.accent||"")?d.accent:defaults.accent;
       // Класс и свой промт сохраняются в проекте: движок UDS учитывает класс в концепции уникальной главной.
-      next.tier=["premium","luxury"].includes($("aiTier").value)?$("aiTier").value:"standard";next.customPrompt=$("aiPrompt").value.trim().slice(0,8000);next.customPromptMode=$("aiPromptMode").value;
+      const sent=aiDraftReq||{tier:$("aiTier").value,customPrompt:$("aiPrompt").value.trim().slice(0,8000),customPromptMode:$("aiPromptMode").value};next.tier=["premium","luxury"].includes(sent.tier)?sent.tier:"standard";next.customPrompt=sent.customPrompt;next.customPromptMode=sent.customPromptMode==="replace"?"replace":"append";
       return next;
     }
     try{$("aiPrompt").value=localStorage.getItem("lsCustomPrompt")||"";$("aiPromptMode").value=localStorage.getItem("lsCustomPromptMode")==="replace"?"replace":"append";if($("aiPrompt").value)$("aiPromptBox").open=true}catch(e){}
@@ -496,7 +497,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         const response=await fetch("/api/generate-landing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
         const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
         if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
-        aiDraft=payload.landing;aiProgress(4,"Черновик готов. Проверяем данные и собираем страницу…");
+        aiDraft=payload.landing;aiDraftReq=req;aiProgress(4,"Черновик готов. Проверяем данные и собираем страницу…");
         const d=aiDraft;$("aiResultTitle").textContent=safeText(d.brand,"Ваш лендинг")+" — готово";
         $("aiResultSummary").textContent=safeText(d.strategySummary,"Подготовлена первая версия стратегии и структуры сайта.");
         $("aiAudience").textContent=safeText(d.targetAudience,"Сегмент аудитории определён как рабочая гипотеза.");
