@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/unique-design-architecture
+      - design/modern-workspace-2026
     paths:
       - "scripts/extract-or-build-app.sh"
       - "scripts/build-app-chunks.cjs"
@@ -11,6 +12,7 @@ on:
       - "vendor/**"
       - "src/landing-studio-app.html"
       - "src/control-center.html"
+      - "src/control-center-redesign.css"
       - "src/control-center.js"
       - "lib/**"
       - "projects.json"
@@ -38,7 +40,7 @@ jobs:
       - name: Checkout feature branch
         uses: actions/checkout@v4
         with:
-          ref: feature/unique-design-architecture
+          ref: ${{ github.ref }}
 
       - name: Extract source or rebuild browser chunks
         run: |
@@ -62,6 +64,13 @@ jobs:
       - name: Test Control Center, site audit library and project monitor
         run: node --test tests/control-center.test.mjs
 
+      - name: Build Cloudflare Pages control center and verify assets
+        run: |
+          bash scripts/build-cloudflare-pages.sh
+          test -s dist/index.html
+          test -s dist/control-center.js
+          test -s dist/control-center-redesign.css
+
       # Движок Unique Design Studio: бандл, встраивание в app-chunks, загрузчик и редактор.
       - name: Test Unique Design Studio integration
         run: node --test tests/uds-integration.test.mjs
@@ -78,5 +87,5 @@ jobs:
           git add src app-chunks index.html
           if ! git diff --cached --quiet; then
             git commit -m "Prepare editable Landing Studio app source and chunk build"
-            git push origin feature/unique-design-architecture
+            git push origin HEAD:${GITHUB_REF_NAME}
           fi
