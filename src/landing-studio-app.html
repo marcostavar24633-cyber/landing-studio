@@ -492,7 +492,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         // Как в студии: класс, город, свой промт и полный подробный промт движка (концепция, тон, требования к блокам).
         const req={niche,tier:$("aiTier").value,city:$("aiCity").value.trim(),customPrompt:$("aiPrompt").value.trim().slice(0,8000),customPromptMode:$("aiPromptMode").value};
         try{localStorage.setItem("lsCustomPrompt",req.customPrompt);localStorage.setItem("lsCustomPromptMode",req.customPromptMode)}catch(e){}
-        if(UDS&&typeof UDS.autopilot==="function"){try{req.studioPrompt=UDS.autopilot(req,{registry:udsRegistry(null)}).prompt}catch(e){console.warn("UDS:",e)}}
+        if(UDS&&typeof UDS.autopilot==="function"){try{req.studioPrompt=UDS.autopilot(req,{registry:udsRegistry(activeProjectId)}).prompt}catch(e){console.warn("UDS:",e)}}
         const response=await fetch("/api/generate-landing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
         const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
         if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
