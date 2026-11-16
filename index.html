@@ -13,7 +13,7 @@ main{max-width:520px;text-align:center;padding:28px}h1{font-size:24px;letter-spa
 <script>
 (async()=>{const status=document.getElementById("status");try{
  if(!("DecompressionStream"in window))throw new Error("Браузер не поддерживает распаковку приложения. Скачайте ZIP-архив репозитория.");
- const chunks=await Promise.all(Array.from({length:58},async(_,i)=>{const name="./app-chunks/"+String(i).padStart(2,"0")+".txt";const r=await fetch(name,{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить часть приложения: "+name);return r.text()}));
+ const chunks=await Promise.all(Array.from({length:59},async(_,i)=>{const name="./app-chunks/"+String(i).padStart(2,"0")+".txt";const r=await fetch(name,{cache:"no-store"});if(!r.ok)throw new Error("Не удалось загрузить часть приложения: "+name);return r.text()}));
  const binary=atob(chunks.join(""));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
  let html=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
  const bgResponse=await fetch("./assets/home-background.jpg.b64",{cache:"no-store"});if(!bgResponse.ok)throw new Error("Не удалось загрузить фоновое изображение");const homepageBg=(await bgResponse.text()).trim();
