@@ -25,7 +25,7 @@ if (engineTag.test(html)) {
   if (!fs.existsSync(enginePath)) throw new Error("Missing " + enginePath + ": run node scripts/sync-uds-engine.mjs");
   // Закрывающие теги внутри строк движка экранируются: </script> закрыл бы тег раньше времени,
   // а загрузчик index.html вставляет AI-помощника перед первым </body> в документе.
-  const engine = fs.readFileSync(enginePath, "utf8").replace(/<\/(script|body|html|head)/gi, "<\\/$1");
+  const engine = fs.readFileSync(enginePath, "utf8").replace(/\r\n/g, "\n").replace(/<\/(script|body|html|head)/gi, "<\\/$1");
   new Function(engine); // экранирование не должно ломать синтаксис
   html = html.replace(engineTag, () => "<script data-uds-engine>" + engine + "</script>");
   const firstBody = html.toLowerCase().indexOf("</body>");

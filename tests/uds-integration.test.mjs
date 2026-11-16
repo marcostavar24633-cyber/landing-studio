@@ -10,7 +10,8 @@ const root = new URL("../", import.meta.url);
 const read = rel => readFileSync(new URL(rel, root), "utf8");
 
 function loadEngine() {
-  const ctx = { console };
+  // Встроенные возможности браузера, которыми пользуется движок (TextEncoder — для ZIP-экспорта и т.п.).
+  const ctx = { console, TextEncoder, TextDecoder, URL, atob, btoa };
   ctx.window = ctx; ctx.self = ctx;
   vm.createContext(ctx);
   vm.runInContext(read("vendor/uds-engine.js") + "\n;window.UDS = UDS;", ctx);
@@ -129,4 +130,37 @@ test("предпросмотр редактора показывает стра�
   assert.match(src, /#udsPreview\{[^}]*z-index:15/);
   const loader = read("index.html");
   assert.match(loader, /#lsa-launch\{position:fixed;right:18px;bottom:80px;/, "кнопка помощника не перекрывает «Настройка сайта»");
+});
+
+test("AI-помощник редактора отправляет класс, свой промт и полный промт движка", () => {
+  const src = read("src/landing-studio-app.html");
+  for (const id of ["aiTier", "aiCity", "aiPrompt", "aiPromptMode"]) assert.match(src, new RegExp(`id="${id}"`), id);
+  assert.match(src, /req\.studioPrompt=UDS\.autopilot\(req/);
+  assert.match(src, /body:JSON\.stringify\(req\)/);
+  assert.match(src, /next\.tier=/, "класс сохраняется в проекте");
+  const loader = read("index.html");
+  assert.match(loader, /window\.UDS\.autopilot\(\{niche:niche\}\)/, "локальный помощник использует автопилот");
+  const UDS = loadEngine();
+  const a = UDS.autopilot({ niche: "ювелирная мастерская", tier: "luxury", customPrompt: "Пиши для 35+." });
+  assert.ok(a.prompt.length > 3000 && a.prompt.includes("Пиши для 35+."));
+});
+
+test("повторная генерация той же ниши даёт тот же промт", () => {
+  // Текущий проект не должен сравниваться сам с собой, иначе движок каждый раз уводит его в другую композицию.
+  const src = read("src/landing-studio-app.html");
+  assert.match(src, /req\.studioPrompt=UDS\.autopilot\(req,\{registry:udsRegistry\(activeProjectId\)\}\)/);
+  const UDS = loadEngine();
+  const one = UDS.autopilot({ niche: "кофейня", tier: "premium" }, { registry: [] });
+  const two = UDS.autopilot({ niche: "кофейня", tier: "premium" }, { registry: [] });
+  assert.equal(two.prompt, one.prompt);
+  // А соседний проект той же ниши намеренно получает другую композицию.
+  const reg = UDS.upsertRegistry([], UDS.registryEntry(one.project, UDS.buildConcept(one.project, { registry: [] })));
+  assert.notEqual(UDS.autopilot({ niche: "кофейня", tier: "premium" }, { registry: reg }).prompt, one.prompt);
+});
+
+test("в проект сохраняются настройки, с которыми получен черновик, а не текущие поля формы", () => {
+  const src = read("src/landing-studio-app.html");
+  assert.match(src, /aiDraft=payload\.landing;aiDraftReq=req;/);
+  assert.match(src, /const sent=aiDraftReq\|\|/);
+  assert.match(src, /next\.tier=\["premium","luxury"\]\.includes\(sent\.tier\)/);
 });
