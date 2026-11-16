@@ -28,6 +28,67 @@
     @media print{#editorToggle,#editor{display:none!important}}
 
 /* AI Landing Studio */
+/* Стартовый экран конструктора: свои цвета, не зависящие от палитры открытого проекта. */
+#studioHome{display:none;position:fixed;inset:0;z-index:50;overflow:auto;background:#0e1014;color:#ecebe6;font-family:var(--sans);background-image:radial-gradient(rgba(255,255,255,.055) 1px,transparent 1px);background-size:22px 22px}
+body.home-open{overflow:hidden}body.home-open #studioHome{display:block}
+body.home-open #lsa-launch,body.home-open #editorToggle,body.home-open #aiLaunch,body.home-open #homeToggle,body.home-open #udsBadge{display:none!important}
+#homeToggle{position:fixed;left:18px;bottom:72px;z-index:21;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:10px 16px;background:#15181e;color:#ecebe6;font-weight:700;font-size:13px;box-shadow:0 8px 26px #0008;cursor:pointer}
+.sh-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 28px;background:rgba(14,16,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.09)}
+.sh-logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.01em;font-size:15px}
+.sh-logo small{font-weight:500;color:#8f9299;font-size:12px;padding:3px 8px;border:1px solid rgba(255,255,255,.14);border-radius:6px}
+.sh-mark{width:22px;height:22px;border-radius:6px;background:conic-gradient(from 210deg,#d9b56c,#6aa59a,#7c8cf0,#d9b56c)}
+.sh-top-actions{display:flex;gap:8px}
+#studioHome button{font:inherit;cursor:pointer;box-shadow:none!important;transform:none!important}
+#studioHome .sh-btn{white-space:nowrap;border:1px solid rgba(255,255,255,.16)!important;background:#171a20!important;color:#ecebe6!important;border-radius:9px!important;padding:9px 14px!important;font-size:13px;font-weight:600}
+#studioHome .sh-btn:hover{border-color:rgba(255,255,255,.4)!important}
+#studioHome .sh-btn.sh-go{background:#d9b56c!important;border-color:#d9b56c!important;color:#17130a!important}
+#studioHome .sh-btn.sh-go:hover{background:#e6c684!important}
+.sh-body{max-width:1120px;margin:0 auto;padding:44px 28px 80px}
+.sh-build{border:1px solid rgba(255,255,255,.11);background:#14171c;border-radius:16px;padding:28px}
+.sh-label{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;color:#8f9299}
+.sh-build h1{font:700 clamp(26px,3.4vw,38px)/1.12 var(--sans);letter-spacing:-.02em;margin:12px 0 8px;color:#fff}
+.sh-build>p{color:#a6a8ad;margin:0 0 20px;max-width:640px;font-size:15px;line-height:1.5}
+#shForm{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:10px}
+#shForm input,#shForm select{background:#0e1014;border:1px solid rgba(255,255,255,.16);border-radius:10px;color:#fff;padding:14px 15px;font:inherit;font-size:16px;min-width:0}
+#shForm input:focus,#shForm select:focus{outline:2px solid #d9b56c;outline-offset:1px;border-color:transparent}
+#studioHome #shForm .sh-btn{padding:14px 22px!important;font-size:15px;border-radius:10px!important}
+.sh-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+#studioHome .sh-chip{border:1px dashed rgba(255,255,255,.2)!important;background:transparent!important;color:#bfc1c6!important;border-radius:999px!important;padding:6px 12px!important;font-size:13px}
+#studioHome .sh-chip:hover{border-style:solid!important;color:#fff!important}
+.sh-ai{display:flex;align-items:center;gap:8px;margin-top:16px;color:#a6a8ad;font-size:13px}
+.sh-ai input{accent-color:#d9b56c;width:16px;height:16px}
+#shStatus{margin:10px 0 0;font-size:13px;color:#e6a57a;min-height:18px}
+.sh-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;padding:0}
+.sh-steps li{display:flex;gap:10px;align-items:baseline;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;color:#a6a8ad;font-size:13px;line-height:1.4;background:rgba(20,23,28,.7)}
+.sh-steps b{font:600 12px ui-monospace,Menlo,Consolas,monospace;color:#d9b56c}
+.sh-steps strong{color:#ecebe6;font-weight:600}
+.sh-h2{display:flex;align-items:center;gap:10px;margin:40px 0 14px;font:700 18px var(--sans);color:#fff}
+.sh-h2 span{font:600 12px ui-monospace,Menlo,Consolas,monospace;color:#8f9299;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:2px 7px}
+.sh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.sh-card{position:relative;border:1px solid rgba(255,255,255,.11);background:#14171c;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+.sh-card:hover{border-color:rgba(217,181,108,.7);transform:translateY(-2px)}
+.sh-card.sh-current{border-color:#d9b56c}
+#studioHome .sh-open{all:unset;cursor:pointer;display:block;background:transparent!important;border:0!important;border-radius:0!important;color:inherit!important}
+#studioHome .sh-open:focus-visible{outline:2px solid #d9b56c;outline-offset:-2px}
+.sh-thumb{height:124px;padding:14px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sh-thumb i{display:block;border-radius:3px}
+.sh-thumb .t-nav{height:5px;width:38%;opacity:.5}
+.sh-thumb .t-h{height:13px;width:74%;margin-top:10px}
+.sh-thumb .t-h2{height:13px;width:52%}
+.sh-thumb .t-p{height:5px;width:62%;opacity:.45;margin-top:3px}
+.sh-thumb .t-b{height:17px;width:72px;border-radius:5px;margin-top:auto}
+.sh-meta{padding:12px 14px 4px}
+.sh-meta b{display:block;font-size:15px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-meta span{display:block;font-size:12px;color:#8f9299;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-tools{display:flex;gap:6px;padding:8px 14px 14px;margin-top:auto}
+#studioHome .sh-tools button{border:1px solid rgba(255,255,255,.14)!important;background:transparent!important;color:#bfc1c6!important;border-radius:7px!important;padding:6px 10px!important;font-size:12px}
+#studioHome .sh-tools button:hover{color:#fff!important;border-color:rgba(255,255,255,.4)!important}
+#studioHome .sh-new{border:1px dashed rgba(255,255,255,.22)!important;background:transparent!important;color:#bfc1c6!important;border-radius:14px!important;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:14px}
+#studioHome .sh-new:hover{color:#fff!important;border-color:#d9b56c!important}
+.sh-new b{font-size:30px;font-weight:300;line-height:1}
+.sh-foot{margin-top:28px;color:#74777e;font-size:12px}
+@media(max-width:720px){.sh-top{padding:10px 14px}#studioHome .sh-top .sh-btn{padding:8px 10px!important;font-size:12px}.sh-logo small{display:none}.sh-body{padding:24px 16px 60px}.sh-build{padding:20px 16px}#shForm{grid-template-columns:1fr}.sh-steps{grid-template-columns:1fr}#homeToggle{left:12px;bottom:62px;font-size:12px;padding:9px 12px}}
+@media print{#studioHome,#homeToggle{display:none!important}}
 .ai-launch{position:fixed;left:18px;bottom:18px;z-index:21;border:1px solid rgba(218,183,111,.55);border-radius:999px;padding:13px 19px;background:linear-gradient(110deg,#e3c47e,#a77a36);color:#17120a;font-weight:800;box-shadow:0 10px 34px #0009;cursor:pointer;letter-spacing:.01em}
 .ai-launch:hover{filter:brightness(1.08);transform:translateY(-2px)}
 .ai-overlay{display:none;position:fixed;inset:0;z-index:60;background:rgba(4,4,4,.78);backdrop-filter:blur(12px);padding:20px;overflow:auto;align-items:center;justify-content:center}
@@ -157,6 +218,29 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     <section class="content-section" id="contacts"><div class="shell"><div class="contact"><div><div class="eyebrow">09 / КОНТАКТЫ</div><h2 id="contactTitle">Обсудим вашу задачу?</h2><p class="muted" id="contactText">Оставьте сообщение — мы свяжемся с вами удобным способом.</p><p class="muted" id="contactDetails">Добавьте телефон, почту или ссылку на мессенджер в настройках.</p></div><form class="contact-form" id="leadForm"><input class="field" id="leadName" placeholder="Ваше имя" required><input class="field" id="leadContact" placeholder="Телефон или e-mail" required><textarea class="field" id="leadMessage" placeholder="Коротко о вашей задаче" rows="4"></textarea><button class="button" type="submit" id="formCta">Оставить заявку</button><div class="contact-note" id="formNote">Демонстрационная форма: для приёма заявок подключите выбранный способ отправки в настройках.</div></form></div></div></section>
   </main>
   <footer class="shell"><span id="footerBrand">© Мой бизнес</span><span>Сайт создан на основе Landing Studio</span></footer>
+
+  <button id="homeToggle" type="button">⌂ Проекты</button>
+  <section id="studioHome" aria-label="Мастерская Landing Studio">
+    <div class="sh-top">
+      <div class="sh-logo"><span class="sh-mark" aria-hidden="true"></span>Landing Studio <small>конструктор сайтов</small></div>
+      <div class="sh-top-actions"><button type="button" class="sh-btn" id="shImport">Импорт JSON</button><button type="button" class="sh-btn" id="shContinue">В редактор →</button></div>
+    </div>
+    <div class="sh-body">
+      <div class="sh-build">
+        <div class="sh-label">Новый сайт</div>
+        <h1>Что собираем?</h1>
+        <p>Впишите нишу. Конструктор подберёт структуру, напишет черновые тексты и соберёт главную с собственным дизайном. Дальше всё правится в редакторе.</p>
+        <form id="shForm"><input id="shNiche" maxlength="180" required placeholder="Например: кофейня, юрист, ювелирная мастерская" autocomplete="off" aria-label="Ниша"><select id="shTier" aria-label="Класс"><option value="standard">Стандарт</option><option value="premium">Премиум</option><option value="luxury">Люкс</option></select><button type="submit" class="sh-btn sh-go">Собрать сайт</button></form>
+        <div class="sh-chips" id="shChips"></div>
+        <label class="sh-ai"><input type="checkbox" id="shUseAi"> Писать тексты через AI с поиском в интернете (1–3 минуты; нужен запущенный на компьютере AI-мост или ключ на сервере)</label>
+        <p id="shStatus" role="status"></p>
+      </div>
+      <ol class="sh-steps"><li><b>01</b><span><strong>Ниша.</strong> Структура, тексты и дизайн собираются сами.</span></li><li><b>02</b><span><strong>Правка.</strong> Тексты, цвета, фото и блоки меняются в редакторе.</span></li><li><b>03</b><span><strong>Готовый файл.</strong> Сайт скачивается одним HTML.</span></li></ol>
+      <h2 class="sh-h2">Мои проекты <span id="shCount">0</span></h2>
+      <div class="sh-grid" id="shProjects"></div>
+      <p class="sh-foot">Проекты хранятся в этом браузере. Для переноса на другой компьютер используйте экспорт JSON в редакторе.</p>
+    </div>
+  </section>
 
   <button class="ai-launch" id="aiLaunch" type="button">✦ Создать сайт с AI</button>
   <section class="ai-overlay" id="aiOverlay" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
@@ -447,13 +531,19 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
       $("udsBadgeText").textContent=`Уникальная главная · ${a.name}`;
     }
     $("udsBadgeSwitch").addEventListener("click",()=>{data.udsPreview="editor";$("eUdsPreview").value="editor";save()});
-    $("downloadSite").addEventListener("click",()=>{readEditor();render();const clone=document.documentElement.cloneNode(true);clone.querySelector("#editor")?.remove();clone.querySelector("#editorToggle")?.remove();clone.querySelector("#aiLaunch")?.remove();clone.querySelector("#aiOverlay")?.remove();clone.querySelector("#udsPreview")?.remove();clone.querySelector("#udsBadge")?.remove();clone.querySelectorAll("script").forEach(s=>s.remove());const script=document.createElement("script");script.textContent=`document.querySelectorAll(".faq-q").forEach(b=>b.addEventListener("click",()=>b.parentElement.classList.toggle("open")));document.getElementById("leadForm")?.addEventListener("submit",e=>{e.preventDefault();alert("Это демонстрационная форма. Перед публикацией подключите обработку заявок.");});`;clone.querySelector("body").appendChild(script);const blob=new Blob(["<!doctype html>\n"+clone.outerHTML],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(data.brand||"landing").toLowerCase().replace(/[^a-zа-я0-9]+/gi,"-")+".html";a.click();URL.revokeObjectURL(a.href);});
+    $("downloadSite").addEventListener("click",()=>{readEditor();render();const clone=document.documentElement.cloneNode(true);clone.querySelector("#editor")?.remove();clone.querySelector("#editorToggle")?.remove();clone.querySelector("#aiLaunch")?.remove();clone.querySelector("#aiOverlay")?.remove();clone.querySelector("#udsPreview")?.remove();clone.querySelector("#udsBadge")?.remove();clone.querySelector("#studioHome")?.remove();clone.querySelector("#homeToggle")?.remove();clone.querySelector("body")?.classList.remove("home-open");clone.querySelectorAll("script").forEach(s=>s.remove());const script=document.createElement("script");script.textContent=`document.querySelectorAll(".faq-q").forEach(b=>b.addEventListener("click",()=>b.parentElement.classList.toggle("open")));document.getElementById("leadForm")?.addEventListener("submit",e=>{e.preventDefault();alert("Это демонстрационная форма. Перед публикацией подключите обработку заявок.");});`;clone.querySelector("body").appendChild(script);const blob=new Blob(["<!doctype html>\n"+clone.outerHTML],{type:"text/html;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(data.brand||"landing").toLowerCase().replace(/[^a-zа-я0-9]+/gi,"-")+".html";a.click();URL.revokeObjectURL(a.href);});
     $("leadForm").addEventListener("submit",e=>{e.preventDefault();const n=$("leadName").value.trim(),c=$("leadContact").value.trim(),m=$("leadMessage").value.trim();const msg=`Заявка с сайта ${data.brand}\nИмя: ${n}\nКонтакт: ${c}\nЗадача: ${m}`;if(data.messenger){window.open(data.messenger+(data.messenger.includes("?")?"&":"?")+"text="+encodeURIComponent(msg),"_blank")}else if(data.email){window.location.href="mailto:"+encodeURIComponent(data.email)+"?subject="+encodeURIComponent("Заявка с сайта")+"&body="+encodeURIComponent(msg)}else{alert("Это демонстрационная форма. Чтобы получать заявки, добавьте ссылку на мессенджер или e-mail в настройках.")}});
 
     // AI Landing Studio: a single niche input drives the complete first draft.
     let aiDraft = null;
     let aiDraftReq = null; // настройки, с которыми получен черновик: их и сохраняем в проекте
     const aiOverlay=$("aiOverlay"), aiSteps=[...document.querySelectorAll("[data-ai-step]")];
+    // Локальный мост (tools/local-ai-bridge.cjs) пишет тексты через аккаунт Claude владельца — ключ API не нужен.
+    const AI_BRIDGE="http://127.0.0.1:8787";
+    async function aiEndpoint(){
+      try{const c=new AbortController(),t=setTimeout(()=>c.abort(),900);const r=await fetch(AI_BRIDGE+"/health",{signal:c.signal});clearTimeout(t);if(r.ok&&(await r.json()).bridge==="landing-studio-local")return AI_BRIDGE+"/api/generate-landing"}catch(e){}
+      return "/api/generate-landing";
+    }
     function aiOpen(){aiOverlay.classList.add("open");$("aiNiche").focus()}
     function aiClose(){aiOverlay.classList.remove("open")}
     function aiProgress(index,title){$("aiProgress").classList.add("show");$("aiProgressTitle").textContent=title||"AI-агент выполняет задачу…";aiSteps.forEach((el,i)=>{el.classList.toggle("done",i<index);el.classList.toggle("active",i===index)})}
@@ -494,7 +584,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         const req={niche,tier:$("aiTier").value,city:$("aiCity").value.trim(),customPrompt:$("aiPrompt").value.trim().slice(0,8000),customPromptMode:$("aiPromptMode").value};
         try{localStorage.setItem("lsCustomPrompt",req.customPrompt);localStorage.setItem("lsCustomPromptMode",req.customPromptMode)}catch(e){}
         if(UDS&&typeof UDS.autopilot==="function"){try{req.studioPrompt=UDS.autopilot(req,{registry:udsRegistry(activeProjectId)}).prompt}catch(e){console.warn("UDS:",e)}}
-        const response=await fetch("/api/generate-landing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
+        const endpoint=await aiEndpoint();if(endpoint.startsWith(AI_BRIDGE))aiProgress(0,"Локальный мост: Claude изучает нишу в интернете — обычно 1–3 минуты…");
+        const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
         const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
         if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
         aiDraft=payload.landing;aiDraftReq=req;aiProgress(4,"Черновик готов. Проверяем данные и собираем страницу…");
@@ -510,12 +601,71 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
         $("aiSources").replaceChildren();(Array.isArray(d.researchSources)?d.researchSources:[]).slice(0,5).forEach(source=>{if(!source||typeof source.url!=="string"||!/^https:\/\//i.test(source.url))return;const a=document.createElement("a");a.href=source.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=safeText(source.title,source.url);a.style.cssText="color:#dfbf75;font-size:12px;text-decoration:underline;overflow-wrap:anywhere";$("aiSources").appendChild(a)});
         $("aiResult").classList.add("show");$("aiSubmit").disabled=false;$("aiSubmit").textContent="Создать ещё вариант";
       }catch(err){
-        const msg=err instanceof TypeError?"Не удалось связаться с AI-сервисом. Для работы агента нужно развернуть backend /api/generate-landing и добавить OPENAI_API_KEY в настройки хостинга.":err.message;
+        const msg=err instanceof TypeError?"Не удалось связаться с AI-сервисом. Запустите на компьютере локальный мост (файл «Запустить AI-мост.cmd» в папке проекта) или добавьте OPENAI_API_KEY в настройки хостинга.":err.message;
         aiFail(msg);
       }finally{clearInterval(progressTimer)}
     });
 
-    load();fillEditor();render();refreshProjectSelect();
+    // Стартовый экран конструктора: новый сайт по нише и список проектов. В скачанный сайт не попадает.
+    const SH_CHIPS=["кофейня","салон красоты","ремонт квартир","юрист","стоматология","фотограф","автосервис","ювелирная мастерская"];
+    function homeThumb(p){
+      let pal=null;
+      try{const r=udsGenerate(p.id===activeProjectId?data:p.data,p.id);pal=r&&r.concept.visualSystem.palette}catch(e){}
+      const hex=v=>/^#[0-9a-f]{3,8}$/i.test(v||"")?v:"";
+      const bg=hex(pal&&pal.bg)||"#191c23",text=hex(pal&&pal.text)||"#f4f1eb",accent=hex(pal&&pal.accent)||hex(p.data&&p.data.accent)||"#c6a879";
+      return `<div class="sh-thumb" style="background:${bg}"><i class="t-nav" style="background:${text}"></i><i class="t-h" style="background:${text}"></i><i class="t-h2" style="background:${text}"></i><i class="t-p" style="background:${text}"></i><i class="t-b" style="background:${accent}"></i></div>`;
+    }
+    function renderHome(){
+      $("shCount").textContent=projects.length;
+      $("shProjects").innerHTML=projects.map(p=>{
+        const d=p.id===activeProjectId?data:p.data;
+        const tier=d.tier==="luxury"?" · люкс":d.tier==="premium"?" · премиум":"";
+        return `<article class="sh-card${p.id===activeProjectId?" sh-current":""}"><button type="button" class="sh-open" data-sh-open="${esc(p.id)}" aria-label="Открыть проект ${esc(p.name||"Без названия")}">${homeThumb(p)}<div class="sh-meta"><b>${esc(p.name||"Без названия")}</b><span>${esc(String(d.niche||"ниша не указана").toLowerCase())}${tier}</span></div></button><div class="sh-tools"><button type="button" data-sh-copy="${esc(p.id)}">Копия</button><button type="button" data-sh-del="${esc(p.id)}">Удалить</button></div></article>`;
+      }).join("")+`<button type="button" class="sh-new" id="shBlank"><b>＋</b>Пустой проект</button>`;
+    }
+    function homeOpen(){syncActiveProject();renderHome();$("shStatus").textContent="";document.body.classList.add("home-open");$("editor").classList.remove("open")}
+    function homeClose(){document.body.classList.remove("home-open");window.scrollTo({top:0})}
+    function homeSwitch(id){
+      const target=projects.find(p=>p.id===id);if(!target)return false;
+      syncActiveProject();activeProjectId=id;data=clone(target.data);fillEditor();render();persistProjects();return true;
+    }
+    function homeBuild(niche,tier){
+      // Сборка в браузере: автопилот движка пишет черновые тексты по нише, новый проект сравнивается со всеми прежними.
+      const a=UDS.autopilot({niche,tier},{registry:udsRegistry(null)});
+      syncActiveProject();
+      aiDraftReq={tier,customPrompt:"",customPromptMode:"append"};
+      let projectData;
+      try{projectData=applyAIDraft(a.project)}finally{aiDraftReq=null}
+      createProject(projectData.brand,projectData);
+    }
+    $("shChips").innerHTML=SH_CHIPS.map(c=>`<button type="button" class="sh-chip" data-sh-chip="${esc(c)}">${esc(c)}</button>`).join("");
+    $("shChips").addEventListener("click",e=>{const b=e.target.closest("[data-sh-chip]");if(!b)return;$("shNiche").value=b.dataset.shChip;$("shNiche").focus()});
+    $("shForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const niche=$("shNiche").value.trim(),tier=$("shTier").value;if(!niche)return;
+      const viaAi=$("shUseAi").checked||!UDS||typeof UDS.autopilot!=="function";
+      if(viaAi){homeClose();aiOpen();$("aiNiche").value=niche;$("aiTier").value=tier;$("aiForm").requestSubmit();return}
+      try{homeBuild(niche,tier);$("shNiche").value="";homeClose()}
+      catch(err){console.warn("UDS:",err);$("shStatus").textContent="Не удалось собрать сайт в браузере. Попробуйте вариант «через AI» или создайте пустой проект."}
+    });
+    $("shProjects").addEventListener("click",e=>{
+      const open=e.target.closest("[data-sh-open]"),copy=e.target.closest("[data-sh-copy]"),del=e.target.closest("[data-sh-del]");
+      if(open){if(homeSwitch(open.dataset.shOpen))homeClose();return}
+      if(copy){const src=projects.find(p=>p.id===copy.dataset.shCopy);if(!src)return;syncActiveProject();createProject((src.name||"Проект")+" — копия",src.id===activeProjectId?data:src.data);renderHome();return}
+      if(del){
+        if(projects.length<2){$("shStatus").textContent="Последний проект удалить нельзя — сначала создайте ещё один.";return}
+        const victim=projects.find(p=>p.id===del.dataset.shDel);if(!victim||!confirm(`Удалить проект «${victim.name||"Без названия"}»? Это действие нельзя отменить.`))return;
+        syncActiveProject();projects=projects.filter(p=>p.id!==victim.id);
+        if(activeProjectId===victim.id){activeProjectId=projects[0].id;data=clone(projects[0].data);fillEditor();render()}
+        persistProjects();refreshProjectSelect();renderHome();return;
+      }
+      if(e.target.closest("#shBlank")){syncActiveProject();createProject("Новый сайт");homeClose();$("editor").classList.add("open");fillEditor()}
+    });
+    $("shImport").addEventListener("click",()=>{homeClose();$("importProjectFile").click()});
+    $("shContinue").addEventListener("click",homeClose);
+    $("homeToggle").addEventListener("click",()=>{readEditor();homeOpen()});
+
+    load();fillEditor();render();refreshProjectSelect();homeOpen();
   })();
   </script>
 </body>
