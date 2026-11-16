@@ -110,7 +110,7 @@ async function generateWithWorkersAI(i, env) {
       "Если рыночные сведения неизвестны, явно укажи это в assumptions, а researchSources оставь пустым массивом.",
       "Верни только один корректный JSON-объект по JSON Schema. Без Markdown и пояснений.",
       "ИНСТРУКЦИИ:\n" + instructions,
-      "ВХОДНЫЕ ДАННЫЕ:\n" + buildInput(i),
+      "ВХОДНЫЕ ДАННЫЕ:\n" + (i.studioPrompt || buildInput(i)),
       "JSON SCHEMA:\n" + JSON.stringify(schema)
     ].join("\n\n");
     const result = await env.AI.run(env.WORKERS_AI_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
