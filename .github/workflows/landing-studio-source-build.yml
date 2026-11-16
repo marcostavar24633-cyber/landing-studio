@@ -64,6 +64,13 @@ jobs:
       - name: Test Control Center, site audit library and project monitor
         run: node --test tests/control-center.test.mjs
 
+      - name: Build Cloudflare Pages control center and verify assets
+        run: |
+          bash scripts/build-cloudflare-pages.sh
+          test -s dist/index.html
+          test -s dist/control-center.js
+          test -s dist/control-center-redesign.css
+
       # Движок Unique Design Studio: бандл, встраивание в app-chunks, загрузчик и редактор.
       - name: Test Unique Design Studio integration
         run: node --test tests/uds-integration.test.mjs
