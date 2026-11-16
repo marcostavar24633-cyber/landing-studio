@@ -1,0 +1,12 @@
+/* Landing Studio — editor home and project workspace refinement */
+#studioHome{background-color:#0b1016!important;background-image:radial-gradient(rgba(93,214,192,.07) 1px,transparent 1px),radial-gradient(ellipse at 75% 0%,rgba(42,137,132,.18),transparent 42%)!important;background-size:22px 22px,auto!important}
+#studioHome .sh-top{padding:13px clamp(14px,3vw,34px);border-bottom:1px solid rgba(194,211,229,.1);backdrop-filter:blur(18px)}
+#studioHome .sh-top button,#studioHome button{border-radius:11px}
+#studioHome .sh-top button{min-height:40px}
+#studioHome .sh-card,#studioHome .sh-panel,#studioHome .sh-project,#studioHome .sh-stat{border-radius:15px}
+#studioHome input,#studioHome select,#studioHome textarea{border-radius:10px}
+#editor{border-radius:20px 0 0 20px;box-shadow:-18px 0 60px rgba(0,0,0,.35)}
+#editorToggle{border-radius:14px;background:linear-gradient(135deg,#238d83,#176f78);box-shadow:0 10px 28px rgba(25,133,126,.28)}
+#homeToggle{border-radius:12px;border-color:rgba(93,214,192,.25);background:#14212a}
+@media(max-width:700px){#editor{inset:auto 0 0;width:100%;height:min(88dvh,820px);border-radius:20px 20px 0 0;transform:translateY(110%)}#editor.open{transform:translateY(0)}#editorToggle{right:12px;bottom:12px}#homeToggle{left:12px;bottom:66px}}
+@media(prefers-reduced-motion:reduce){#editor,#editorToggle{transition:none}}
