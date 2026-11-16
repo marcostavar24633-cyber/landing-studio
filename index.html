@@ -20,7 +20,7 @@ main{max-width:520px;text-align:center;padding:28px}h1{font-size:24px;letter-spa
  const engine=(await engineResponse.text()).replace(/<\/(script|body|html|head)/gi,"<\\/$1");
  const engineTag=/<script data-uds-engine src="[^"]*"><\/script>/;
  if(!engineTag.test(html))throw new Error("В исходнике не найден движок Unique Design Studio.");
- html=html.replace(engineTag,()=>"<script data-uds-engine>"+engine+"</script>");
+ html=html.replace(engineTag,()=>"<script data-uds-engine>"+engine+"<"+"/script>");
  const bgResponse=await fetch("./assets/home-background.jpg.b64",{cache:"no-store"});if(!bgResponse.ok)throw new Error("Не удалось загрузить фоновое изображение");const homepageBg=(await bgResponse.text()).trim();
  const polish=`
  /* Black & gold luxury theme */
