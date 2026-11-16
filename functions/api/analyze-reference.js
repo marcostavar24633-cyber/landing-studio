@@ -9,7 +9,7 @@ function validateUrl(value){
   let u;try{u=new URL(value)}catch{throw new Error("Не удалось распознать адрес сайта.");}
   const host=u.hostname.toLowerCase();
   if(u.protocol!=="https:"||u.username||u.password||u.port&&u.port!=="443")throw new Error("Поддерживаются только публичные HTTPS-сайты на стандартном порту.");
-  if(!host.includes(".")||host==="localhost"||host.endsWith(".localhost")||host.endsWith(".local")||host.endsWith(".internal")||/^\d+(\.\d+){3}$/.test(host)||host.includes(":"))throw new Error("Этот адрес не поддерживается. Укажите публичный домен.");
+  if(!host.includes(".")||/^[0-9.]+$/.test(host)||host==="localhost"||host.endsWith(".localhost")||host.endsWith(".local")||host.endsWith(".internal")||/^\d+(\.\d+){3}$/.test(host)||host.includes(":"))throw new Error("Этот адрес не поддерживается. Укажите публичный домен.");
   u.hash="";return u;
 }
 async function collectPage(html){
