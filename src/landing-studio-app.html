@@ -538,12 +538,8 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     let aiDraft = null;
     let aiDraftReq = null; // настройки, с которыми получен черновик: их и сохраняем в проекте
     const aiOverlay=$("aiOverlay"), aiSteps=[...document.querySelectorAll("[data-ai-step]")];
-    // Локальный мост (tools/local-ai-bridge.cjs) пишет тексты через аккаунт Claude владельца — ключ API не нужен.
-    const AI_BRIDGE="http://127.0.0.1:8787";
-    async function aiEndpoint(){
-      try{const c=new AbortController(),t=setTimeout(()=>c.abort(),900);const r=await fetch(AI_BRIDGE+"/health",{signal:c.signal});clearTimeout(t);if(r.ok&&(await r.json()).bridge==="landing-studio-local")return AI_BRIDGE+"/api/generate-landing"}catch(e){}
-      return "/api/generate-landing";
-    }
+    // Генерация работает через облачную Cloudflare Pages Function и Workers AI.
+    async function aiEndpoint(){return "/api/generate-landing"}
     function aiOpen(){aiOverlay.classList.add("open");$("aiNiche").focus()}
     function aiClose(){aiOverlay.classList.remove("open")}
     function aiProgress(index,title){$("aiProgress").classList.add("show");$("aiProgressTitle").textContent=title||"AI-агент выполняет задачу…";aiSteps.forEach((el,i)=>{el.classList.toggle("done",i<index);el.classList.toggle("active",i===index)})}
@@ -600,7 +596,7 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
             "\\nСоздай самостоятельную концепцию для указанной ниши. Сохрани полезную логику разделов согласно выбранному режиму; перепроектируй визуальный язык, тексты, графику, цвета и фирменные элементы.";
           $("aiReferenceStatus").textContent="Образец проанализирован. Его структура передана генератору.";
         }
-        const endpoint=await aiEndpoint();if(endpoint.startsWith(AI_BRIDGE))aiProgress(0,"Локальный мост: Claude изучает нишу в интернете — обычно 1–3 минуты…");
+        const endpoint=await aiEndpoint();
         const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(req)});
         const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Сервис AI вернул ошибку ${response.status}.`);
         if(!payload.landing)throw new Error("AI-сервис вернул неполный ответ. Попробуйте ещё раз.");
