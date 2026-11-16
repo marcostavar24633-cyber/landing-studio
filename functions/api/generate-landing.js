@@ -15,7 +15,7 @@ export async function onRequestOptions({ request, env }) {
 }
 
 export async function onRequestGet({ request, env }) {
-  return json({ status: "ok", configured: Boolean(env.OPENAI_API_KEY), model: env.OPENAI_MODEL || "gpt-6-astra" }, 200, cors(request, env));
+  return json({ status: "ok", configured: Boolean(env.AI?.run || env.OPENAI_API_KEY), provider: env.AI?.run ? "cloudflare-workers-ai" : env.OPENAI_API_KEY ? "openai" : null, model: env.AI?.run ? (env.WORKERS_AI_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast") : (env.OPENAI_MODEL || "gpt-6-astra") }, 200, cors(request, env));
 }
 
 export async function onRequestPost({ request, env }) {
