@@ -23,7 +23,7 @@ export async function onRequestPost({ request, env }) {
   let payload;
   try {
     const raw = await request.text();
-    if (raw.length > 60000) return json({ error: "Слишком большой запрос." }, 413, headers);
+    if (raw.length > 12000) return json({ error: "Слишком большой запрос." }, 413, headers);
     payload = JSON.parse(raw || "{}");
   } catch {
     return json({ error: "Некорректный JSON запроса." }, 400, headers);
