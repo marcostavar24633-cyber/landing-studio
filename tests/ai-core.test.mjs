@@ -8,7 +8,7 @@ const core = require("../server/generate-landing-core.js");
 const vercel = require("../api/generate-landing.js");
 
 test("вход: строка старого редактора и объект автопилота", () => {
-  assert.deepEqual(core.readInput("кофейня"), { niche: "кофейня", tier: "standard", city: "", brand: "", details: "" });
+  assert.deepEqual(core.readInput("кофейня"), { niche: "кофейня", tier: "standard", city: "", brand: "", details: "", customPrompt: "", customPromptMode: "append", studioPrompt: "" });
   const i = core.readInput({ niche: "ювелир", tier: "luxury", city: "Москва", brand: "Аурум", details: "x".repeat(2000) });
   assert.equal(i.tier, "luxury");
   assert.equal(i.details.length, 800);
@@ -47,4 +47,27 @@ test("адаптер Vercel отвечает на preflight и передаёт 
 test("инструкции требуют исследования, человеческого языка и честности", async () => {
   const src = (await import("node:fs")).readFileSync(new URL("../server/generate-landing-core.js", import.meta.url), "utf8");
   for (const s of ["веб-поиск", "человеческим языком", "Без канцелярита", "Не создавай отзывы", "segments", "objections", "keywords", "imagePrompts", "seoTitle"]) assert.ok(src.includes(s), s);
+});
+
+test("свой промт заказчика уходит в генерацию: дополняет или заменяет правила, честность остаётся", () => {
+  const mine = "Пиши для аудитории 35+, упор на ручную работу.";
+  const add = core.buildInput(core.readInput({ niche: "ювелир", tier: "luxury", customPrompt: mine }));
+  assert.match(add, /УКАЗАНИЯ ЗАКАЗЧИКА/);
+  assert.match(add, /Класс: люкс/, "в режиме «дополнить» правила класса остаются");
+  assert.ok(add.trimEnd().endsWith(mine));
+  const rep = core.buildInput(core.readInput({ niche: "ювелир", tier: "luxury", customPrompt: mine, customPromptMode: "replace" }));
+  assert.match(rep, /ПРОМТ ЗАКАЗЧИКА — главная инструкция/);
+  assert.doesNotMatch(rep, /Класс: люкс/, "в режиме «заменить» правила класса уступают промту");
+  assert.match(rep, /не выдумывай отзывы/);
+  assert.equal(core.readInput({ niche: "x", customPrompt: "я".repeat(9000) }).customPrompt.length, 8000);
+  assert.doesNotMatch(core.buildInput(core.readInput({ niche: "кофейня" })), /ЗАКАЗЧИКА/);
+});
+
+test("подробный промт студии уходит в генерацию целиком, сервер добавляет обязательные правила", () => {
+  const studio = "Ты — команда из четырёх специалистов…\n# 6. Дизайн-концепция\n…\n# 12. Указания заказчика\nПиши для 35+.";
+  const text = core.buildInput(core.readInput({ niche: "ювелир", tier: "luxury", studioPrompt: studio }));
+  assert.ok(text.startsWith(studio), "промт студии — основа входа");
+  assert.match(text, /Веб-поиск обязателен/);
+  assert.match(text, /не выдумывай отзывы/);
+  assert.equal(core.readInput({ niche: "x", studioPrompt: "я".repeat(30000) }).studioPrompt.length, 24000);
 });
