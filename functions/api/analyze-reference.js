@@ -68,7 +68,7 @@ export async function onRequestPost({request,env}){
     const ai=await env.AI.run(MODEL,{messages:[{role:"system",content:"Ты специалист по UX-архитектуре сайтов. Никакого копирования чужого контента. Не выдумывай невидимые детали."},{role:"user",content:prompt+"\nИзвлечённые данные (частичный DOM-анализ):\n"+JSON.stringify(extracted).slice(0,22000)}],max_tokens:mode==="detailed"?2600:mode==="composition"?1600:900});
     const analysis=extractJson(ai);
     if(!analysis)return json({error:"AI не смог вернуть структурированный анализ. Повторите запрос."},502);
-    analysis.mode=mode;analysis.sourceUrl=url.origin+url.pathname;analysis.extracted=extracted;
+    analysis.mode=mode;analysis.sourceUrl=url.origin+url.pathname;
     return json({analysis});
   }catch(error){return json({error:error?.message||"Ошибка анализа сайта-образца."},502);}
 }
