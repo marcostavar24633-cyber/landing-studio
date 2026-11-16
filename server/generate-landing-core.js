@@ -93,10 +93,53 @@ function corsHeaders(origin, env = {}) {
   return { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400", "Vary": "Origin" };
 }
 
+
+function parseWorkersAiJson(result) {
+  const raw = typeof result === "string" ? result : result?.response || result?.result?.response || "";
+  const match = String(raw).match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try { return JSON.parse(match[0]); } catch { return null; }
+}
+
+async function generateWithWorkersAI(i, env) {
+  try {
+    const prompt = [
+      "Подготовь полноценный контентный бриф лендинга на русском языке.",
+      "У тебя нет инструмента веб-поиска. Не заявляй, что изучил рынок или конкурентов.",
+      "Не выдумывай источники, отзывы, сертификаты, цены, адреса, телефоны, гарантии, цифры и факты о конкретном бизнесе.",
+      "Если рыночные сведения неизвестны, явно укажи это в assumptions, а researchSources оставь пустым массивом.",
+      "Верни только один корректный JSON-объект по JSON Schema. Без Markdown и пояснений.",
+      "ИНСТРУКЦИИ:\\n" + instructions,
+      "ВХОДНЫЕ ДАННЫЕ:\\n" + buildInput(i),
+      "JSON SCHEMA:\\n" + JSON.stringify(schema)
+    ].join("\\n\\n");
+    const result = await env.AI.run(env.WORKERS_AI_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+      messages: [
+        { role: "system", content: "Ты эксперт по UX, маркетингу и структуре коммерческих сайтов. Возвращай только валидный JSON." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 12000
+    });
+    const landing = parseWorkersAiJson(result);
+    if (!landing || typeof landing !== "object" || !landing.title || !landing.niche) {
+      return { status: 502, body: { error: "Workers AI вернул неполный ответ. Попробуйте повторить запрос." } };
+    }
+    landing.researchSources = Array.isArray(landing.researchSources)
+      ? landing.researchSources.filter(x => x && /^https:\/\//i.test(x.url || ""))
+      : [];
+    landing.tier = i.tier;
+    landing.aiProvider = "cloudflare-workers-ai";
+    return { status: 200, body: { landing } };
+  } catch (error) {
+    console.error("Cloudflare Workers AI generation failed", error);
+    return { status: 502, body: { error: "Облачная модель не смогла подготовить сайт. Попробуйте ещё раз позже." } };
+  }
+}
+
 async function generateLanding(input, env = {}) {
   const i = readInput(input);
   if (!i.niche) return { status: 400, body: { error: "Укажите нишу бизнеса." } };
-  if (!env.OPENAI_API_KEY) return { status: 503, body: { error: "AI ещё не подключён: добавьте OPENAI_API_KEY в переменные окружения хостинга." } };
+  if (env.AI?.run) return generateWithWorkersAI(i, env);\n  if (!env.OPENAI_API_KEY) return { status: 503, body: { error: "Workers AI не подключён. Добавьте binding AI в Cloudflare Pages." } };
   try {
     const upstream = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
