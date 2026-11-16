@@ -124,9 +124,10 @@ async function generateWithWorkersAI(i, env) {
     if (!landing || typeof landing !== "object" || !landing.title || !landing.niche) {
       return { status: 502, body: { error: "Workers AI вернул неполный ответ. Попробуйте повторить запрос." } };
     }
-    landing.researchSources = Array.isArray(landing.researchSources)
-      ? landing.researchSources.filter(x => x && /^https:\/\//i.test(x.url || ""))
-      : [];
+    // Workers AI path has no web-search tool: never present model-invented URLs or market research as verified.
+    landing.researchSources = [];
+    landing.marketResearch = "Веб-исследование в этом режиме не выполнялось. Рыночные сведения и конкурентов нужно проверить отдельно.";
+    landing.competitors = [];
     landing.tier = i.tier;
     landing.aiProvider = "cloudflare-workers-ai";
     return { status: 200, body: { landing } };
