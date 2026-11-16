@@ -206,6 +206,42 @@ body.architecture-modular .card:nth-child(3n+1){grid-row:span 1;background:#fff}
     @media(max-width:700px){#editor{inset:auto 0 0;width:100%;height:min(88dvh,820px);border-radius:20px 20px 0 0;transform:translateY(110%)}#editor.open{transform:translateY(0)}#editorToggle{right:12px;bottom:12px}#homeToggle{left:12px;bottom:66px}}
     @media(prefers-reduced-motion:reduce){#editor,#editorToggle{transition:none}}
     
+
+    /* Mobile workspace refinements: controls stay reachable without hiding the preview. */
+    @media(max-width:700px){
+      .topbar{gap:10px;padding:10px 14px;align-items:flex-start;flex-direction:column}
+      .topbar .brand{font-size:12px}
+      .top-cta{align-self:stretch;text-align:center}
+      .sh-top{align-items:flex-start;flex-wrap:wrap;padding:10px 14px}
+      .sh-logo{min-width:0;font-size:13px}
+      .sh-logo small{font-size:10px}
+      .sh-top-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+      #studioHome .sh-top-actions .sh-btn{min-width:0;white-space:normal;min-height:42px;padding:9px 10px!important}
+      .sh-body{padding:22px 14px 56px}
+      .sh-build{padding:18px 15px;border-radius:15px}
+      #shForm{grid-template-columns:minmax(0,1fr);gap:9px}
+      #shForm input,#shForm select{width:100%;min-height:48px}
+      #studioHome #shForm .sh-btn{width:100%;min-height:48px}
+      .sh-steps{grid-template-columns:1fr;gap:8px}
+      .sh-steps li{padding:11px 12px}
+      .sh-grid{grid-template-columns:minmax(0,1fr);gap:11px}
+      .sh-h2{margin-top:28px}
+      .sh-ai{align-items:flex-start;line-height:1.45}
+      .sh-ai input{flex:none;margin-top:3px}
+      .bar{position:sticky;top:0;z-index:8;background:var(--panel);padding:8px 10px}
+      .tabs{flex-wrap:nowrap;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+      .tabs button{flex:0 0 auto;white-space:nowrap}
+      .sizes{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:2px}
+      .sizes button{flex:0 0 auto;white-space:nowrap}
+      .view--preview{height:72dvh;min-height:420px}
+      #frame{min-height:100%;height:100%}
+    }
+    @media(max-width:380px){
+      .sh-top-actions{grid-template-columns:1fr}
+      .sh-build h1{font-size:25px}
+      .tabs button{padding-inline:9px}
+      .sizes button{padding-inline:10px}
+    }
   </style>
   <!-- Движок Unique Design Studio: при сборке в app-chunks встраивается в страницу (scripts/build-app-chunks.cjs). -->
   <script data-uds-engine src="../vendor/uds-engine.js"></script>
