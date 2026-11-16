@@ -12,9 +12,8 @@ function validateUrl(value){
   if(!host.includes(".")||host==="localhost"||host.endsWith(".localhost")||host.endsWith(".local")||host.endsWith(".internal")||/^\d+(\.\d+){3}$/.test(host)||host.includes(":"))throw new Error("Этот адрес не поддерживается. Укажите публичный домен.");
   u.hash="";return u;
 }
-function collectPage(html){
+async function collectPage(html){
   const data={title:"",description:"",headings:[],paragraphs:[],links:[],buttons:[],images:[],sections:[]};
-  let currentSection=null;
   const text=(v)=>String(v||"").replace(/\\s+/g," ").trim().slice(0,500);
   new HTMLRewriter()
     .on("title",{text(t){data.title+=t.text}})
@@ -25,7 +24,8 @@ function collectPage(html){
     .on("button,input[type=submit]",{element(e){if(data.buttons.length<30)data.buttons.push({text:e.getAttribute("aria-label")||e.getAttribute("value")||"",type:e.getAttribute("type")||"button"})},text(t){const last=data.buttons[data.buttons.length-1];if(last&&!last.text)last.text+=t.text}})
     .on("img",{element(e){if(data.images.length<35)data.images.push({alt:(e.getAttribute("alt")||"").slice(0,160),role:e.getAttribute("role")||"",className:(e.getAttribute("class")||"").slice(0,100)})}})
     .on("section,main,article,header,footer,nav",{element(e){if(data.sections.length<40)data.sections.push({tag:e.tagName.toLowerCase(),id:(e.getAttribute("id")||"").slice(0,100),className:(e.getAttribute("class")||"").slice(0,140)})}})
-    .transform(new Response(html));
+    .transform(new Response(html)).text();
+  await new HTMLRewriter().transform(new Response(html)).text();
   data.title=text(data.title);data.description=text(data.description);
   data.headings=data.headings.map(h=>({...h,text:text(h.text)})).filter(h=>h.text);
   data.links=data.links.map(a=>({...a,text:text(a.text)})).filter(a=>a.text||a.href);
@@ -62,7 +62,7 @@ export async function onRequestPost({request,env}){
     if(response.status>=300&&response.status<400)return json({error:"Сайт перенаправляет на другой адрес. Введите конечный HTTPS-адрес вручную."},422);
     if(!response.ok)return json({error:"Сайт не удалось открыть (HTTP "+response.status+"). Проверьте адрес или доступность страницы."},422);
     const type=response.headers.get("content-type")||"";if(!/text\\/html|application\\/xhtml\\+xml/i.test(type))return json({error:"По этому адресу не найдена HTML-страница."},415);
-    const html=await readLimited(response);const extracted=collectPage(html);
+    const html=await readLimited(response);const extracted=await collectPage(html);
     if(!extracted.title&&!extracted.headings.length)return json({error:"Не удалось извлечь структуру. Возможно, сайт формирует содержимое только через JavaScript."},422);
     const prompt="Проанализируй публичную страницу сайта. Верни только корректный JSON без Markdown. URL: "+url.origin+url.pathname+"\\nРежим: "+modeInstructions[mode]+"\\nНе воспроизводи текст страницы, торговые марки, названия компании, авторские изображения или уникальный фирменный стиль. Опиши обобщённые UX-паттерны. Если данных нет, укажи это явно. JSON-объект должен содержать mode, pageTitle, summary, sections, composition, visualDirection, navigation, callsToAction, forms, responsiveNotes, accessibilityNotes, seoNotes, strengths, risks, limitations. Для structure достаточно sections, summary и limitations; для остальных режимов заполни только поля, доступные по извлечённым данным.";
     const ai=await env.AI.run(MODEL,{messages:[{role:"system",content:"Ты специалист по UX-архитектуре сайтов. Никакого копирования чужого контента. Не выдумывай невидимые детали."},{role:"user",content:prompt+"\\nИзвлечённые данные (частичный DOM-анализ):\\n"+JSON.stringify(extracted).slice(0,22000)}],max_tokens:mode==="detailed"?2600:mode==="composition"?1600:900});
